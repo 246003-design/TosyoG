@@ -1,6 +1,6 @@
 package entity;
 
-// データベースの user テーブルのデータを持ち運ぶための箱
+// データベースの user テーブルのデータを持ち運ぶための箱　
 public class User {
     private int id;
     private String name;
