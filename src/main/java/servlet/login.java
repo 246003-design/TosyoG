@@ -27,8 +27,8 @@ public class login extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");	
 		String id = request.getParameter("id");
 		String pass = request.getParameter("pass");
-		
-		User user = new User(id,pass);
+		String role = request.getParameter("role");
+		User user = new User(id,pass,role);
 		
 		Loginlogic loginlogic = new LoginLogic();
 		boolean isLogin = loginLogic.execute(user);
