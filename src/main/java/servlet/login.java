@@ -30,7 +30,7 @@ public class login extends HttpServlet {
 		String role = request.getParameter("role");
 		User user = new User(id,pass,role);
 		
-		Loginlogic loginlogic = new LoginLogic();
+		Loginlogic loginLogic = new LoginLogic();
 		boolean isLogin = loginLogic.execute(user);
 		
 		if(isLogin) {
