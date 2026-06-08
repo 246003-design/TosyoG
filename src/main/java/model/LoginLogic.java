@@ -1,4 +1,4 @@
-package servlet;
+package model;
 
 public class LoginLogic {
 	public boolean execute(User user) {
