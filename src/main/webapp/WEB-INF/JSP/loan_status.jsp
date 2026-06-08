@@ -7,51 +7,67 @@
     <title>貸出状況照会</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50 flex flex-col min-h-screen">
+<body class="bg-stone-50 flex flex-col min-h-screen font-sans antialiased text-gray-800">
 
-    <header class="bg-[#1e5641] text-white p-4 shadow-md flex items-center gap-3 sticky top-0 z-10">
-        <a href="user_home.jsp" class="p-1 hover:bg-white/20 rounded-full transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+    <header class="bg-[#1e5641] text-white p-4 shadow-md flex items-center gap-4 sticky top-0 z-20">
+        <a href="user_home.jsp" class="p-2 hover:bg-white/20 rounded-full transition-colors group">
+            <svg class="transform group-hover:-translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         </a>
-        <h1 class="text-xl font-bold tracking-wider">貸出状況照会</h1>
+        <h1 class="text-xl font-bold tracking-widest">貸出状況照会</h1>
     </header>
     
     <main class="flex-1 p-4 md:p-8 max-w-5xl mx-auto w-full">
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        
+        <div class="mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">現在の貸出リスト</h2>
+            <p class="text-gray-500 text-sm">返却期限にご注意ください。期限を過ぎると新たな貸出ができなくなります。</p>
+        </div>
+
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
+                <table class="w-full text-left border-collapse whitespace-nowrap">
                     <thead>
-                        <tr class="bg-teal-50 border-b border-teal-100 text-[#1e5641]">
-                            <th class="p-4 font-bold">タイトル</th>
-                            <th class="p-4 font-bold">貸出開始日</th>
-                            <th class="p-4 font-bold">返却期限日</th>
-                            <th class="p-4 font-bold text-center">状態</th>
+                        <tr class="bg-green-50/50 border-b border-gray-100 text-gray-500 text-sm tracking-wider uppercase">
+                            <th class="p-5 font-bold">タイトル</th>
+                            <th class="p-5 font-bold">貸出開始日</th>
+                            <th class="p-5 font-bold">返却期限日</th>
+                            <th class="p-5 font-bold text-center">状態</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                         
-                        <%-- JSTLでのループ処理（サーブレットから loanList 等を受け取る） --%>
                         <%-- <c:forEach var="loan" items="${loanList}"> --%>
                         
-                        <!-- サンプルデータ 1行目 (超過の場合のスタイル例) -->
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="p-4 font-semibold text-gray-900">Web UIデザイン論</td>
-                            <td class="p-4 text-gray-600">2024/05/10</td>
-                            <td class="p-4 font-medium text-red-600">2024/05/24</td>
-                            <td class="p-4 text-center">
-                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700 border border-red-200">
-                                    超過
+                        <!-- サンプル 1: 超過の場合 (赤の背景で強調) -->
+                        <tr class="hover:bg-red-50/30 transition-colors group">
+                            <td class="p-5">
+                                <span class="font-bold text-gray-900 text-lg">Web UIデザイン論</span>
+                            </td>
+                            <td class="p-5 text-gray-500">2024/05/10</td>
+                            <td class="p-5">
+                                <div class="flex items-center gap-2 text-red-600 font-bold">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                    2024/05/24
+                                </div>
+                            </td>
+                            <td class="p-5 text-center">
+                                <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-black bg-red-100 text-red-700 border border-red-200">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span>
+                                    期限超過
                                 </span>
                             </td>
                         </tr>
 
-                        <!-- サンプルデータ 2行目 (正常な場合) -->
+                        <!-- サンプル 2: 正常な貸出 -->
                         <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="p-4 font-semibold text-gray-900">技術情報の活用</td>
-                            <td class="p-4 text-gray-600">2024/06/01</td>
-                            <td class="p-4 font-medium text-gray-600">2024/06/15</td>
-                            <td class="p-4 text-center">
-                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 border border-green-200">
+                            <td class="p-5">
+                                <span class="font-bold text-gray-800 text-lg">技術情報の活用</span>
+                            </td>
+                            <td class="p-5 text-gray-500">2024/06/01</td>
+                            <td class="p-5 font-medium text-gray-700">2024/06/15</td>
+                            <td class="p-5 text-center">
+                                <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold bg-green-100 text-green-800 border border-green-200">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-green-600"></span>
                                     貸出中
                                 </span>
                             </td>
@@ -63,9 +79,9 @@
                 </table>
             </div>
             
-            <div class="p-6 bg-gray-50 border-t flex justify-center">
-                <a href="user_home.jsp" class="px-8 py-3 bg-white border-2 border-[#1e5641] text-[#1e5641] rounded-lg font-bold hover:bg-[#1e5641] hover:text-white transition-colors">
-                    メニューへ
+            <div class="p-6 bg-gray-50/50 border-t border-gray-100 flex justify-center">
+                <a href="user_home.jsp" class="px-8 py-3.5 bg-white border-2 border-gray-200 text-gray-600 rounded-xl font-bold hover:bg-gray-50 hover:text-gray-900 transition-colors shadow-sm">
+                    メニューへ戻る
                 </a>
             </div>
         </div>
