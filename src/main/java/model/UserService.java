@@ -1,4 +1,5 @@
 //サイトの最初に今の権限でアクセスできるか確認するクラス
+//sessionが保持してる権限情報を渡してください
 package model;
 
 import java.util.List;
