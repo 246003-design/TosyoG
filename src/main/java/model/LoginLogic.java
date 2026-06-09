@@ -1,9 +1,9 @@
 package model;
 
+import org.mindrot.jbcrypt.BCrypt;
 public class LoginLogic {
-	public boolean execute(User user) {
-		//passwordを参照して判定
-		if(user.getPass().equals(password)) {return ture;}
-		return false;
-	}
+    public boolean execute(User user, String dbHashedPassword) {
+        // インポートすることで、BCryptクラスがそのまま使えます
+        return BCrypt.checkpw(user.getPass(), dbHashedPassword);
+    }
 }
