@@ -1,5 +1,6 @@
 package model;
 
+//ログイン時のパスワードをハッシュ化し判定を行う
 import org.mindrot.jbcrypt.BCrypt;
 
 import entity.User;
