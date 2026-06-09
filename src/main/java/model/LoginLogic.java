@@ -1,9 +1,17 @@
 package model;
 
 import org.mindrot.jbcrypt.BCrypt;
+
+import entity.User;
 public class LoginLogic {
+	//ID,パスワード、ハッシュ化したパスワード
     public boolean execute(User user, String dbHashedPassword) {
-        // インポートすることで、BCryptクラスがそのまま使えます
-        return BCrypt.checkpw(user.getPass(), dbHashedPassword);
+        
+    	String inputPassword = user.getPassword();
+    	
+        if(BCrypt.checkpw(inputPassword, dbHashedPassword)) {
+        	return true;
+        }
+        return false;
     }
 }
