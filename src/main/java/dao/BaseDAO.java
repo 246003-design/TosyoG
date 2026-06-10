@@ -1,9 +1,13 @@
 package dao;
 
-public class BaseDAO {
+import java.sql.Connection;
 
-	public BaseDAO() {
-		// TODO 自動生成されたコンストラクター・スタブ
+public class BaseDAO {
+	
+	protected Connection conn;
+
+	public BaseDAO(Connection conn) {
+		this.conn = conn;
 	}
 
 }
