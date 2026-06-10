@@ -1,3 +1,4 @@
+//継承してdaoを作ってください。
 package dao;
 
 import java.sql.Connection;
