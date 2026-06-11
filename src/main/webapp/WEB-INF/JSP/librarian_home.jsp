@@ -74,14 +74,7 @@
                 </div>
                 <span class="font-bold text-gray-800 text-lg group-hover:text-orange-600 transition-colors">延滞一覧表</span>
             </a>
-            
-            <!-- 利用者管理 (通常は管理者機能だが、PDFに存在するため配置) -->
-            <a href="#" class="group bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl border border-gray-100 transition-all duration-300 hover:-translate-y-1 flex flex-col items-center justify-center gap-4 opacity-75 hover:opacity-100">
-                <div class="bg-purple-50 text-purple-600 p-5 rounded-full group-hover:bg-purple-600 group-hover:text-white transition-colors duration-300 shadow-inner">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                </div>
-                <span class="font-bold text-gray-800 text-lg group-hover:text-purple-700 transition-colors">利用者管理</span>
-            </a>
+         
         </div>
     </main>
 </body>
