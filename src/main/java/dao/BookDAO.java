@@ -22,9 +22,10 @@ public class BookDAO extends BaseDAO{
 				+ "FROM book WEHER deletedAt IS NULL";
 		
 		try(PreparedStatement pstmt = conn.prepareStatement(sql)){
-			pstmt.executeQuery();
+			pstmt.setInt(1, id);
 				
 				try (ResultSet rs = pstmt.executeQuery()) {
+					
 	                if (rs.next()) {
 	        				Book book = new Book();
 	                        book.setId(rs.getInt("id"));
@@ -48,6 +49,7 @@ public class BookDAO extends BaseDAO{
 	//図書情報と一致する情報の取得を行う
 	public List<Book>findAll(){
 		List<Book> list = new ArrayList<>();
+		
 		String sql ="SELECT id, bookInfoId, bookNumber, layoutId, createdAt, updatedAt, deletedAt"
 				+ "FROM book WEHER deletedAt IS NULL";
 		
