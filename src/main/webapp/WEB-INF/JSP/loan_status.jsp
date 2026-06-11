@@ -31,13 +31,13 @@
                     <tbody class="divide-y divide-gray-100">
                         
                         <%-- JSTLでのループ処理（サーブレットから loanList 等を受け取る） --%>
-                        <%-- <c:forEach var="loan" items="${loanList}"> --%>
+                        <c:forEach var="loan" items="${loanList}">
                         
                         <!-- サンプルデータ 1行目 (超過の場合のスタイル例) -->
                         <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="p-4 font-semibold text-gray-900">Web UIデザイン論</td>
-                            <td class="p-4 text-gray-600">2024/05/10</td>
-                            <td class="p-4 font-medium text-red-600">2024/05/24</td>
+                            <td class="p-4 font-semibold text-gray-900">${loan.title}</td>
+                            <td class="p-4 text-gray-600">${loan.lend_date}</td>
+                            <td class="p-4 font-medium text-red-600">${loan.due_date}</td>
                             <td class="p-4 text-center">
                                 <span class="px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700 border border-red-200">
                                     超過
@@ -47,9 +47,9 @@
 
                         <!-- サンプルデータ 2行目 (正常な場合) -->
                         <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="p-4 font-semibold text-gray-900">技術情報の活用</td>
-                            <td class="p-4 text-gray-600">2024/06/01</td>
-                            <td class="p-4 font-medium text-gray-600">2024/06/15</td>
+                            <td class="p-4 font-semibold text-gray-900">due_date</td>
+                            <td class="p-4 text-gray-600">${loan.lend_date}</td>
+                            <td class="p-4 font-medium text-gray-600">${loan.due_date}</td>
                             <td class="p-4 text-center">
                                 <span class="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 border border-green-200">
                                     貸出中
@@ -57,7 +57,7 @@
                             </td>
                         </tr>
 
-                        <%-- </c:forEach> --%>
+                        </c:forEach>
                         
                     </tbody>
                 </table>
