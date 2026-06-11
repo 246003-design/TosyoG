@@ -37,3 +37,4 @@ public class Author {
 	public void setDeletedAt(java.sql.Timestamp deletedAt) {
 		this.deletedAt = deletedAt;
 	}
+}
