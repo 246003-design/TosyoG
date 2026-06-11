@@ -14,7 +14,10 @@ public class BookDAO extends BaseDAO{
 //DBManagerを継承
 	public BookDAO(Connection conn) {
 		super(conn);
-	}Optional <Book>findById(int id){
+	}
+	//ISNB番号から図書情報を1件取得する（論理削除を除く）
+	public Optional <Book>findById(int id){
+		
 		String sql ="SELECT id, bookInfoId, bookNumber, layoutId, createdAt, updatedAt, deletedAt"
 				+ "FROM book WEHER deletedAt IS NULL";
 		
@@ -41,6 +44,8 @@ public class BookDAO extends BaseDAO{
 		}
 		return Optional.empty();
 	}
+	
+	//図書情報と一致する情報の取得を行う
 	public List<Book>findAll(){
 		List<Book> list = new ArrayList<>();
 		String sql ="SELECT id, bookInfoId, bookNumber, layoutId, createdAt, updatedAt, deletedAt"
@@ -62,6 +67,7 @@ public class BookDAO extends BaseDAO{
                 list.add(book);
 			}
 		}catch(SQLException e) {
+			System.err.println("findAllの実行中にエラーが発生しました。");
 			e.printStackTrace();
 		}
 		return list;
