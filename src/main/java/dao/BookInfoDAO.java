@@ -86,4 +86,26 @@ public class BookInfoDAO extends BaseDAO {
 		}
 		return generatedId; // 🔴 成功すれば、新しく採番されたID（例: 15 とか）が戻る
 	}
+	
+	//idが届いたらtitleを返す、存在しなかったらnullを返す
+	public BookInfo searchTitle(int id){
+		BookInfo bookInfo = null;
+		
+		String sql = "SELECT * FROM book_info WHERE id = ? AND deleted_at IS NULL";
+		try (PreparedStatement pstms = conn.prepareStatement(sql)){
+			pstms.setInt(1, id);
+			
+			try(ResultSet rs = pstms.executeQuery()){
+				if(rs.next()) {
+					bookInfo = new BookInfo();
+					
+					bookInfo.setTitle(rs.getString("title"));
+				}
+			}
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return bookInfo;
+	}
 }
