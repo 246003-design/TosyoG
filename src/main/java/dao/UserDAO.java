@@ -105,7 +105,68 @@ import entity.User;
 		return result;
 	}
 	
-	//4.利用者の論理削除
-	//5.idでの検索（これ３に作らないと更新処理の際の検索ができない？
+	/**
+	 * 4. 利用者の論理削除処理（主キー指定）
+	 * @param id 削除したい（退会させたい）利用者のユーザーID
+	 * @return 削除（更新）成功ならtrue、失敗ならfalse
+	 */
+	public boolean delete(int id) {
+		boolean result = false;
+		// 🔴 データを消すのではなく、deleted_at に現在のシステム日時（CURRENT_TIMESTAMP）をセットするSQL
+		String sql = "UPDATE user SET deleted_at = CURRENT_TIMESTAMP WHERE id = ? AND deleted_at IS NULL";
+
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+			// SQLにある唯一の「?」に、引数で届いた id をハメ込む！
+			pstmt.setInt(1, id);
+
+			// 実行された行数（アップデートされた件数）を受け取る
+			int rows = pstmt.executeUpdate();
+			if (rows > 0) {
+				result = true; // 1件無事に論理削除（更新）されたら成功！
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	/**
+	 * 5. 利用者の1件検索処理（主キー指定）
+	 * @param id 検索したい利用者のユーザーID
+	 * @return 見つかった場合はユーザー情報を入れたEntity、存在しない（または削除済み）場合はnull
+	 */
+	public User findById(int id) {
+		User user = null;
+		// 🔴 主キー（id）で狙い撃ちし、かつ削除されていない(deleted_at IS NULL)人を検索するSQL
+		String sql = "SELECT * FROM user WHERE id = ? AND deleted_at IS NULL";
+
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+			// SQLにある唯一の「?」に、引数で届いた id をハメ込む！
+			pstmt.setInt(1, id);
+
+			// 検索系（SELECT）なので executeQuery() を使う
+			try (ResultSet rs = pstmt.executeQuery()) {
+				// もしデータが1件見つかったら（rs.nextがtrueなら）
+				if (rs.next()) {
+					user = new User(); // 持ち帰り用の箱（Entity）を作る！
+					user.setId(rs.getInt("id"));
+					user.setName(rs.getString("name"));
+					user.setPassword(rs.getString("password"));
+					user.setRole(rs.getInt("role"));
+					user.setStatus(rs.getInt("status"));
+					user.setBorrowCount(rs.getInt("borrow_count"));
+					user.setCreatedAt(rs.getTimestamp("created_at"));
+					user.setUpdatedAt(rs.getTimestamp("updated_at"));
+					user.setDeletedAt(rs.getTimestamp("deleted_at"));
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// 見つかればデータ入りの箱、見つからなければ空っぽ（null）が戻る
+		return user;
+	}
 
 }
