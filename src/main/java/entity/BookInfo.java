@@ -66,6 +66,14 @@ public class BookInfo {
 	public void setDeletedAt(java.sql.Timestamp deletedAt) {
 		this.deletedAt = deletedAt;
 	}
+	public void setImageUrl(String string) {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+	public String getImageUrl() {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
+	}
 
 
 }
