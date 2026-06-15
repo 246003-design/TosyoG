@@ -21,9 +21,10 @@ public class BookInfoDAO extends BaseDAO {
 	 */
 	public List<BookInfo> search(String keyword) {
 		List<BookInfo> bookList = new ArrayList<>();
-		// 🔴 画像URL（imageUrl）も取得するようにSQLに追加
-		String sql = "SELECT id, title, isbn, authorId, publisherId, imageUrl, createdAt, updatedAt, deletedAt "
-				+ "FROM book_info WHERE title LIKE ? AND deletedAt IS NULL";
+		// 🔴 SQL文の中の列名を、実際のデータベースに合わせて「アンダーバー型」に直しました！
+		// 🔴 category_id も取得対象に追加しています
+		String sql = "SELECT id, title, isbn, author_id, publisher_id, category_id, imageUrl, created_at, updated_at, deleted_at "
+				+ "FROM book_info WHERE title LIKE ? AND deleted_at IS NULL";
 
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			String likeKeyword = "%" + keyword + "%";
@@ -35,12 +36,16 @@ public class BookInfoDAO extends BaseDAO {
 					book.setId(rs.getInt("id"));
 					book.setTitle(rs.getString("title"));
 					book.setIsbn(rs.getString("isbn"));
-					book.setAuthorId(rs.getInt("authorId"));
-					book.setPublisherId(rs.getInt("publisherId"));
-					book.setImageUrl(rs.getString("imageUrl")); // 🔴 画像URLをセット
-					book.setCreatedAt(rs.getTimestamp("createdAt"));
-					book.setUpdatedAt(rs.getTimestamp("updatedAt"));
-					book.setDeletedAt(rs.getTimestamp("deletedAt"));
+					
+					// 🔴 rs.getInt("〇〇") の中身をデータベースの列名（アンダーバー）に統一！
+					book.setAuthorId(rs.getInt("author_id"));
+					book.setPublisherId(rs.getInt("publisher_id"));
+					book.setCategoryId(rs.getInt("category_id")); // カテゴリIDもセット！
+					book.setImageUrl(rs.getString("imageUrl")); 
+					
+					book.setCreatedAt(rs.getTimestamp("created_at"));
+					book.setUpdatedAt(rs.getTimestamp("updated_at"));
+					book.setDeletedAt(rs.getTimestamp("deleted_at"));
 
 					bookList.add(book);
 				}
@@ -53,14 +58,14 @@ public class BookInfoDAO extends BaseDAO {
 	}
 
 	/**
-	 * 2. 新規書籍登録（APIから取得した情報＋画像URLを保存する）
-	 * 🔴 登録完了時に、データベースが自動生成した「id」をひっくり返して戻す特別なインサート文です！
+	 * 2. 新規書籍登録（APIから取得した情報＋画像URL＋カテゴリIDを保存する）
+	 * 🔴 登録完了時に、データベースが自動生成した最新の「id」をひっくり返して戻す特別なインサート文です！
 	 */
 	public int insert(BookInfo book) {
 		int generatedId = -1; // 失敗時は -1 を返す
 		
-		// 🔴 imageUrl も一緒に保存するSQL
-		String sql = "INSERT INTO book_info (title, isbn, authorId, publisherId, imageUrl) VALUES (?, ?, ?, ?, ?)";
+		// 🔴 インサート先のカラム名も「アンダーバー型」にし、category_id も追加しました！
+		String sql = "INSERT INTO book_info (title, isbn, author_id, publisher_id, category_id, imageUrl) VALUES (?, ?, ?, ?, ?, ?)";
 
 		// 🔴 「PreparedStatement.RETURN_GENERATED_KEYS」をつけることで、自動生成された主キー（id）を取れるようにします
 		try (PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -69,7 +74,8 @@ public class BookInfoDAO extends BaseDAO {
 			pstmt.setString(2, book.getIsbn());
 			pstmt.setInt(3, book.getAuthorId());
 			pstmt.setInt(4, book.getPublisherId());
-			pstmt.setString(5, book.getImageUrl()); // 🔴 画像URLをインサート！
+			pstmt.setInt(5, book.getCategoryId());
+			pstmt.setString(6, book.getImageUrl());
 
 			int rows = pstmt.executeUpdate();
 			if (rows > 0) {
@@ -87,22 +93,32 @@ public class BookInfoDAO extends BaseDAO {
 		return generatedId; // 🔴 成功すれば、新しく採番されたID（例: 15 とか）が戻る
 	}
 	
-	//idが届いたらtitleを返す、存在しなかったらnullを返す
-	public BookInfo searchTitle(int id){
+	/**
+	 * 3. idが届いたら情報を詰めて返す（存在しなかったらnull）
+	 */
+	public BookInfo searchTitle(int id) {
 		BookInfo bookInfo = null;
 		
+		// 🔴 deleted_at の表記をデータベースに合わせました
 		String sql = "SELECT * FROM book_info WHERE id = ? AND deleted_at IS NULL";
-		try (PreparedStatement pstms = conn.prepareStatement(sql)){
+		try (PreparedStatement pstms = conn.prepareStatement(sql)) {
 			pstms.setInt(1, id);
 			
-			try(ResultSet rs = pstms.executeQuery()){
-				if(rs.next()) {
+			try (ResultSet rs = pstms.executeQuery()) {
+				if (rs.next()) {
 					bookInfo = new BookInfo();
 					
+					bookInfo.setId(rs.getInt("id"));
 					bookInfo.setTitle(rs.getString("title"));
+					bookInfo.setIsbn(rs.getString("isbn"));
+					bookInfo.setAuthorId(rs.getInt("author_id"));
+					bookInfo.setPublisherId(rs.getInt("publisher_id"));
+					bookInfo.setCategoryId(rs.getInt("category_id"));
+					bookInfo.setImageUrl(rs.getString("imageUrl")); // 画像URLも一緒に返せると画面で超便利！
 				}
 			}
-		}catch (SQLException e) {
+		} catch (SQLException e) {
+			System.err.println("BookInfoDAO.searchTitleでエラーが発生しました。");
 			e.printStackTrace();
 		}
 		
