@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 import entity.Author;
-
+//著者DAO
 public class AuthorDAO extends BaseDAO{
 
 	public AuthorDAO(Connection conn) {
