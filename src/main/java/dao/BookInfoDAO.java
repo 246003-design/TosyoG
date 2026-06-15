@@ -53,7 +53,7 @@ public class BookInfoDAO extends BaseDAO {
 	}
 
 	/**
-	 * 2. 新規書籍登録処理（型を数字に直しました！）
+	 * 2. 新規書籍登録処理
 	 */
 	public boolean insert(BookInfo book) {
 		boolean result = false;
@@ -63,9 +63,9 @@ public class BookInfoDAO extends BaseDAO {
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
 			pstmt.setString(1, book.getTitle());
-			pstmt.setString(2, book.getIsbn());       // 👈 前回のタイポ（重複）を修正！
-			pstmt.setInt(3, book.getAuthorId());       // 👈 文字ではなく「setInt」で数字を入れる！
-			pstmt.setInt(4, book.getPublisherId());    // 👈 文字ではなく「setInt」で数字を入れる！
+			pstmt.setString(2, book.getIsbn());
+			pstmt.setInt(3, book.getAuthorId());
+			pstmt.setInt(4, book.getPublisherId());
 
 			int rows = pstmt.executeUpdate();
 			if (rows > 0) {
