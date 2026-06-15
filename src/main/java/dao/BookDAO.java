@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import entity.Book;
 
+//図書情報DAO
 public class BookDAO extends BaseDAO{
 //DBManagerを継承
 	public BookDAO(Connection conn) {
