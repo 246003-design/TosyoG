@@ -19,7 +19,7 @@ public class PublisherDAO extends BaseDAO{
 	public Optional<Publisher>findById(int id){
 		
 		String sql ="SELECT id, name, createdAt, updatedAt, deletedAt"
-				+ "FROM publisher WHERE id = ? deletedAt IS NULL";
+				+ "FROM publisher WHERE id = ? AND deletedAt IS NULL";
 		
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)){
 			pstmt.setInt(1, id);
