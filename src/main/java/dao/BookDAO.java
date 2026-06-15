@@ -20,7 +20,7 @@ public class BookDAO extends BaseDAO{
 	public Optional <Book>findById(int id){
 		
 		String sql ="SELECT id, bookInfoId, bookNumber, layoutId, createdAt, updatedAt, deletedAt"
-				+ "FROM book WEHER deletedAt IS NULL";
+				+ "FROM book WHERE id = ? AND deletedAt IS NULL";
 		
 		try(PreparedStatement pstmt = conn.prepareStatement(sql)){
 			pstmt.setInt(1, id);
@@ -52,7 +52,7 @@ public class BookDAO extends BaseDAO{
 		List<Book> list = new ArrayList<>();
 		
 		String sql ="SELECT id, bookInfoId, bookNumber, layoutId, createdAt, updatedAt, deletedAt"
-				+ "FROM book WEHER deletedAt IS NULL";
+				+ "FROM book WHERE deletedAt IS NULL";
 		
 		try(PreparedStatement pstmt = conn.prepareStatement(sql);
 				ResultSet rs = pstmt.executeQuery()){
