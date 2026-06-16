@@ -2,6 +2,7 @@ package servlet;
 
 import java.io.IOException;
 
+import dao.UserDAO;
 import entity.User;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -30,8 +31,18 @@ public class login extends HttpServlet {
 		String id = request.getParameter("id");
 		String password = request.getParameter("password");
 		String role = request.getParameter("role");
-		User user = new User();
 		
+		User inputUser = new User();
+        inputUser.setId(id);
+        inputUser.setPassword(password);
+        inputUser.setRole(role);
+		//ユーザ情報の検索取得
+        UserDAO userDao = new UserDAO();
+        
+User dbUser = userDao.findById(id); 
+        
+        boolean isLogin = false;
+        
 		LoginLogic loginLogic = new LoginLogic();
 		boolean isLogin = loginLogic.execute(user, role);
 		
