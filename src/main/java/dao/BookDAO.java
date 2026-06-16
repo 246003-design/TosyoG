@@ -11,69 +11,89 @@ import java.util.Optional;
 import entity.Book;
 
 //図書情報DAO
-public class BookDAO extends BaseDAO{
-//DBManagerを継承
+public class BookDAO extends BaseDAO {
+	
+	// DBManagerを継承
 	public BookDAO(Connection conn) {
 		super(conn);
 	}
-	//ISNB番号から図書情報を1件取得する（論理削除を除く）
-	public Optional <Book>findById(int id){
+	
+	// 実物の本（Book）をデータベースに登録する
+	public boolean insert(Book book) {
+		boolean result = false;
+		String sql = "INSERT INTO book (book_info_id, book_number, layout_id) VALUES (?, ?, ?)";
+
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, book.getBookInfoId());
+			pstmt.setInt(2, book.getBookNumber());
+			pstmt.setInt(3, book.getLayoutId());
+
+			int rows = pstmt.executeUpdate();
+			if (rows > 0) {
+				result = true;
+			}
+		} catch (SQLException e) {
+			System.err.println("BookDAO.insertでエラーが発生しました。");
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	// ISNB番号から図書情報を1件取得する（論理削除を除く）
+	public Optional<Book> findById(int id) {
+		String sql = "SELECT id, book_info_id, book_number, layout_id, created_at, updated_at, deleted_at "
+				+ "FROM book WHERE id = ? AND deleted_at IS NULL";
 		
-		String sql ="SELECT id, bookInfoId, bookNumber, layoutId, createdAt, updatedAt, deletedAt"
-				+ "FROM book WHERE id = ? AND deletedAt IS NULL";
-		
-		try(PreparedStatement pstmt = conn.prepareStatement(sql)){
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setInt(1, id);
 				
-				try (ResultSet rs = pstmt.executeQuery()) {
+			try (ResultSet rs = pstmt.executeQuery()) {
+				if (rs.next()) {
+					Book book = new Book();
+					book.setId(rs.getInt("id"));
+					book.setBookInfoId(rs.getInt("book_info_id"));
+					book.setBookNumber(rs.getInt("book_number"));
+					book.setLayoutId(rs.getInt("layout_id"));
+					book.setCreatedAt(rs.getTimestamp("created_at"));
+					book.setUpdatedAt(rs.getTimestamp("updated_at"));
+					book.setDeletedAt(rs.getTimestamp("deleted_at"));
 					
-	                if (rs.next()) {
-	        				Book book = new Book();
-	                        book.setId(rs.getInt("id"));
-	                        book.setBookInfoId(rs.getInt("bookInfoId"));
-	                        book.setBookNumber(rs.getInt("bookNumber"));
-	                        book.setLayoutId(rs.getInt("layoutId"));
-	                        book.setCreatedAt(rs.getTimestamp("createdAt"));
-	                        book.setUpdatedAt(rs.getTimestamp("updatedAt"));
-	                        book.setDeletedAt(rs.getTimestamp("deletedAt"));
-	                        
-	                       return Optional.of(book);
-	                }
+					return Optional.of(book);
 				}
-		}catch (SQLException e) {
+			}
+		} catch (SQLException e) {
 			System.err.println("findByIdの実行中にエラーが発生しました。");
 			e.printStackTrace();
 		}
 		return Optional.empty();
 	}
 	
-	//図書情報と一致する情報の取得を行う
-	public List<Book>findAll(){
+	// 図書情報と一致する情報の取得を行う
+	public List<Book> findAll() {
 		List<Book> list = new ArrayList<>();
 		
-		String sql ="SELECT id, bookInfoId, bookNumber, layoutId, createdAt, updatedAt, deletedAt"
-				+ "FROM book WHERE deletedAt IS NULL";
+		String sql = "SELECT id, book_info_id, book_number, layout_id, created_at, updated_at, deleted_at "
+				+ "FROM book WHERE deleted_at IS NULL";
 		
-		try(PreparedStatement pstmt = conn.prepareStatement(sql);
-				ResultSet rs = pstmt.executeQuery()){
+		try (PreparedStatement pstmt = conn.prepareStatement(sql);
+			 ResultSet rs = pstmt.executeQuery()) {
 			
-			while(rs.next()) {
+			while (rs.next()) {
 				Book book = new Book();
-                book.setId(rs.getInt("id"));
-                book.setBookInfoId(rs.getInt("bookInfoId"));
-                book.setBookNumber(rs.getInt("bookNumber"));
-                book.setLayoutId(rs.getInt("layoutId"));
-                book.setCreatedAt(rs.getTimestamp("createdAt"));
-                book.setUpdatedAt(rs.getTimestamp("updatedAt"));
-                book.setDeletedAt(rs.getTimestamp("deletedAt"));
-                
-                list.add(book);
+				book.setId(rs.getInt("id"));
+				book.setBookInfoId(rs.getInt("book_info_id"));
+				book.setBookNumber(rs.getInt("book_number"));
+				book.setLayoutId(rs.getInt("layout_id"));
+				book.setCreatedAt(rs.getTimestamp("created_at"));
+				book.setUpdatedAt(rs.getTimestamp("updated_at"));
+				book.setDeletedAt(rs.getTimestamp("deleted_at"));
+				
+				list.add(book);
 			}
-		}catch(SQLException e) {
+		} catch (SQLException e) {
 			System.err.println("findAllの実行中にエラーが発生しました。");
 			e.printStackTrace();
 		}
 		return list;
 	}
-
 }
