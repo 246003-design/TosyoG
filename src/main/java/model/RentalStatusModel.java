@@ -9,7 +9,7 @@ public class RentalStatusModel {
 	
 	@return
 	
-	public boolean isOverdue() {
+	public boolean isOverdue(Time) {
 		
 	}
 
