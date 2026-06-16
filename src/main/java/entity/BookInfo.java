@@ -8,6 +8,7 @@ public class BookInfo {
 	private int authorId;
 	private int publisherId;
 	private int categoryId;
+	private String imageUrl;
 	private java.sql.Timestamp createdAt;
 	private java.sql.Timestamp updatedAt;
 	private java.sql.Timestamp deletedAt;
@@ -48,6 +49,12 @@ public class BookInfo {
 	public void setCategoryId(int categoryId) {
 		this.categoryId = categoryId;
 	}
+	public String getImageUrl() {
+		return imageUrl;
+	}
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
 	public java.sql.Timestamp getCreatedAt() {
 		return createdAt;
 	}
@@ -66,6 +73,7 @@ public class BookInfo {
 	public void setDeletedAt(java.sql.Timestamp deletedAt) {
 		this.deletedAt = deletedAt;
 	}
+
 
 
 }

@@ -39,8 +39,14 @@
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                         
+<<<<<<< HEAD
                         <%-- <c:forEach var="loan" items="${loanList}"> --%>
+=======
+                        <%-- JSTLでのループ処理（サーブレットから loanList 等を受け取る） --%>
+                        <c:forEach var="loan" items="${loanList}">
+>>>>>>> branch 'master' of https://github.com/246003-design/TosyoG.git
                         
+<<<<<<< HEAD
                         <!-- サンプル 1: 超過の場合 (赤の背景で強調) -->
                         <tr class="hover:bg-red-50/30 transition-colors group">
                             <td class="p-5">
@@ -57,12 +63,23 @@
                                 <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-black bg-red-100 text-red-700 border border-red-200">
                                     <span class="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span>
                                     期限超過
+=======
+                        <!-- サンプルデータ 1行目 (超過の場合のスタイル例) -->
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="p-4 font-semibold text-gray-900">${loan.title}</td>
+                            <td class="p-4 text-gray-600">${loan.lend_date}</td>
+                            <td class="p-4 font-medium text-red-600">${loan.due_date}</td>
+                            <td class="p-4 text-center">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700 border border-red-200">
+                                    超過
+>>>>>>> branch 'master' of https://github.com/246003-design/TosyoG.git
                                 </span>
                             </td>
                         </tr>
 
                         <!-- サンプル 2: 正常な貸出 -->
                         <tr class="hover:bg-gray-50 transition-colors">
+<<<<<<< HEAD
                             <td class="p-5">
                                 <span class="font-bold text-gray-800 text-lg">技術情報の活用</span>
                             </td>
@@ -71,12 +88,19 @@
                             <td class="p-5 text-center">
                                 <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold bg-green-100 text-green-800 border border-green-200">
                                     <span class="w-1.5 h-1.5 rounded-full bg-green-600"></span>
+=======
+                            <td class="p-4 font-semibold text-gray-900">due_date</td>
+                            <td class="p-4 text-gray-600">${loan.lend_date}</td>
+                            <td class="p-4 font-medium text-gray-600">${loan.due_date}</td>
+                            <td class="p-4 text-center">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 border border-green-200">
+>>>>>>> branch 'master' of https://github.com/246003-design/TosyoG.git
                                     貸出中
                                 </span>
                             </td>
                         </tr>
 
-                        <%-- </c:forEach> --%>
+                        </c:forEach>
                         
                     </tbody>
                 </table>
