@@ -21,8 +21,6 @@ public class BookInfoDAO extends BaseDAO {
 	 */
 	public List<BookInfo> search(String keyword) {
 		List<BookInfo> bookList = new ArrayList<>();
-		// 🔴 SQL文の中の列名を、実際のデータベースに合わせて「アンダーバー型」に直しました！
-		// 🔴 category_id も取得対象に追加しています
 		String sql = "SELECT id, title, isbn, author_id, publisher_id, category_id, imageUrl, created_at, updated_at, deleted_at "
 				+ "FROM book_info WHERE title LIKE ? AND deleted_at IS NULL";
 
@@ -36,11 +34,9 @@ public class BookInfoDAO extends BaseDAO {
 					book.setId(rs.getInt("id"));
 					book.setTitle(rs.getString("title"));
 					book.setIsbn(rs.getString("isbn"));
-					
-					// 🔴 rs.getInt("〇〇") の中身をデータベースの列名（アンダーバー）に統一！
 					book.setAuthorId(rs.getInt("author_id"));
 					book.setPublisherId(rs.getInt("publisher_id"));
-					book.setCategoryId(rs.getInt("category_id")); // カテゴリIDもセット！
+					book.setCategoryId(rs.getInt("category_id"));
 					book.setImageUrl(rs.getString("imageUrl")); 
 					
 					book.setCreatedAt(rs.getTimestamp("created_at"));
@@ -59,7 +55,6 @@ public class BookInfoDAO extends BaseDAO {
 
 	/**
 	 * 2. 新規書籍登録（APIから取得した情報＋画像URL＋カテゴリIDを保存する）
-	 * 🔴 登録完了時に、データベースが自動生成した最新の「id」をひっくり返して戻す特別なインサート文です！
 	 */
 	public int insert(BookInfo book) {
 		int generatedId = -1; // 失敗時は -1 を返す
@@ -79,7 +74,6 @@ public class BookInfoDAO extends BaseDAO {
 
 			int rows = pstmt.executeUpdate();
 			if (rows > 0) {
-				// 🔴 データベースが自動で発番した最新の id を抜き出す処理
 				try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
 					if (generatedKeys.next()) {
 						generatedId = generatedKeys.getInt(1); // 生成されたIDをゲット！
@@ -99,7 +93,6 @@ public class BookInfoDAO extends BaseDAO {
 	public BookInfo searchTitle(int id) {
 		BookInfo bookInfo = null;
 		
-		// 🔴 deleted_at の表記をデータベースに合わせました
 		String sql = "SELECT * FROM book_info WHERE id = ? AND deleted_at IS NULL";
 		try (PreparedStatement pstms = conn.prepareStatement(sql)) {
 			pstms.setInt(1, id);
@@ -114,7 +107,7 @@ public class BookInfoDAO extends BaseDAO {
 					bookInfo.setAuthorId(rs.getInt("author_id"));
 					bookInfo.setPublisherId(rs.getInt("publisher_id"));
 					bookInfo.setCategoryId(rs.getInt("category_id"));
-					bookInfo.setImageUrl(rs.getString("imageUrl")); // 画像URLも一緒に返せると画面で超便利！
+					bookInfo.setImageUrl(rs.getString("imageUrl"));
 				}
 			}
 		} catch (SQLException e) {
