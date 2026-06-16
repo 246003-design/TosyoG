@@ -9,26 +9,25 @@ import java.util.List;
 
 import entity.Lend;
 
-
-public class LendDAO extends BaseDAO{
+// 貸出DAO
+public class LendDAO extends BaseDAO {
 
 	public LendDAO(Connection conn) {
 		super(conn);
 	}
 	
-
-	
-	public Lend findById(int id){
+	// IDから貸出情報を1件取得する
+	public Lend findById(int id) {
 		Lend lend = null;
-		
-		String sql = "SELECT * FROM lend WHERE id = ? AND deleted_at IS NULL";
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+		String sql = "SELECT id, user_id, book_id, lend_date, due_date, return_date, status, created_at, updated_at, deleted_at "
+				+ "FROM lend WHERE id = ? AND deleted_at IS NULL";
+				
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setInt(1, id);
 			
-			try(ResultSet rs = pstmt.executeQuery()){
-				if(rs.next()) {
+			try (ResultSet rs = pstmt.executeQuery()) {
+				if (rs.next()) {
 					lend = new Lend();
-					
 					lend.setId(rs.getInt("id"));
 					lend.setUserId(rs.getInt("user_id"));
 					lend.setBookId(rs.getInt("book_id"));
@@ -39,28 +38,26 @@ public class LendDAO extends BaseDAO{
 					lend.setCreatedAt(rs.getTimestamp("created_at"));
 					lend.setUpdatedAt(rs.getTimestamp("updated_at"));
 					lend.setDeletedAt(rs.getTimestamp("deleted_at"));
-					
 				}
-				
 			}
-		}catch (SQLException e) {
+		} catch (SQLException e) {
+			System.err.println("LendDAO.findByIdの実行中にエラーが発生しました。");
 			e.printStackTrace();
 		}
-		
 		return lend;
 	}
 	
-	public List<Lend>findAll(){
+	// すべての貸出情報を取得する
+	public List<Lend> findAll() {
 		List<Lend> list = new ArrayList<>();
+		String sql = "SELECT id, user_id, book_id, lend_date, due_date, return_date, status, created_at, updated_at, deleted_at "
+				+ "FROM lend WHERE deleted_at IS NULL";
 		
-		String sql = "SELECT * FROM lend WHERE deleted_at IS NULL ORDER BY due_date ASC"; //修正予定orderbyどうするか
-		
-		try(PreparedStatement pstmt = conn.prepareStatement(sql);
-				ResultSet rs = pstmt.executeQuery()){
+		try (PreparedStatement pstmt = conn.prepareStatement(sql);
+				ResultSet rs = pstmt.executeQuery()) {
 			
-			while(rs.next()) {
+			while (rs.next()) {
 				Lend lend = new Lend();
-				
 				lend.setId(rs.getInt("id"));
 				lend.setUserId(rs.getInt("user_id"));
 				lend.setBookId(rs.getInt("book_id"));
@@ -72,46 +69,12 @@ public class LendDAO extends BaseDAO{
 				lend.setUpdatedAt(rs.getTimestamp("updated_at"));
 				lend.setDeletedAt(rs.getTimestamp("deleted_at"));
                 
-                list.add(lend);
+				list.add(lend);
 			}
-		}catch(SQLException e) {
-			e.printStackTrace();
-		}
-		return list;
-	}
-	
-	public List<Lend>findByUserId(int userId){
-		List<Lend> list = new ArrayList<>();
-		
-		String sql = "SELECT * FROM lend WHERE user_id = ? AND deleted_at IS NULL"; //修正予定orderbyどうするか
-		
-		try(PreparedStatement pstmt = conn.prepareStatement(sql)){
-				
-				pstmt.setInt(1, userId);
-				
-				try (ResultSet rs = pstmt.executeQuery()){
-			
-					while(rs.next()) {
-						Lend lend = new Lend();
-						
-						
-						lend.setId(rs.getInt("id"));
-						lend.setUserId(rs.getInt("user_id"));
-						lend.setBookId(rs.getInt("book_id"));
-						lend.setLendDate(rs.getTimestamp("lend_date"));
-						lend.setDueDate(rs.getTimestamp("due_date"));
-		                
-		                list.add(lend);
-			}
-				}
-		}catch(SQLException e) {
+		} catch (SQLException e) {
+			System.err.println("LendDAO.findAllの実行中にエラーが発生しました。");
 			e.printStackTrace();
 		}
 		return list;
 	}
 }
-
-
-//rs.getInt
-//rs.getString
-//getTimestamp
