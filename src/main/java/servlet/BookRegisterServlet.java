@@ -23,6 +23,19 @@ public class BookRegisterServlet extends HttpServlet {
 		super();
 	}
 
+	/**
+	 * ★新しく追加：URLを直接叩いたとき、またはメニューから遷移したときに
+	 * WEB-INFの中にある「book_register.jsp」を安全に表示させる処理
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// WEB-INF/JSP/book_register.jsp を安全に呼び出して画面を表示する
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/JSP/book_register.jsp");
+		dispatcher.forward(request, response);
+	}
+
+	/**
+	 * 登録ボタンが押されたときの処理（POST送信）
+	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		// 1. 文字化け対策
@@ -81,14 +94,15 @@ public class BookRegisterServlet extends HttpServlet {
 				// ❌ BookInfoの登録に失敗した場合
 				System.err.println("BookInfoの登録に失敗しました。");
 				request.setAttribute("errorMessage", "登録に失敗しました。");
-				RequestDispatcher dispatcher = request.getRequestDispatcher("librarian_book_register.jsp"); // 蔵書登録JSP名に合わせてください
+				// エラー時は安全に同じ登録画面（サーブレット経由）にフォワードする
+				RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/JSP/book_register.jsp");
 				dispatcher.forward(request, response);
 			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 			request.setAttribute("errorMessage", "システムエラーが発生しました。");
-			RequestDispatcher dispatcher = request.getRequestDispatcher("librarian_book_register.jsp"); // 蔵書登録JSP名に合わせてください
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/JSP/book_register.jsp");
 			dispatcher.forward(request, response);
 		}
 	}
