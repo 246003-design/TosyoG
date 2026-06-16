@@ -1,16 +1,12 @@
 package model;
 
-public class RentalStatusModel {
+import java.sql.Timestamp;
 
-	public RentalStatusModel() {
-		
-	}
+public class RentalStatusModel {
 	
-	
-	@return
-	
-	public boolean isOverdue(Time) {
-		
+	public boolean isOverdue(Timestamp time) {
+		Timestamp now = new Timestamp(System.currentTimeMillis());
+		return now.after(time);
 	}
 
 }

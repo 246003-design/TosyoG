@@ -3,11 +3,19 @@
 package servlet;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.util.List;
 
+import dao.BookInfoDAO;
+import dao.DBManager;
+import dao.LendDAO;
+import entity.Lend;
+import entity.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import model.RentalStatusModel;
 
 
 public class RentalStatusServlet extends HttpServlet {
@@ -22,8 +30,18 @@ public class RentalStatusServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		User user = (User) request.getSession().getAttribute("loginUser");
+		int userId = user.getId();
+		
+		Connection conn = DBManager.getConnection();
+		
+		LendDAO lendDAO = new LendDAO(conn);
+		BookInfoDAO bookInfoDAO = new BookInfoDAO(conn);
+		RentalStatusModel model = new RentalStatusModel();
+		
+		List<Lend> lendList = lendDAO.findByUserId(userId);
+		List<BookInfoDAO> bookInfoList = bookInfoDAO.searchTitle()
+		
 	}
 
 	/**
