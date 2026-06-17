@@ -10,58 +10,60 @@ import java.util.Optional;
 
 import entity.Publisher;
 
-public class PublisherDAO extends BaseDAO{
-//出版社DAO
+// 出版社DAO
+public class PublisherDAO extends BaseDAO {
+
 	public PublisherDAO(Connection conn) {
 		super(conn);
 	}
-//IDから出版社情報を1件取得する
-	public Optional<Publisher>findById(int id){
+
+	// IDから出版社情報を1件取得する
+	public Optional<Publisher> findById(int id) {
+		String sql = "SELECT id, name, created_at, updated_at, deleted_at FROM publisher WHERE id = ? AND deleted_at IS NULL";
 		
-		String sql ="SELECT id, name, createdAt, updatedAt, deletedAt"
-				+ "FROM publisher WHERE id = ? AND deletedAt IS NULL";
-		
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setInt(1, id);
 			
-			try(ResultSet rs = pstmt.executeQuery()){
-				
-				if(rs.next()) {
+			try (ResultSet rs = pstmt.executeQuery()) {
+				if (rs.next()) {
 					Publisher publisher = new Publisher();
 					publisher.setId(rs.getInt("id"));
 					publisher.setName(rs.getString("name"));
-					publisher.setCreatedAt(rs.getTimestamp("createdAt"));
-					publisher.setUpdatedAt(rs.getTimestamp("updatedAt"));
-					publisher.setDeletedAt(rs.getTimestamp("deletedAt"));
+					publisher.setCreatedAt(rs.getTimestamp("created_at"));
+					publisher.setUpdatedAt(rs.getTimestamp("updated_at"));
+					publisher.setDeletedAt(rs.getTimestamp("deleted_at"));
 					
 					return Optional.of(publisher);
 				}
 			}
-			}catch (SQLException e) {
-				System.err.println("findByIdの実行中にエラーが発生しました。");
-				e.printStackTrace();
+		} catch (SQLException e) {
+			System.err.println("PublisherDAO.findByIdの実行中にエラーが発生しました。");
+			e.printStackTrace();
 		}
 		return Optional.empty();
 	}
-//出版社情報と一致する情報の取得を行う		
-	public List<Publisher>findAll(){
+
+	// 出版社情報と一致する情報の取得を行う        
+	public List<Publisher> findAll() {
 		List<Publisher> list = new ArrayList<>();
-		String sql ="SELECT id, name, createdAt, updatedAt, deletedAt"
-				+ "FROM id WEHER deletedAt IS NULL";
+		String sql = "SELECT id, name, created_at, updated_at, deleted_at FROM publisher WHERE deleted_at IS NULL";
 		
 		try (PreparedStatement pstmt = conn.prepareStatement(sql);
-	             ResultSet rs = pstmt.executeQuery()){
-			Publisher publisher = new Publisher();
-			publisher.setId(rs.getInt("id"));
-			publisher.setName(rs.getString("name"));
-			publisher.setCreatedAt(rs.getTimestamp("createdAt"));
-			publisher.setUpdatedAt(rs.getTimestamp("updatedAt"));
-			publisher.setDeletedAt(rs.getTimestamp("deletedAt"));
+				ResultSet rs = pstmt.executeQuery()) {
+			
+			while (rs.next()) {
+				Publisher publisher = new Publisher();
+				publisher.setId(rs.getInt("id"));
+				publisher.setName(rs.getString("name"));
+				publisher.setCreatedAt(rs.getTimestamp("created_at"));
+				publisher.setUpdatedAt(rs.getTimestamp("updated_at"));
+				publisher.setDeletedAt(rs.getTimestamp("deleted_at"));
 
-			list.add(publisher);
-		}catch (SQLException e) {
-            System.err.println("findAllの実行中にエラーが発生しました。");
-            e.printStackTrace();
+				list.add(publisher);
+			}
+		} catch (SQLException e) {
+			System.err.println("PublisherDAO.findAllの実行中にエラーが発生しました。");
+			e.printStackTrace();
 		}
 		return list;
 	}

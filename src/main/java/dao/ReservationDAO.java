@@ -9,25 +9,25 @@ import java.util.List;
 
 import entity.Reservation;
 
-
-public class ReservationDAO extends BaseDAO{
+// 予約DAO
+public class ReservationDAO extends BaseDAO {
 
 	public ReservationDAO(Connection conn) {
 		super(conn);
-		
 	}
 	
-	public Reservation findById(int id){
+	// IDから予約情報を1件取得する
+	public Reservation findById(int id) {
 		Reservation reservation = null;
-		
-		String sql = "SELECT * FROM reservation WHERE id = ? AND deleted_at IS NULL";
-		try (PreparedStatement pstms = conn.prepareStatement(sql)){
-			pstms.setInt(1, id);
+		String sql = "SELECT id, user_id, book_info_id, book_id, reservation_date, expire_date, status, created_at, updated_at, deleted_at "
+				+ "FROM reservation WHERE id = ? AND deleted_at IS NULL";
+				
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, id);
 			
-			try(ResultSet rs = pstms.executeQuery()){
-				if(rs.next()) {
+			try (ResultSet rs = pstmt.executeQuery()) {
+				if (rs.next()) {
 					reservation = new Reservation();
-					
 					reservation.setId(rs.getInt("id"));
 					reservation.setUserId(rs.getInt("user_id"));
 					reservation.setBookInfoId(rs.getInt("book_info_id"));
@@ -38,27 +38,26 @@ public class ReservationDAO extends BaseDAO{
 					reservation.setCreatedAt(rs.getTimestamp("created_at"));
 					reservation.setUpdatedAt(rs.getTimestamp("updated_at"));
 					reservation.setDeletedAt(rs.getTimestamp("deleted_at"));
-					
 				}
 			}
-		}catch (SQLException e) {
+		} catch (SQLException e) {
+			System.err.println("ReservationDAO.findByIdの実行中にエラーが発生しました。");
 			e.printStackTrace();
 		}
-		
 		return reservation;
 	}
 	
-	public List<Reservation>findAll(){
+	// すべての予約情報を取得する
+	public List<Reservation> findAll() {
 		List<Reservation> list = new ArrayList<>();
+		String sql = "SELECT id, user_id, book_info_id, book_id, reservation_date, expire_date, status, created_at, updated_at, deleted_at "
+				+ "FROM reservation WHERE deleted_at IS NULL ORDER BY reservation_date ASC";
 		
-		String sql = "SELECT * FROM reservation WHERE deleted_at IS NULL ORDER BY reservation_date ASC";//修正予定
-		
-		try(PreparedStatement pstmt = conn.prepareStatement(sql);
-				ResultSet rs = pstmt.executeQuery()){
+		try (PreparedStatement pstmt = conn.prepareStatement(sql);
+				ResultSet rs = pstmt.executeQuery()) {
 			
-			while(rs.next()) {
+			while (rs.next()) {
 				Reservation reservation = new Reservation();
-				
 				reservation.setId(rs.getInt("id"));
 				reservation.setUserId(rs.getInt("user_id"));
 				reservation.setBookInfoId(rs.getInt("book_info_id"));
@@ -70,9 +69,10 @@ public class ReservationDAO extends BaseDAO{
 				reservation.setUpdatedAt(rs.getTimestamp("updated_at"));
 				reservation.setDeletedAt(rs.getTimestamp("deleted_at"));
                 
-                list.add(reservation);
+				list.add(reservation);
 			}
-		}catch(SQLException e) {
+		} catch (SQLException e) {
+			System.err.println("ReservationDAO.findAllの実行中にエラーが発生しました。");
 			e.printStackTrace();
 		}
 		return list;

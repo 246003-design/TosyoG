@@ -9,6 +9,7 @@ import java.util.List;
 
 import entity.BookInfo;
 
+// 書籍マスタDAO
 public class BookInfoDAO extends BaseDAO {
 
 	// BaseDAOのコンストラクタを呼び出す
@@ -21,6 +22,7 @@ public class BookInfoDAO extends BaseDAO {
 	 */
 	public List<BookInfo> search(String keyword) {
 		List<BookInfo> bookList = new ArrayList<>();
+		// 🔴 SQL側のカラム名は、DBの定義に合わせてください（通常は大文字小文字が区別されます）
 		String sql = "SELECT id, title, isbn, author_id, publisher_id, category_id, imageUrl, created_at, updated_at, deleted_at "
 				+ "FROM book_info WHERE title LIKE ? AND deleted_at IS NULL";
 
@@ -37,12 +39,14 @@ public class BookInfoDAO extends BaseDAO {
 					book.setAuthorId(rs.getInt("author_id"));
 					book.setPublisherId(rs.getInt("publisher_id"));
 					book.setCategoryId(rs.getInt("category_id"));
+					
+					// 🔴 BookInfo.java のメソッド名「setImageUrl」に完全に合わせました
 					book.setImageUrl(rs.getString("imageUrl")); 
 					
 					book.setCreatedAt(rs.getTimestamp("created_at"));
 					book.setUpdatedAt(rs.getTimestamp("updated_at"));
 					book.setDeletedAt(rs.getTimestamp("deleted_at"));
-
+					
 					bookList.add(book);
 				}
 			}
@@ -54,29 +58,33 @@ public class BookInfoDAO extends BaseDAO {
 	}
 
 	/**
-	 * 2. 新規書籍登録（APIから取得した情報＋画像URL＋カテゴリIDを保存する）
+	 * 2. 書籍マスタへの新規登録処理（環境依存エラー回避版）
 	 */
 	public int insert(BookInfo book) {
-		int generatedId = -1; // 失敗時は -1 を返す
-		
-		// 🔴 インサート先のカラム名も「アンダーバー型」にし、category_id も追加しました！
-		String sql = "INSERT INTO book_info (title, isbn, author_id, publisher_id, category_id, imageUrl) VALUES (?, ?, ?, ?, ?, ?)";
+		int generatedId = 0;
+		// SQL文
+		String insertSql = "INSERT INTO book_info (title, isbn, author_id, publisher_id, category_id, imageUrl) VALUES (?, ?, ?, ?, ?, ?)";
+		// 直前に自動採番されたIDを安全に取得するSQL（これで最初のNotSupportedExceptionを回避します）
+		String selectIdSql = "SELECT LAST_INSERT_ID()";
 
-		// 🔴 「PreparedStatement.RETURN_GENERATED_KEYS」をつけることで、自動生成された主キー（id）を取れるようにします
-		try (PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
-
+		try (PreparedStatement pstmt = conn.prepareStatement(insertSql)) {
 			pstmt.setString(1, book.getTitle());
 			pstmt.setString(2, book.getIsbn());
 			pstmt.setInt(3, book.getAuthorId());
 			pstmt.setInt(4, book.getPublisherId());
 			pstmt.setInt(5, book.getCategoryId());
-			pstmt.setString(6, book.getImageUrl());
+			
+			// 🔴 BookInfo.java のメソッド名「getImageUrl」に完全に合わせました
+			pstmt.setString(6, book.getImageUrl()); 
 
 			int rows = pstmt.executeUpdate();
+			
+			// 安全に自動採番されたIDを取得する
 			if (rows > 0) {
-				try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
-					if (generatedKeys.next()) {
-						generatedId = generatedKeys.getInt(1); // 生成されたIDをゲット！
+				try (PreparedStatement pstmtId = conn.prepareStatement(selectIdSql);
+					 ResultSet rs = pstmtId.executeQuery()) {
+					if (rs.next()) {
+						generatedId = rs.getInt(1);
 					}
 				}
 			}
@@ -84,37 +92,42 @@ public class BookInfoDAO extends BaseDAO {
 			System.err.println("BookInfoDAO.insertでエラーが発生しました。");
 			e.printStackTrace();
 		}
-		return generatedId; // 🔴 成功すれば、新しく採番されたID（例: 15 とか）が戻る
+		return generatedId;
 	}
 	
 	/**
-	 * 3. idが届いたら情報を詰めて返す（存在しなかったらnull）
+	 * 3. idから書籍マスタの情報を取得する
 	 */
 	public BookInfo searchTitle(int id) {
 		BookInfo bookInfo = null;
-		
-		String sql = "SELECT * FROM book_info WHERE id = ? AND deleted_at IS NULL";
-		try (PreparedStatement pstms = conn.prepareStatement(sql)) {
-			pstms.setInt(1, id);
+		String sql = "SELECT id, title, isbn, author_id, publisher_id, category_id, imageUrl, created_at, updated_at, deleted_at "
+				+ "FROM book_info WHERE id = ? AND deleted_at IS NULL";
+				
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, id);
 			
-			try (ResultSet rs = pstms.executeQuery()) {
+			try (ResultSet rs = pstmt.executeQuery()) {
 				if (rs.next()) {
 					bookInfo = new BookInfo();
-					
 					bookInfo.setId(rs.getInt("id"));
 					bookInfo.setTitle(rs.getString("title"));
 					bookInfo.setIsbn(rs.getString("isbn"));
 					bookInfo.setAuthorId(rs.getInt("author_id"));
 					bookInfo.setPublisherId(rs.getInt("publisher_id"));
 					bookInfo.setCategoryId(rs.getInt("category_id"));
-					bookInfo.setImageUrl(rs.getString("imageUrl"));
+					
+					// 🔴 BookInfo.java のメソッド名「setImageUrl」に完全に合わせました
+					bookInfo.setImageUrl(rs.getString("imageUrl")); 
+					
+					bookInfo.setCreatedAt(rs.getTimestamp("created_at"));
+					bookInfo.setUpdatedAt(rs.getTimestamp("updated_at"));
+					bookInfo.setDeletedAt(rs.getTimestamp("deleted_at"));
 				}
 			}
 		} catch (SQLException e) {
 			System.err.println("BookInfoDAO.searchTitleでエラーが発生しました。");
 			e.printStackTrace();
 		}
-		
 		return bookInfo;
 	}
 }
