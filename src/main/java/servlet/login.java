@@ -50,7 +50,7 @@ User dbUser = userDao.findById(id);
 			HttpSession session = request.getSession();
 			session.setAttribute("loginUser",user);
 			}
-		RequestDispatcher dispacher = request.getRequestDispatcher("WEB-INF/jsp/loginResult.jsp");
+		RequestDispatcher dispacher = request.getRequestDispatcher("WEB-INF/jsp/common/login.jsp");
 		dispacher.forward(request,response);
 	}
 }
