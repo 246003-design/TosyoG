@@ -1,27 +1,45 @@
 package dto;
 
 import java.sql.Timestamp;
-//予約機能に必要な利用者情報、図書情報
+
 public class ReservationDTO {
-    // --- 既存のフィールド（すでにあるもの） ---
+
+    // フィールド
     private int id;
     private int userId;
     private int bookInfoId;
     private int bookId;
     private Timestamp reservationDate;
+    private Timestamp expireDate;
     private int status;
-    // ...（中略）...
-
-    // --- ★ここを追加：画面表示（DTO化）のために必要なフィールド ---
     private String userName;   // 利用者名
     private String bookTitle;  // 図書のタイトル
 
-    // --- 追加したフィールドのゲッター・セッター ---
+    // --- DAOが値を「入れる」「出す」ための正しいゲッター・セッター ---
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+
+    public int getUserId() { return userId; }
+    public void setUserId(int userId) { this.userId = userId; }
+
+    public int getBookInfoId() { return bookInfoId; }
+    public void setBookInfoId(int bookInfoId) { this.bookInfoId = bookInfoId; }
+
+    public int getBookId() { return bookId; }
+    public void setBookId(int bookId) { this.bookId = bookId; }
+
+    public Timestamp getReservationDate() { return reservationDate; }
+    public void setReservationDate(Timestamp reservationDate) { this.reservationDate = reservationDate; }
+
+    public Timestamp getExpireDate() { return expireDate; }
+    public void setExpireDate(Timestamp expireDate) { this.expireDate = expireDate; }
+
+    public int getStatus() { return status; }
+    public void setStatus(int status) { this.status = status; }
+
     public String getUserName() { return userName; }
     public void setUserName(String userName) { this.userName = userName; }
 
     public String getBookTitle() { return bookTitle; }
     public void setBookTitle(String bookTitle) { this.bookTitle = bookTitle; }
-
-    // （既存のゲッター・セッターはそのまま残す）
 }
