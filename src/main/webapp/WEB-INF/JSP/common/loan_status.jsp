@@ -1,8 +1,8 @@
-
-　　　　　　　　　　　　　　　　　　　<%--      貸出状況照会画面　　　　 --%>
+<%--      貸出状況照会画面　　　　 --%>
 
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%-- <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> --%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -38,70 +38,35 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
-                        
-<<<<<<< HEAD
-                        <%-- <c:forEach var="loan" items="${loanList}"> --%>
-=======
-                        <%-- JSTLでのループ処理（サーブレットから loanList 等を受け取る） --%>
-                        <c:forEach var="loan" items="${loanList}">
->>>>>>> branch 'master' of https://github.com/246003-design/TosyoG.git
-                        
-<<<<<<< HEAD
-                        <!-- サンプル 1: 超過の場合 (赤の背景で強調) -->
-                        <tr class="hover:bg-red-50/30 transition-colors group">
-                            <td class="p-5">
-                                <span class="font-bold text-gray-900 text-lg">Web UIデザイン論</span>
-                            </td>
-                            <td class="p-5 text-gray-500">2024/05/10</td>
-                            <td class="p-5">
-                                <div class="flex items-center gap-2 text-red-600 font-bold">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                    2024/05/24
-                                </div>
-                            </td>
-                            <td class="p-5 text-center">
-                                <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-black bg-red-100 text-red-700 border border-red-200">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span>
-                                    期限超過
-=======
-                        <!-- サンプルデータ 1行目 (超過の場合のスタイル例) -->
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="p-4 font-semibold text-gray-900">${loan.title}</td>
-                            <td class="p-4 text-gray-600">${loan.lend_date}</td>
-                            <td class="p-4 font-medium text-red-600">${loan.due_date}</td>
-                            <td class="p-4 text-center">
-                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700 border border-red-200">
-                                    超過
->>>>>>> branch 'master' of https://github.com/246003-design/TosyoG.git
-                                </span>
-                            </td>
-                        </tr>
-
-                        <!-- サンプル 2: 正常な貸出 -->
-                        <tr class="hover:bg-gray-50 transition-colors">
-<<<<<<< HEAD
-                            <td class="p-5">
-                                <span class="font-bold text-gray-800 text-lg">技術情報の活用</span>
-                            </td>
-                            <td class="p-5 text-gray-500">2024/06/01</td>
-                            <td class="p-5 font-medium text-gray-700">2024/06/15</td>
-                            <td class="p-5 text-center">
-                                <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold bg-green-100 text-green-800 border border-green-200">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-green-600"></span>
-=======
-                            <td class="p-4 font-semibold text-gray-900">due_date</td>
-                            <td class="p-4 text-gray-600">${loan.lend_date}</td>
-                            <td class="p-4 font-medium text-gray-600">${loan.due_date}</td>
-                            <td class="p-4 text-center">
-                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 border border-green-200">
->>>>>>> branch 'master' of https://github.com/246003-design/TosyoG.git
-                                    貸出中
-                                </span>
-                            </td>
-                        </tr>
-
+                        <c:forEach var="dto" items="${dtoList}">
+                            <tr class="hover:bg-gray-50 transition-colors group">
+                                <td class="p-5">
+                                    <span class="font-bold text-gray-900 text-lg">${dto.title}</span>
+                                </td>
+                                <td class="p-5 text-gray-500">
+                                    <fmt:formatDate value="${dto.lendDate}" pattern="yyyy/MM/dd"/>
+                                </td>
+                                <td class="p-5 font-medium text-gray-700">
+                                    <fmt:formatDate value="${dto.dueDate}" pattern="yyyy/MM/dd"/>
+                                </td>
+                                <td class="p-5 text-center">
+                                    <c:choose>
+                                        <c:when test="${dto.overdue}">
+                                            <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-black bg-red-100 text-red-700 border border-red-200">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span>
+                                                期限超過
+                                            </span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold bg-green-100 text-green-800 border border-green-200">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-green-600"></span>
+                                                貸出中
+                                            </span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                            </tr>
                         </c:forEach>
-                        
                     </tbody>
                 </table>
             </div>
