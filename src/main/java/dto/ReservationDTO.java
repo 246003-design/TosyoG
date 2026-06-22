@@ -1,7 +1,7 @@
 package dto;
 
 import java.sql.Timestamp;
-
+//予約機能に必要な利用者情報、図書情報
 public class ReservationDTO {
     // --- 既存のフィールド（すでにあるもの） ---
     private int id;
