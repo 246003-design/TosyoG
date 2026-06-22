@@ -8,9 +8,9 @@ public class DBManager {
 	public static Connection getConnection() {
 		
 		String jdbcDriver = "com.mysql.cj.jdbc.Driver";
-		String url = "jdbc:mysql://localhost:3306/s3a1_systm_dev";
+		String url = "jdbc:mysql://localhost:3306/s3a1_system_dev";
 		String user = "root";
-		String password = "";
+		String password = "password";
 		
 		try {
 			Class.forName(jdbcDriver);

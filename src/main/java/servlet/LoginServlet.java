@@ -23,7 +23,7 @@ public class LoginServlet extends HttpServlet {
 	// 画面を最初に開いたとき（GET）
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// ログイン画面を表示する
-		RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/common/login.jsp");
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/JSP/common/login.jsp");
 		dispatcher.forward(request, response);
 	}
 
@@ -42,7 +42,7 @@ public class LoginServlet extends HttpServlet {
 		} catch (NumberFormatException e) {
 			// IDに数字以外が入力された場合の処理
 			request.setAttribute("errorMessage", "IDは数字で入力してください。");
-			RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/common/login.jsp");
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/JSP/common/login.jsp");
 			dispatcher.forward(request, response);
 			return;
 		}
@@ -73,7 +73,7 @@ public class LoginServlet extends HttpServlet {
 			// ❌ ログイン失敗...
 			// エラーメッセージをセットしてログイン画面に戻す
 			request.setAttribute("errorMessage", "IDまたはパスワードが誤っています");
-			RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/common/login.jsp");
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/JSP/common/login.jsp");
 			dispatcher.forward(request, response);
 		}
 	}
