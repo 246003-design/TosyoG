@@ -4,11 +4,14 @@ package servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.List;
 
 import dao.BookInfoDAO;
 import dao.DBManager;
 import dao.LendDAO;
+import dto.LendDetailDto;
+import entity.BookInfo;
 import entity.Lend;
 import entity.User;
 import jakarta.servlet.ServletException;
@@ -33,15 +36,36 @@ public class RentalStatusServlet extends HttpServlet {
 		User user = (User) request.getSession().getAttribute("loginUser");
 		int userId = user.getId();
 		
-		Connection conn = DBManager.getConnection();
-		
-		LendDAO lendDAO = new LendDAO(conn);
-		BookInfoDAO bookInfoDAO = new BookInfoDAO(conn);
-		RentalStatusModel model = new RentalStatusModel();
-		
-		List<Lend> lendList = lendDAO.findByUserId(userId);
-		List<BookInfoDAO> bookInfoList = bookInfoDAO.searchTitle()
-		
+		try(Connection conn = DBManager.getConnection()){
+			LendDAO lendDAO = new LendDAO(conn);
+			BookInfoDAO bookInfoDAO = new BookInfoDAO(conn);
+			RentalStatusModel model = new RentalStatusModel();
+			List<LendDetailDto> dtoList = new ArrayList<LendDetailDto>();
+
+			
+			List<Lend> lendList = lendDAO.findByUserId(userId);
+			
+			for(Lend lend : lendList) {
+				BookInfo book = bookInfoDAO.searchTitle(lend.getBookId());
+				String title;
+				
+				if(book == null) {
+					title = "不明";
+				}else {
+					title = book.getTitle();
+				}
+				
+				LendDetailDto dto = new LendDetailDto();
+				dto.setTitle(title);
+				dto.setDueDate(lend.getDueDate());
+				dto.setLendDate(lend.getLendDate());
+				dto.setOverdue(model.isOverdue(lend.getDueDate()));
+				
+				dtoList.add(dto);
+			}
+			request.setAttribute("dtoList", dtoList);
+			request.getRequestDispatcher("jspパス").forward(request, response);		
+		}
 	}
 
 	/**

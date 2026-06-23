@@ -77,4 +77,29 @@ public class LendDAO extends BaseDAO {
 		}
 		return list;
 	}
+	
+	public List<Lend> findByUserId(int userId) {
+		List<Lend> list = new ArrayList<>();
+		String sql = "SELECT book_id, lend_date, due_date FROM lend WHERE user_id = ? AND return_date IS NULL AND deleted_at IS NULL";
+		
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+			pstmt.setInt(1, userId);
+
+			try(ResultSet rs = pstmt.executeQuery()) {
+			
+				while (rs.next()) {
+					Lend lend = new Lend();
+					lend.setBookId(rs.getInt("book_id"));
+					lend.setLendDate(rs.getTimestamp("lend_date"));
+					lend.setDueDate(rs.getTimestamp("due_date"));
+	                
+					list.add(lend);
+				}
+			}
+		} catch (SQLException e) {
+			System.err.println("LendDAO.findByUserIdの実行中にエラーが発生しました。");
+			e.printStackTrace();
+		}
+		return list;
+	}
 }

@@ -12,55 +12,52 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.LoginLogic;
 
-@WebServlet("/Login")
-public class login extends HttpServlet {
+@WebServlet("/LoginServlet") 
+public class LoginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    public login() {
-        super();
-    }
+
+	public LoginServlet() {
+		super();
+	}
 
 	// 画面を最初に開いたとき（GET）
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// 先頭の「/」と大文字の「JSP」が必須です！
+		// ログイン画面を表示する
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/JSP/common/login.jsp");
 		dispatcher.forward(request, response);
 	}
 
 	// ログインボタンが押されたとき（POST）
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
 		request.setCharacterEncoding("UTF-8");	
 		
-		// 1. JSPの <input name="..."> と名前を合わせて受け取る
-		// JSP側が name="userId" なら request.getParameter("userId") にする必要があります
-		String idStr = request.getParameter("userId"); 
-		if (idStr == null) {
-			idStr = request.getParameter("id"); // 念のための予備
-		}
+		// 1. JSPから入力値を受け取る（name属性と一致させる）
+		// ※StringのままだとDB検索しづらいので、int型に変換します
+		String userIdStr = request.getParameter("userId");
 		String password = request.getParameter("password");
 		
-		// 2. 文字列のIDを、データベースで使える「数字(int)」に変換する
-		int id = 0;
+		int userId = 0;
 		try {
-			id = Integer.parseInt(idStr);
+			userId = Integer.parseInt(userIdStr);
 		} catch (NumberFormatException e) {
-			// IDに文字が入力された場合の弾き処理
+			// IDに数字以外が入力された場合の処理
 			request.setAttribute("errorMessage", "IDは数字で入力してください。");
 			RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/JSP/common/login.jsp");
 			dispatcher.forward(request, response);
 			return;
 		}
 
-		// 3. LoginLogicに「数字のID」と「入力されたパスワード」を渡して照合する
+		// 2. Logicに渡して認証する
+		// 💡ここは「戻り値として、DBから取得した完全なUser情報を受け取る」設計にするのが一般的です
 		LoginLogic loginLogic = new LoginLogic();
-		User loginUser = loginLogic.execute(id, password); 
+		User loginUser = loginLogic.execute(userId, password);
 		
-		// 4. 認証結果による分岐
+		// 3. 認証結果による分岐
 		if (loginUser != null) {
 			// ⭕ ログイン成功！
+			// セッションにユーザー情報を保存
 			HttpSession session = request.getSession();
-			session.setAttribute("loginUser", loginUser); // 取得した本物のUser情報をセッションに入れる
+			session.setAttribute("loginUser", loginUser);
 			
 			// 権限（role）をチェックして、それぞれのホーム画面へリダイレクト
 			int role = loginUser.getRole();
@@ -69,11 +66,12 @@ public class login extends HttpServlet {
 			} else if (role == 2) {
 				response.sendRedirect("admin_home.jsp");     // 管理者のホームへ
 			} else {
-				response.sendRedirect("user_home.jsp");      // 利用者のホームへ
+				response.sendRedirect("customer_home.jsp");  // 利用者のホームへ
 			}
 			
 		} else {
 			// ❌ ログイン失敗...
+			// エラーメッセージをセットしてログイン画面に戻す
 			request.setAttribute("errorMessage", "IDまたはパスワードが誤っています");
 			RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/JSP/common/login.jsp");
 			dispatcher.forward(request, response);

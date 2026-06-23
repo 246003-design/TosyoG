@@ -7,9 +7,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import dto.ReservationDTO;
 import entity.Reservation;
 
-// 予約DAO
+// 予約DAO(ID検索、一覧取得、予約情報の登録更新が可能）
 public class ReservationDAO extends BaseDAO {
 
 	public ReservationDAO(Connection conn) {
@@ -77,4 +78,49 @@ public class ReservationDAO extends BaseDAO {
 		}
 		return list;
 	}
+
+	// ★DTOから直接情報を取得して新規登録する形に修正
+		public boolean insert(ReservationDTO newRes) { // 型を ReservationDTO に変更
+			boolean result = false;
+			String sql = "INSERT INTO reservation (user_id, book_info_id, book_id, reservation_date, status, created_at) "
+					+ "VALUES (?, ?, ?, NOW(), ?, NOW())";
+
+			try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+				// newRes（DTOの箱）からゲッターで値を取得
+				pstmt.setInt(1, newRes.getUserId());
+				pstmt.setInt(2, newRes.getBookInfoId());
+				pstmt.setInt(3, newRes.getBookId());
+				pstmt.setInt(4, newRes.getStatus());
+
+				int rows = pstmt.executeUpdate();
+				if (rows > 0) {
+					result = true;
+				}
+			} catch (SQLException e) {
+				System.err.println("ReservationDAO.insertの実行中にエラーが発生しました。");
+				e.printStackTrace();
+			}
+			return result;
+		}
+
+		// ★DTOから直接情報を取得して更新（キャンセル等）する形に修正
+		public boolean update(ReservationDTO r) { // 型を ReservationDTO に変更
+			boolean result = false;
+			String sql = "UPDATE reservation SET status = ?, updated_at = NOW() WHERE id = ? AND deleted_at IS NULL";
+
+			try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+				// r（DTOの箱）からゲッターで値を取得
+				pstmt.setInt(1, r.getStatus());
+				pstmt.setInt(2, r.getId());
+
+				int rows = pstmt.executeUpdate();
+				if (rows > 0) {
+					result = true;
+				}
+			} catch (SQLException e) {
+				System.err.println("ReservationDAO.updateの実行中にエラーが発生しました。");
+				e.printStackTrace();
+			}
+			return result;
+		}
 }
