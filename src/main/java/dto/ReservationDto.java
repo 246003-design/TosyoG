@@ -2,7 +2,7 @@ package dto;
 
 import java.sql.Timestamp;
 
-public class ReservationDTO {
+public class ReservationDto {
 
     // フィールド
     private int id;
