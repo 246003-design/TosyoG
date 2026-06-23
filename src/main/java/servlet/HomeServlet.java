@@ -38,7 +38,7 @@ public class HomeServlet extends HttpServlet {
 			// 管理者の場合のJSPパス
 			jspPath = "/WEB-INF/JSP/admin/admin_home.jsp"; 
 		} else {
-			// 利用者の場合のJSPパス（※フォルダ名が違う場合は適宜合わせてください）
+			// 利用者の場合のJSPパス
 			jspPath = "/WEB-INF/JSP/customer/customer_home.jsp"; 
 		}
 		

@@ -50,7 +50,7 @@
             </a>
 
             <!-- 貸出状況メニューカード -->
-            <a href="LoanStatusServlet" class="group bg-white rounded-3xl p-8 shadow-sm hover:shadow-xl border border-gray-100 hover:border-[#1e5641]/30 transition-all duration-300 hover:-translate-y-1 flex flex-col items-center text-center">
+            <a href="RentalStatusServlet" class="group bg-white rounded-3xl p-8 shadow-sm hover:shadow-xl border border-gray-100 hover:border-[#1e5641]/30 transition-all duration-300 hover:-translate-y-1 flex flex-col items-center text-center">
                 <div class="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mb-6 group-hover:bg-[#1e5641] group-hover:text-white text-[#1e5641] transition-colors duration-300 shadow-inner">
                     <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
                 </div>

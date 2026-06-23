@@ -66,7 +66,7 @@ public class RentalStatusServlet extends HttpServlet {
 				dtoList.add(dto);
 			}
 			request.setAttribute("dtoList", dtoList);
-			request.getRequestDispatcher("TosyoG/src/main/webapp/WEB-INF/JSP/common/loan_status.jsp").forward(request, response);
+			request.getRequestDispatcher("/WEB-INF/JSP/common/loan_status.jsp").forward(request, response);
 			} catch (SQLException e) {
 				// TODO 自動生成された catch ブロック
 				e.printStackTrace();
