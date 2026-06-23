@@ -55,19 +55,13 @@ public class LoginServlet extends HttpServlet {
 		// 3. 認証結果による分岐
 		if (loginUser != null) {
 			// ⭕ ログイン成功！
-			// セッションにユーザー情報を保存
+			
+			// 権限（role）をチェックして、それぞれのホーム画面へリダイレクト
 			HttpSession session = request.getSession();
 			session.setAttribute("loginUser", loginUser);
 			
-			// 権限（role）をチェックして、それぞれのホーム画面へリダイレクト
-			int role = loginUser.getRole();
-			if (role == 1) {
-				response.sendRedirect("librarian_home.jsp"); // 司書のホームへ
-			} else if (role == 2) {
-				response.sendRedirect("admin_home.jsp");     // 管理者のホームへ
-			} else {
-				response.sendRedirect("customer_home.jsp");  // 利用者のホームへ
-			}
+			// 💡変更箇所：権限チェックと画面表示はすべてHomeServletに任せる！
+			response.sendRedirect("HomeServlet");
 			
 		} else {
 			// ❌ ログイン失敗...
