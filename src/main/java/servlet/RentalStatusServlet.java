@@ -4,6 +4,7 @@ package servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import entity.BookInfo;
 import entity.Lend;
 import entity.User;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -33,7 +35,6 @@ public class RentalStatusServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-			throws ServletException, IOException, java.sql.SQLException {
 		User user = (User) request.getSession().getAttribute("loginUser");
 		int userId = user.getId();
 		
@@ -65,10 +66,12 @@ public class RentalStatusServlet extends HttpServlet {
 				dtoList.add(dto);
 			}
 			request.setAttribute("dtoList", dtoList);
-			request.getRequestDispatcher("loan_status.jsp").forward(request, response);
+			request.getRequestDispatcher("TosyoG/src/main/webapp/WEB-INF/JSP/common/loan_status.jsp").forward(request, response);
+			} catch (SQLException e) {
+				// TODO 自動生成された catch ブロック
+				e.printStackTrace();
 			}
 		}
-	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
