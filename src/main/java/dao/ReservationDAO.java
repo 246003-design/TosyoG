@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import dto.ReservationDTO;
+import dto.ReservationDto;
 import entity.Reservation;
 
 // 予約DAO(ID検索、一覧取得、予約情報の登録更新が可能）
@@ -80,7 +80,7 @@ public class ReservationDAO extends BaseDAO {
 	}
 
 	// ★DTOから直接情報を取得して新規登録する形に修正
-		public boolean insert(ReservationDTO newRes) { // 型を ReservationDTO に変更
+		public boolean insert(ReservationDto newRes) { // 型を ReservationDTO に変更
 			boolean result = false;
 			String sql = "INSERT INTO reservation (user_id, book_info_id, book_id, reservation_date, status, created_at) "
 					+ "VALUES (?, ?, ?, NOW(), ?, NOW())";
@@ -104,7 +104,7 @@ public class ReservationDAO extends BaseDAO {
 		}
 
 		// ★DTOから直接情報を取得して更新（キャンセル等）する形に修正
-		public boolean update(ReservationDTO r) { // 型を ReservationDTO に変更
+		public boolean update(ReservationDto r) { // 型を ReservationDTO に変更
 			boolean result = false;
 			String sql = "UPDATE reservation SET status = ?, updated_at = NOW() WHERE id = ? AND deleted_at IS NULL";
 
