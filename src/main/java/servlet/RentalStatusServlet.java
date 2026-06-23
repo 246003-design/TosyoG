@@ -20,7 +20,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.RentalStatusModel;
 
-
+@WebServlet("/rentalStatus")
 public class RentalStatusServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -33,6 +33,7 @@ public class RentalStatusServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+			throws ServletException, IOException, java.sql.SQLException {
 		User user = (User) request.getSession().getAttribute("loginUser");
 		int userId = user.getId();
 		
@@ -64,7 +65,8 @@ public class RentalStatusServlet extends HttpServlet {
 				dtoList.add(dto);
 			}
 			request.setAttribute("dtoList", dtoList);
-			request.getRequestDispatcher("jspパス").forward(request, response);		
+			request.getRequestDispatcher("loan_status.jsp").forward(request, response);
+			}
 		}
 	}
 
