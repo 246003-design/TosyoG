@@ -1,3 +1,5 @@
+CREATE DATABASE s3a1_system_dev;
+
 -- 1. 利用者 (user)
 CREATE TABLE user (
     id INT AUTO_INCREMENT,

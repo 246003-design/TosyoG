@@ -1,9 +1,5 @@
--- 1. 安全装置をオフにする
+ALTER TABLE book_info ADD COLUMN imageUrl VARCHAR(500) DEFAULT NULL AFTER publisher_id;
 SET SQL_SAFE_UPDATES = 0;
-
--- 2. パスワードを一括変更する
 UPDATE user 
 SET password = '$2a$10$WTYqHSRgbvup3adumW4tGO4ljXZbVC4/W/IZpVrT7QKhUBuaL1BRO';
-
--- 3. 安全装置をオンに戻す（忘れずに！）
 SET SQL_SAFE_UPDATES = 1;

@@ -1,1 +1,0 @@
-ALTER TABLE book_info ADD COLUMN imageUrl VARCHAR(500) DEFAULT NULL AFTER publisher_id;
