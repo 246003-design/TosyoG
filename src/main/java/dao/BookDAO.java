@@ -94,4 +94,49 @@ public class BookDAO extends BaseDAO {
 		}
 		return list;
 	}
+	
+	
+	/**
+	 * 画面の4つの条件（タイトル、ISBN、著者、分類）で図書を検索する
+	 */
+	public List<Book> searchBooks(String trim, String trim2, String trim3, String category) {
+	    List<Book> list = new ArrayList<>();
+	    
+	    // SQL文：bookテーブルとbook_infoテーブルを「INNER JOIN」で合体させる
+	    // ※ カラム名やテーブル名は、実際のデータベースに合わせて調整してください
+	    String sql = "SELECT b.id, b.book_info_id, b.book_number, b.layout_id, b.created_at "
+	               + "FROM book b "
+	               + "INNER JOIN book_info bi ON b.book_info_id = bi.id "
+	               + "WHERE bi.title LIKE ? "
+	               + "  AND bi.isbn LIKE ? "
+	               + "  AND bi.author LIKE ? "
+	               + "  AND b.deleted_at IS NULL";
+	               // ※ 分類（category）の条件は、すべて以外の時に加えるなど工夫が必要です（後述）
+
+	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	        // 画面から送られてきた各キーワードを安全にセットする（部分一致検索）
+	        pstmt.setString(1, "%" + trim + "%");
+	        pstmt.setString(2, "%" + trim + "%");
+	        pstmt.setString(3, "%" + trim + "%");
+
+	        try (ResultSet rs = pstmt.executeQuery()) {
+	            while (rs.next()) {
+	                Book book = new Book();
+	                book.setId(rs.getInt("id"));
+	                book.setBookInfoId(rs.getInt("book_info_id"));
+	                book.setBookNumber(rs.getInt("book_number"));
+	                book.setLayoutId(rs.getInt("layout_id"));
+	                book.setCreatedAt(rs.getTimestamp("created_at"));
+	                
+	                // もしJSPでタイトルなども表示したい場合は、Bookクラスにtitleなどのフィールドを
+	                // 追加するか、あるいはBookInfoクラスのリストを返すように変更します。
+	                list.add(book);
+	            }
+	        }
+	    } catch (SQLException e) {
+	        System.err.println("図書の複合検索中にエラーが発生しました。");
+	        e.printStackTrace();
+	    }
+	    return list;
+	}
 }
