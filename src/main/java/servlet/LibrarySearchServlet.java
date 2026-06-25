@@ -3,20 +3,19 @@ package servlet;
 import java.io.IOException;
 import java.util.List;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import entity.BookInfo;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @WebServlet("/LibrarySearchServlet")
 public class LibrarySearchServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
-    // 模擬データベースのインスタンス
-    private final Database database = new Database();
+//    // 模擬データベースのインスタンス
+//    private final Database database = new Database();
 
     /**
      * 【利用者】図書検索を要求する -> 【システム】図書検索画面を表示する
