@@ -172,4 +172,34 @@ public class UserDAO extends BaseDAO {
 		}
 		return list;
 	}
+	
+	// id,nameで検索	
+	public List<User> searchUsers(String keyword) {
+		List<User> list = new ArrayList<>();
+		String sql = "SELECT id, name, role, status FROM user WHERE id LIKE ? OR name LIKE ? ORDER BY id;";
+		
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+			String pattern = "%" + keyword + "%";
+			pstmt.setString(1, pattern);
+			pstmt.setString(2, pattern);
+
+
+			try(ResultSet rs = pstmt.executeQuery()) {
+			
+				while (rs.next()) {
+					User user = new User();
+					user.setId(rs.getInt("id"));
+					user.setName(rs.getString("name"));
+					user.setRole(rs.getInt("role"));
+					user.setStatus(rs.getInt("status"));
+	                
+					list.add(user);
+				}
+			}
+		} catch (SQLException e) {
+			System.err.println("LendDAO.findByUserIdの実行中にエラーが発生しました。");
+			e.printStackTrace();
+		}
+		return list;
+	}
 }
