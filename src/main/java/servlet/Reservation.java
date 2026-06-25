@@ -1,23 +1,20 @@
-package controller;
+package servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.util.List;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import dao.DBManager; // ★ご提示いただいたDBManagerをインポート
 import dao.ReservationDAO;
-import entity.Reservation;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import model.ReservationLogic;
 
-@WebServlet("/reservation")
-public class ReservationServlet extends HttpServlet {
+@WebServlet("/WEB-INF/JSP/customer_book_detail.jsp")
+public class Reservation extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -35,20 +32,30 @@ public class ReservationServlet extends HttpServlet {
             return;
         }
 
+     // 画面から「どの図書か」を特定するための bookId を受け取る
+        String bookIdStr = request.getParameter("bookId");
+        int bookId = Integer.parseInt(bookIdStr);
+
         // ★ DBManagerを使用してコネクションを取得
         try (Connection conn = DBManager.getConnection()) {
             
             ReservationDAO dao = new ReservationDAO(conn);
-            List<Reservation> reservationList = dao.findAll();
             
-            request.setAttribute("reservationList", reservationList);
+            // --------------------------------------------------------
+            // ★ 修正：図書情報（タイトル等）を含んだDTOを1件取得する
+            // --------------------------------------------------------
+            entity.Reservation reservationDto = dao.findById(bookId);
+            
+            // JSPで ${reservationDto.bookTitle} のように使えるようにセット
+            request.setAttribute("reservationDto", reservationDto);
             
         } catch (Exception e) {
+        	
             e.printStackTrace();
             request.setAttribute("errorMsg", "データ取得中にエラーが発生しました。");
         }
 
-        request.getRequestDispatcher("/WEB-INF/JSP/bookDetail.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/JSP/customer_book_detail.jsp").forward(request, response);
     }
 
     /**
@@ -83,6 +90,8 @@ public class ReservationServlet extends HttpServlet {
 
         // ★ DBManagerを使用してコネクションを取得
         try (Connection conn = DBManager.getConnection()) {
+        	
+        	
             
             if ("register".equals(action)) {
                 resultMsg = logic.registerReservation(conn, userId, bookId);
@@ -99,10 +108,10 @@ public class ReservationServlet extends HttpServlet {
 
         if (resultMsg.isEmpty()) {
             request.setAttribute("successMsg", "予約手続きが正常に完了しました。");
-            request.getRequestDispatcher("/WEB-INF/JSP/bookDetail.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/JSP/customer_book_detail.jsp").forward(request, response);
         } else {
             request.setAttribute("errorMsg", resultMsg);
-            request.getRequestDispatcher("/WEB-INF/JSP/bookDetail.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/JSP/customer_book_detail.jsp").forward(request, response);
         }
     }
 }
