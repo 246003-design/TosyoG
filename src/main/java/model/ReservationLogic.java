@@ -6,7 +6,7 @@ import java.util.Optional;
 import dao.BookDAO;
 import dao.ReservationDAO;
 import dao.UserDAO;
-import dto.ReservationDTO; // ★追加：DTOを扱うためにインポート
+import dto.ReservationDto; // ★追加：DTOを扱うためにインポート
 import entity.Book;
 import entity.Reservation;
 import entity.User;
@@ -60,7 +60,7 @@ public class ReservationLogic {
 			}
 
 			// ⑥ ★修正：DAOの引数（ReservationDTO）に合わせて、DTOの箱を作って値を送る！
-			ReservationDTO newResDto = new ReservationDTO();
+			ReservationDto newResDto = new ReservationDto();
 			newResDto.setUserId(userId);
 			newResDto.setBookInfoId(book.getBookInfoId());
 			newResDto.setBookId(bookId);
@@ -99,7 +99,7 @@ public class ReservationLogic {
 				if (r.getUserId() == userId && r.getBookInfoId() == bookInfoId && (r.getStatus() == 1 || r.getStatus() == 2)) {
 					
 					// ★修正：DAOの update(ReservationDTO) に合わせて、DTOの箱に移し替えて送る！
-					ReservationDTO updateDto = new ReservationDTO();
+					ReservationDto updateDto = new ReservationDto();
 					updateDto.setId(r.getId());
 					updateDto.setStatus(9); // 9: キャンセル
 					
