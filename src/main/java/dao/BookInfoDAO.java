@@ -58,44 +58,6 @@ public class BookInfoDAO extends BaseDAO {
 	}
 
 	/**
-	 * 2. 書籍マスタへの新規登録処理（環境依存エラー回避版）
-	 */
-	public int insert(BookInfo book) {
-		int generatedId = 0;
-		// SQL文
-		String insertSql = "INSERT INTO book_info (title, isbn, author_id, publisher_id, category_id, imageUrl) VALUES (?, ?, ?, ?, ?, ?)";
-		// 直前に自動採番されたIDを安全に取得するSQL（これで最初のNotSupportedExceptionを回避します）
-		String selectIdSql = "SELECT LAST_INSERT_ID()";
-
-		try (PreparedStatement pstmt = conn.prepareStatement(insertSql)) {
-			pstmt.setString(1, book.getTitle());
-			pstmt.setString(2, book.getIsbn());
-			pstmt.setInt(3, book.getAuthorId());
-			pstmt.setInt(4, book.getPublisherId());
-			pstmt.setInt(5, book.getCategoryId());
-			
-			// 🔴 BookInfo.java のメソッド名「getImageUrl」に完全に合わせました
-			pstmt.setString(6, book.getImageUrl()); 
-
-			int rows = pstmt.executeUpdate();
-			
-			// 安全に自動採番されたIDを取得する
-			if (rows > 0) {
-				try (PreparedStatement pstmtId = conn.prepareStatement(selectIdSql);
-					 ResultSet rs = pstmtId.executeQuery()) {
-					if (rs.next()) {
-						generatedId = rs.getInt(1);
-					}
-				}
-			}
-		} catch (SQLException e) {
-			System.err.println("BookInfoDAO.insertでエラーが発生しました。");
-			e.printStackTrace();
-		}
-		return generatedId;
-	}
-	
-	/**
 	 * 3. idから書籍マスタの情報を取得する
 	 */
 	public BookInfo searchTitle(int id) {
@@ -130,4 +92,60 @@ public class BookInfoDAO extends BaseDAO {
 		}
 		return bookInfo;
 	}
+
+	// 💡 ISBNを使ってbook_infoテーブルを検索するメソッドを追加します
+	// 💡 ISBNを使ってbook_infoテーブルを検索するメソッドを追加します
+		public BookInfo findByIsbn(String isbn) {
+			BookInfo bookInfo = null;
+			// 🔴 直しポイント1：image_url を imageUrl に修正しました！
+			String sql = "SELECT id, isbn, title, author_id, publisher_id, category_id, imageUrl FROM book_info WHERE isbn = ?";
+			
+			try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+				pstmt.setString(1, isbn);
+				try (ResultSet rs = pstmt.executeQuery()) {
+					if (rs.next()) {
+						bookInfo = new BookInfo();
+						bookInfo.setId(rs.getInt("id"));
+						bookInfo.setIsbn(rs.getString("isbn"));
+						bookInfo.setTitle(rs.getString("title"));
+						bookInfo.setAuthorId(rs.getInt("author_id"));
+						bookInfo.setPublisherId(rs.getInt("publisher_id"));
+						bookInfo.setCategoryId(rs.getInt("category_id"));
+						bookInfo.setImageUrl(rs.getString("imageUrl"));
+					}
+				}
+			} catch (SQLException e) {
+				System.err.println("findByIsbnでエラー: " + e.getMessage());
+				e.printStackTrace();
+			}
+			return bookInfo;
+		}
+
+		// 💡 新規登録してIDを返すinsertメソッド
+		public int insert(BookInfo bookInfo) {
+			int newId = 0;
+			// 🔴 直しポイント2：こちらも imageUrl に統一します
+			String sql = "INSERT INTO book_info (isbn, title, author_id, publisher_id, category_id, imageUrl) VALUES (?, ?, ?, ?, ?, ?)";
+			
+			// 🌟 直しポイント3：RETURN_GENERATED_KEYS を追加してIDを取得できるようにします
+			try (PreparedStatement pstmt = conn.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)) {
+				pstmt.setString(1, bookInfo.getIsbn());
+				pstmt.setString(2, bookInfo.getTitle());
+				pstmt.setInt(3, bookInfo.getAuthorId());
+				pstmt.setInt(4, bookInfo.getPublisherId());
+				pstmt.setInt(5, bookInfo.getCategoryId());
+				pstmt.setString(6, bookInfo.getImageUrl());
+				
+				// 🌟 登録された直後の新しいIDを取得する
+				try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+					if (generatedKeys.next()) {
+						newId = generatedKeys.getInt(1);
+					}
+				}
+			} catch (SQLException e) {
+				System.err.println("insertでエラー: " + e.getMessage());
+				e.printStackTrace();
+			}
+			return newId; // 取得した新しいIDを返す
+		}
 }

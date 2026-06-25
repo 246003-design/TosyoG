@@ -1,8 +1,4 @@
-
-　　　　　　　　　　　　　　　　　　　<%--      ログイン画面　　　　 --%>
-
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%-- <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> --%>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -11,139 +7,162 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 flex flex-col min-h-screen">
+    
+    <!-- ヘッダー -->
     <header class="bg-[#1e3a8a] text-white p-4 shadow-md flex items-center gap-3 sticky top-0 z-20">
-        <a href="librarian_book_menu.jsp" class="p-1 hover:bg-white/20 rounded-full transition-colors">
+        <!-- 戻るボタン（Servlet経由での画面遷移に合わせています） -->
+        <a href="HomeServlet" class="p-1 hover:bg-white/20 rounded-full transition-colors" title="ホームに戻る">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         </a>
-        <h1 class="text-xl font-bold tracking-wider">蔵書登録(手動入力・一括)</h1>
+        <h1 class="text-xl font-bold tracking-widest">蔵書新規登録</h1>
     </header>
 
-    <main class="flex-1 p-4 md:p-8 max-w-4xl mx-auto w-full relative">
-        <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-gray-300">
-            
-            <form action="BookBulkRegisterServlet" method="POST" enctype="multipart/form-data" class="mb-8 p-6 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 text-center relative">
-                <svg class="mx-auto text-gray-400 mb-2" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                <p class="text-gray-600 font-bold mb-2">ファイルをアップロード (CSV)</p>
-                <input type="file" name="csvFile" accept=".csv" required class="mb-3 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"/>
-                <button type="submit" class="px-4 py-2 bg-[#1e3a8a] text-white rounded font-bold shadow-md">一括登録を実行</button>
-            </form>
-
-            <div class="flex items-center gap-4 mb-8">
-                <hr class="flex-1 border-gray-300" />
-                <span class="text-gray-400 font-bold text-xs uppercase tracking-wider">手動入力</span>
-                <hr class="flex-1 border-gray-300" />
+    <main class="flex-1 flex flex-col items-center p-6">
+        
+        <!-- エラーメッセージ表示エリア -->
+        <% String errorMsg = (String) request.getAttribute("errorMessage"); %>
+        <% if (errorMsg != null && !errorMsg.isEmpty()) { %>
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 w-full max-w-2xl text-sm">
+                <%= errorMsg %>
             </div>
+        <% } %>
 
-            <form action="BookRegisterServlet" method="POST" class="space-y-6">
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">ISBN</label>
+        <div class="bg-white rounded-2xl shadow-md p-8 w-full max-w-2xl border border-gray-100">
+            
+            <form action="BookRegisterServlet" method="post" class="flex flex-col gap-5">
+                
+                <!-- 1. ISBN入力と自動検索 -->
+                <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+                    <label for="isbn" class="block text-sm font-bold text-gray-700 mb-1">ISBN</label>
                     <div class="flex gap-2">
-                        <input type="text" id="isbn" name="isbn" placeholder="ISBNを入力 (ハイフンなし13桁推奨)" class="flex-1 p-3 border border-gray-300 rounded focus:ring-2 focus:ring-[#1e3a8a] outline-none font-mono" required />
-                        <button type="button" id="btn-lookup" class="px-5 bg-teal-600 text-white rounded font-bold shadow-md hover:bg-teal-700 transition-colors whitespace-nowrap">
+                        <input type="text" id="isbn" name="isbn" required placeholder="例: 9784..." class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/50">
+                        <button type="button" id="search-btn" class="bg-[#1e3a8a] hover:bg-blue-800 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                             情報取得
                         </button>
                     </div>
-                    <p id="api-status" class="text-xs font-bold mt-1 text-gray-500"></p>
+                    <!-- ここに検索ステータスが出ます -->
+                    <p id="search-status" class="text-xs text-gray-500 mt-2 h-4"></p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">タイトル</label>
-                        <input type="text" id="title" name="title" class="w-full p-3 border border-gray-300 rounded focus:ring-2 focus:ring-[#1e3a8a] outline-none" required />
+                <!-- 2. 自動入力される情報エリア -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    
+                    <!-- 画像プレビュー -->
+                    <div class="col-span-1 flex flex-col items-center justify-start pt-2">
+                        <div id="cover-preview-area" class="w-32 h-48 bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden hidden shadow-inner">
+                            <img id="cover-img" src="" alt="表紙プレビュー" class="w-full h-full object-cover">
+                        </div>
+                        <p class="text-xs text-gray-400 mt-2 text-center">表紙画像</p>
                     </div>
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">著者</label>
-                        <input type="text" id="author" name="author" class="w-full p-3 border border-gray-300 rounded focus:ring-2 focus:ring-[#1e3a8a] outline-none" required />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">出版社</label>
-                        <input type="text" id="publisher" name="publisher" class="w-full p-3 border border-gray-300 rounded focus:ring-2 focus:ring-[#1e3a8a] outline-none" required />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">分類</label>
-                        <select name="category" class="w-full p-3 border border-gray-300 rounded focus:ring-2 focus:ring-[#1e3a8a] outline-none bg-white">
-                            <option value="文芸">文芸</option>
-                            <option value="技術">技術</option>
-                            <option value="実用">実用</option>
-                            <option value="その他">その他</option>
-                        </select>
+
+                    <!-- 本のテキスト情報 -->
+                    <div class="col-span-1 md:col-span-2 flex flex-col gap-4">
+                        <div>
+                            <label for="title" class="block text-sm font-bold text-gray-700 mb-1">タイトル <span class="text-red-500">*</span></label>
+                            <input type="text" id="title" name="title" required class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/50 bg-gray-50">
+                        </div>
+                        <div>
+                            <label for="author" class="block text-sm font-bold text-gray-700 mb-1">著者</label>
+                            <input type="text" id="author" name="author" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/50 bg-gray-50">
+                        </div>
+                        <div>
+                            <label for="publisher" class="block text-sm font-bold text-gray-700 mb-1">出版社</label>
+                            <input type="text" id="publisher" name="publisher" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/50 bg-gray-50">
+                        </div>
+                        <div>
+                            <label for="categoryName" class="block text-sm font-bold text-gray-700 mb-1">カテゴリ</label>
+                            <select id="categoryName" name="categoryName" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/50 bg-white">
+                                <option value="文学">文学</option>
+                                <option value="技術">技術</option>
+                                <option value="実用">実用</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
-                <div id="cover-preview-area" class="hidden border-t border-gray-200 pt-6 flex items-center gap-4">
-                    <div class="w-24 h-32 bg-gray-100 rounded border border-gray-300 flex items-center justify-center overflow-hidden shadow-sm">
-                        <img id="cover-img" src="" alt="表紙プレビュー" class="w-full h-full object-cover">
-                    </div>
-                    <div>
-                        <p class="text-sm font-bold text-gray-700">表紙画像プレビュー</p>
-                        <p class="text-xs text-gray-500">Google Books APIから取得した画像URLを保存します。</p>
-                        <input type="hidden" id="imageUrl" name="imageUrl" value="" />
-                    </div>
-                </div>
+                <!-- 隠し項目：画像URLをJavaに送る用 -->
+                <input type="hidden" id="imageUrl" name="imageUrl" value="">
 
-                <div class="flex gap-4 mt-8 pt-6 border-t border-gray-100">
-                    <a href="librarian_book_menu.jsp" class="flex-1 py-4 border-2 border-gray-300 text-gray-700 rounded font-bold text-center hover:bg-gray-50">戻る</a>
-                    <button type="submit" class="flex-[2] py-4 bg-[#1e3a8a] text-white rounded font-bold hover:bg-blue-800 shadow-md transition-colors" onclick="return confirm('登録してよろしいですか？');">
-                        登録する
+                <hr class="border-gray-200 my-2">
+
+                <!-- 送信ボタン -->
+                <div class="flex justify-end gap-3 mt-2">
+                    <button type="reset" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 font-bold transition-colors">
+                        クリア
+                    </button>
+                    <button type="submit" class="px-8 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-bold shadow-md hover:shadow-lg transition-all">
+                        この内容で登録する
                     </button>
                 </div>
             </form>
         </div>
     </main>
 
+    <!-- 💡 ここが修正された安全なJavaScriptです！ -->
     <script>
-    document.getElementById('btn-lookup').addEventListener('click', function() {
-        const isbnInput = document.getElementById('isbn').value.trim().replace(/-/g, ''); // ハイフンを除去
-        const statusText = document.getElementById('api-status');
-        
-        if (!isbnInput) {
-            alert('ISBNを入力してください。');
+    document.getElementById('search-btn').addEventListener('click', function() {
+        const isbn = document.getElementById('isbn').value.trim();
+        const statusText = document.getElementById('search-status');
+
+        if (!isbn) {
+            statusText.innerText = "⚠️ ISBNコードを入力してください。";
+            statusText.className = "text-xs font-bold mt-1 text-red-500";
             return;
         }
 
-        statusText.innerText = "🔍 Googleからデータを検索中...";
-        statusText.className = "text-xs font-bold mt-1 text-blue-600";
+        statusText.innerText = "⏳ Google Books から情報を検索中...";
+        statusText.className = "text-xs font-bold mt-1 text-blue-500";
 
-        // Google Books APIを直接呼び出す
-        fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbnInput}`)
-            .then(response => response.json())
+        const url = 'https://www.googleapis.com/books/v1/volumes?q=isbn:' + isbn;
+
+        fetch(url)
+            .then(response => {
+                // 429エラーなどの通信拒否があった場合はここでキャッチ
+                if (!response.ok) {
+                    throw new Error("通信エラー: " + response.status);
+                }
+                return response.json();
+            })
             .then(data => {
-                if (data.totalItems === 0) {
-                    statusText.innerText = "❌ 本が見つかりませんでした。手動で入力してください。";
-                    statusText.className = "text-xs font-bold mt-1 text-red-500";
-                    return;
-                }
+                // 🌟 超重要：データがちゃんと存在するか（undefinedじゃないか）をチェックする安全装置
+                if (data.items && data.items.length > 0) {
+                    
+                    // 無事にデータがあった場合のみ取り出し処理をする
+                    const bookInfo = data.items[0].volumeInfo;
+                    
+                    document.getElementById('title').value = bookInfo.title || '';
+                    document.getElementById('author').value = bookInfo.authors ? bookInfo.authors.join(', ') : '';
+                    document.getElementById('publisher').value = bookInfo.publisher || '';
 
-                // APIのデータ構造から必要な情報を引き出す
-                const bookInfo = data.items[0].volumeInfo;
-                
-                // 各入力欄に自動でセット！
-                document.getElementById('title').value = bookInfo.title || '';
-                document.getElementById('author').value = bookInfo.authors ? bookInfo.authors.join(', ') : '';
-                document.getElementById('publisher').value = bookInfo.publisher || '';
+                    // 画像URLの取得とプレビュー表示
+                    const previewArea = document.getElementById('cover-preview-area');
+                    const coverImg = document.getElementById('cover-img');
+                    const imageUrlHidden = document.getElementById('imageUrl');
 
-                // 画像URLの取得とプレビュー表示
-                const previewArea = document.getElementById('cover-preview-area');
-                const coverImg = document.getElementById('cover-img');
-                const imageUrlHidden = document.getElementById('imageUrl');
+                    if (bookInfo.imageLinks && bookInfo.imageLinks.thumbnail) {
+                        const secureUrl = bookInfo.imageLinks.thumbnail.replace('http://', 'https://');
+                        coverImg.src = secureUrl;
+                        imageUrlHidden.value = secureUrl; 
+                        previewArea.classList.remove('hidden');
+                    } else {
+                        previewArea.classList.add('hidden');
+                        imageUrlHidden.value = '';
+                    }
 
-                if (bookInfo.imageLinks && bookInfo.imageLinks.thumbnail) {
-                    // httpをhttpsにセキュア化してセット
-                    const secureUrl = bookInfo.imageLinks.thumbnail.replace('http://', 'https://');
-                    coverImg.src = secureUrl;
-                    imageUrlHidden.value = secureUrl; // 隠しインプットにURLを保存（Javaへ送る用）
-                    previewArea.classList.remove('hidden');
+                    statusText.innerText = "✨ 情報を自動入力しました！";
+                    statusText.className = "text-xs font-bold mt-1 text-green-600";
+                    
                 } else {
-                    previewArea.classList.add('hidden');
-                    imageUrlHidden.value = '';
+                    // 🌟 安全装置その2：通信は成功したけど「本が見つからなかった」場合
+                    statusText.innerText = "⚠️ 該当する本が見つかりませんでした。手入力してください。";
+                    statusText.className = "text-xs font-bold mt-1 text-yellow-600";
                 }
-
-                statusText.innerText = "✨ 情報を自動入力しました！内容を確認してください。";
-                statusText.className = "text-xs font-bold mt-1 text-green-600";
             })
             .catch(error => {
-                console.error('Error:', error);
-                statusText.innerText = "💥 通信エラーが発生しました。";
+                // 💥 429エラー(Too Many Requests)などが起きた場合はここに来る
+                console.error('API Error:', error);
+                statusText.innerText = "💥 通信制限中、またはエラーが発生しました。手入力してください。";
                 statusText.className = "text-xs font-bold mt-1 text-red-500";
             });
     });
