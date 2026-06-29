@@ -94,10 +94,9 @@ public class BookInfoDAO extends BaseDAO {
 	}
 
 	// 💡 ISBNを使ってbook_infoテーブルを検索するメソッドを追加します
-	// 💡 ISBNを使ってbook_infoテーブルを検索するメソッドを追加します
 		public BookInfo findByIsbn(String isbn) {
 			BookInfo bookInfo = null;
-			// 🔴 直しポイント1：image_url を imageUrl に修正しました！
+			// 🔴 DBのカラム名に合わせて imageUrl に戻しました！
 			String sql = "SELECT id, isbn, title, author_id, publisher_id, category_id, imageUrl FROM book_info WHERE isbn = ?";
 			
 			try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -111,6 +110,8 @@ public class BookInfoDAO extends BaseDAO {
 						bookInfo.setAuthorId(rs.getInt("author_id"));
 						bookInfo.setPublisherId(rs.getInt("publisher_id"));
 						bookInfo.setCategoryId(rs.getInt("category_id"));
+						
+						// 🔴 ここも imageUrl から取得します
 						bookInfo.setImageUrl(rs.getString("imageUrl"));
 					}
 				}
@@ -124,10 +125,9 @@ public class BookInfoDAO extends BaseDAO {
 		// 💡 新規登録してIDを返すinsertメソッド
 		public int insert(BookInfo bookInfo) {
 			int newId = 0;
-			// 🔴 直しポイント2：こちらも imageUrl に統一します
+			// 🔴 カラム名を imageUrl に修正しました
 			String sql = "INSERT INTO book_info (isbn, title, author_id, publisher_id, category_id, imageUrl) VALUES (?, ?, ?, ?, ?, ?)";
 			
-			// 🌟 直しポイント3：RETURN_GENERATED_KEYS を追加してIDを取得できるようにします
 			try (PreparedStatement pstmt = conn.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)) {
 				pstmt.setString(1, bookInfo.getIsbn());
 				pstmt.setString(2, bookInfo.getTitle());
@@ -135,6 +135,8 @@ public class BookInfoDAO extends BaseDAO {
 				pstmt.setInt(4, bookInfo.getPublisherId());
 				pstmt.setInt(5, bookInfo.getCategoryId());
 				pstmt.setString(6, bookInfo.getImageUrl());
+				
+				pstmt.executeUpdate();
 				
 				// 🌟 登録された直後の新しいIDを取得する
 				try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
@@ -146,6 +148,6 @@ public class BookInfoDAO extends BaseDAO {
 				System.err.println("insertでエラー: " + e.getMessage());
 				e.printStackTrace();
 			}
-			return newId; // 取得した新しいIDを返す
+			return newId; 
 		}
-}
+	}
