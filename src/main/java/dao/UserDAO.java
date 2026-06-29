@@ -112,7 +112,7 @@ public class UserDAO extends BaseDAO {
 		}
 		return result;
 	}
-	
+
 	// 5. 利用者の1件検索処理（主キー指定）
 	public User findById(int id) {
 		User user = null;
@@ -172,33 +172,63 @@ public class UserDAO extends BaseDAO {
 		}
 		return list;
 	}
-	
+
 	// id,nameで検索	
 	public List<User> searchUsers(String keyword) {
 		List<User> list = new ArrayList<>();
-		String sql = "SELECT id, name, role, status FROM user WHERE id LIKE ? OR name LIKE ? ORDER BY id;";
-		
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)){
-			String pattern = "%" + keyword + "%";
-			pstmt.setString(1, pattern);
-			pstmt.setString(2, pattern);
+		String sql;
 
+		if (keyword == null || keyword.isEmpty()) {
+			sql = "SELECT id, name, role, status FROM user WHERE id = ? OR name LIKE ? ORDER BY id;";
+			return list;
+		}
 
-			try(ResultSet rs = pstmt.executeQuery()) {
-			
-				while (rs.next()) {
-					User user = new User();
-					user.setId(rs.getInt("id"));
-					user.setName(rs.getString("name"));
-					user.setRole(rs.getInt("role"));
-					user.setStatus(rs.getInt("status"));
-	                
-					list.add(user);
+		boolean isNumeric = keyword.matches("\\d+");
+
+		if (isNumeric) {
+			sql = "SELECT id, name, role, status FROM user WHERE id = ? OR name LIKE ? ORDER BY id;";
+			try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+				pstmt.setInt(1, Integer.parseInt(keyword));
+				pstmt.setString(2, "%" + keyword + "%");
+
+				try (ResultSet rs = pstmt.executeQuery()) {
+
+					while (rs.next()) {
+						User user = new User();
+						user.setId(rs.getInt("id"));
+						user.setName(rs.getString("name"));
+						user.setRole(rs.getInt("role"));
+						user.setStatus(rs.getInt("status"));
+
+						list.add(user);
+					}
 				}
+			} catch (SQLException e) {
+				System.err.println("LendDAO.findByUserIdの実行中にエラーが発生しました。");
+				e.printStackTrace();
 			}
-		} catch (SQLException e) {
-			System.err.println("LendDAO.findByUserIdの実行中にエラーが発生しました。");
-			e.printStackTrace();
+		} else {
+			sql = "SELECT id, name, role, status FROM user WHERE name LIKE ? ORDER BY id;";
+
+			try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+				pstmt.setString(1, "%" + keyword + "%");
+
+				try (ResultSet rs = pstmt.executeQuery()) {
+
+					while (rs.next()) {
+						User user = new User();
+						user.setId(rs.getInt("id"));
+						user.setName(rs.getString("name"));
+						user.setRole(rs.getInt("role"));
+						user.setStatus(rs.getInt("status"));
+
+						list.add(user);
+					}
+				}
+			} catch (SQLException e) {
+				System.err.println("LendDAO.findByUserIdの実行中にエラーが発生しました。");
+				e.printStackTrace();
+			}
 		}
 		return list;
 	}
