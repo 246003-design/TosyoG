@@ -67,15 +67,16 @@ public class LibrarySearchServlet extends HttpServlet {
         if (author == null) author = "";
 
         // 1. データベース接続の開始
+        // 1. データベース接続の開始
         try (Connection conn = DBManager.getConnection()) {
             // 2. BookDAOのインスタンス化
             BookDAO bookDAO = new BookDAO(conn);
             
-            // ★修正ポイント②：それぞれの変数（トリム済み）を、正しい順番でDAOに渡す
+            // ★修正ポイント：大文字の「BookDAO」を小文字の「bookDAO」に変更！
             results = bookDAO.searchBooks(title.trim(), isbn.trim(), author.trim(), category); 
 
         } catch (SQLException e) {
-            System.err.println("サーブレットでのDB処理中にエラーが発生しました。");
+        	System.err.println("サーブレットでのDB処理中にエラーが発生しました。");
             e.printStackTrace();
             request.setAttribute("errorMessage", "システムエラーが発生しました。");
             request.getRequestDispatcher("WEB-INF/JSP/customer/customer_book_search.jsp").forward(request, response);
