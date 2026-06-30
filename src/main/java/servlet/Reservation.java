@@ -56,7 +56,7 @@ public class Reservation extends HttpServlet {
             request.setAttribute("errorMsg", "データ取得中にエラーが発生しました。");
         }
 
-        request.getRequestDispatcher("/WEB-INF/JSP/customer_book_detail.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/JSP/customer/customer_book_detail.jsp").forward(request, response);
     }
 
     /**
@@ -109,10 +109,10 @@ public class Reservation extends HttpServlet {
 
         if (resultMsg.isEmpty()) {
             request.setAttribute("successMsg", "予約手続きが正常に完了しました。");
-            request.getRequestDispatcher("/WEB-INF/JSP/customer_book_detail.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/JSP/customer/customer_book_detail.jsp").forward(request, response);
         } else {
             request.setAttribute("errorMsg", resultMsg);
-            request.getRequestDispatcher("/WEB-INF/JSP/customer_book_detail.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/JSP/customer/customer_book_detail.jsp").forward(request, response);
         }
     }
 }
