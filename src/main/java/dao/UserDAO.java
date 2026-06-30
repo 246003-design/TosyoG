@@ -50,15 +50,15 @@ public class UserDAO extends BaseDAO {
 	// 2. 利用者の新規登録処理
 	public boolean insert(User user) {
 		boolean result = false;
-		String sql = "INSERT INTO user (name, password, role, status, borrow_count) VALUES (?, ?, ?, ?, ?)";
+		String sql = "INSERT INTO user (name, password, role, status) VALUES (?, ?, ?, ?)";
 
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setString(1, user.getName());
 			pstmt.setString(2, user.getPassword());
 			pstmt.setInt(3, user.getRole());
 			pstmt.setInt(4, user.getStatus());
-			pstmt.setInt(5, user.getBorrowCount());
-
+			
+			//更新された情報の数
 			int rows = pstmt.executeUpdate();
 			if (rows > 0) {
 				result = true;

@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.ReservationLogic;
 
-@WebServlet("/WEB-INF/JSP/customer_book_detail.jsp")
+@WebServlet("/Reservation")
 public class Reservation extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
@@ -28,7 +28,8 @@ public class Reservation extends HttpServlet {
         Integer userId = (Integer) session.getAttribute("loginUserId"); 
 
         if (userId == null) {
-            response.sendRedirect(request.getContextPath() + "/login.jsp");
+        	
+            response.sendRedirect(request.getContextPath() + "/WEB-INF/JSP/common/login.jsp");
             return;
         }
 
@@ -55,7 +56,7 @@ public class Reservation extends HttpServlet {
             request.setAttribute("errorMsg", "データ取得中にエラーが発生しました。");
         }
 
-        request.getRequestDispatcher("/WEB-INF/JSP/customer_book_detail.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/JSP/customer/customer_book_detail.jsp").forward(request, response);
     }
 
     /**
@@ -108,10 +109,10 @@ public class Reservation extends HttpServlet {
 
         if (resultMsg.isEmpty()) {
             request.setAttribute("successMsg", "予約手続きが正常に完了しました。");
-            request.getRequestDispatcher("/WEB-INF/JSP/customer_book_detail.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/JSP/customer/customer_book_detail.jsp").forward(request, response);
         } else {
             request.setAttribute("errorMsg", resultMsg);
-            request.getRequestDispatcher("/WEB-INF/JSP/customer_book_detail.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/JSP/customer/customer_book_detail.jsp").forward(request, response);
         }
     }
 }

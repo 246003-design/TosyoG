@@ -33,7 +33,7 @@
             <!-- 検索フォーム -->
             <form action="BookListServlet" method="GET" class="p-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
                 <div class="relative w-full max-w-md flex items-center">
-                    <input type="text" name="keyword" value="${keyword}" placeholder="キーワード検索 (タイトル, ISBN...)" class="w-full pl-3 pr-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]" />
+                    <input type="text" name="keyword" placeholder="キーワード検索 (タイトル, ISBN...)" class="w-full pl-3 pr-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]" />
                     <button type="submit" class="bg-[#1e3a8a] text-white px-4 py-2 rounded-r-lg font-bold border border-[#1e3a8a]">検索</button>
                 </div>
             </form>

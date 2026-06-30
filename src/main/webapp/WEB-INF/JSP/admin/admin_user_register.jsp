@@ -1,5 +1,4 @@
-
-　　　　　　　　　　　　　　　　　　　<%--      新規利用者登録画面　　　　 --%>
+                            <%--      新規利用者登録画面　　　　 --%>
 
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -38,25 +37,20 @@
                         <label class="block text-sm font-bold text-gray-600 mb-2 uppercase tracking-wider">初期パスワード</label>
                         <input type="text" name="password" placeholder="例: password123" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-gray-900 transition-all font-mono" required />
                     </div>
-                    
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-bold text-gray-600 mb-2 uppercase tracking-wider">所属部署・団体</label>
-                        <input type="text" name="department" placeholder="例: 広島情報本部" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-gray-900 transition-all" required />
-                    </div>
 
                     <div>
                         <label class="block text-sm font-bold text-gray-600 mb-2 uppercase tracking-wider">初期状態</label>
                         <select name="status" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-gray-900 transition-all appearance-none cursor-pointer">
-                            <option value="利用可能">利用可能</option>
-                            <option value="利用停止">利用停止</option>
+                            <option value="0">利用可能</option>
+                            <option value="1">利用停止</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-600 mb-2 uppercase tracking-wider">権限区分</label>
-                        <select name="type" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-gray-900 transition-all appearance-none cursor-pointer">
-                            <option value="利用者">利用者</option>
-                            <option value="司書">司書</option>
-                            <option value="管理者">管理者</option>
+                        <select name="role" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-gray-900 transition-all appearance-none cursor-pointer">
+                            <option value="0">利用者</option>
+                            <option value="1">司書</option>
+                            <option value="2">管理者</option>
                         </select>
                     </div>
                 </div>
