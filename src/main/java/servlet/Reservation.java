@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.ReservationLogic;
 
-@WebServlet("Reservation")
+@WebServlet("/Reservation")
 public class Reservation extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
