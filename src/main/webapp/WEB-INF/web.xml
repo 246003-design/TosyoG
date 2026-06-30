@@ -49,4 +49,14 @@
     <servlet-name>UserListServlet</servlet-name>
     <url-pattern>/UserListServlet</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>Lend</display-name>
+    <servlet-name>Lend</servlet-name>
+    <servlet-class>servlet.Lend</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Lend</servlet-name>
+    <url-pattern>/Lend</url-pattern>
+  </servlet-mapping>
 </web-app>
