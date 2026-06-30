@@ -28,7 +28,7 @@ public class Reservation extends HttpServlet {
         Integer userId = (Integer) session.getAttribute("loginUserId"); 
 
         if (userId == null) {
-            response.sendRedirect(request.getContextPath() + "/login.jsp");
+            response.sendRedirect(request.getContextPath() + "WEB-INF/common/JSP/login.jsp");
             return;
         }
 
