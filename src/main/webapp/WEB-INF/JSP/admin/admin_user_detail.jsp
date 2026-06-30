@@ -1,6 +1,3 @@
-
-　　　　　　　　　　　　　　　　　　　<%--      利用者詳細編集画面　　　　 --%>
-
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%-- <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> --%>
 <!DOCTYPE html>
@@ -33,7 +30,6 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
-            <!-- ①左側ペイン: ユーザー情報編集フォーム (1/3幅) -->
             <div class="lg:col-span-4 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 self-start">
                 <div class="flex flex-col items-center text-center mb-8 pb-8 border-b border-gray-100">
                     <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 mb-4 border-4 border-white shadow-md">
@@ -52,20 +48,30 @@
                     <input type="hidden" name="userId" value="${user.id}" />
 
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">所属</label>
-                        <input type="text" name="department" value="広島情報本部" class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-900 outline-none bg-gray-50 focus:bg-white transition-all text-sm" required />
+                        <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">氏名</label>
+                        <input type="text" name="name" value="情報 太郎" class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-900 outline-none bg-gray-50 focus:bg-white transition-all text-sm font-bold text-gray-800" required />
                     </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">権限区分</label>
+                        <select name="type" class="w-full p-4 border border-gray-200 rounded-xl outline-none bg-gray-50 focus:bg-white focus:ring-2 focus:ring-gray-900 transition-all text-sm appearance-none cursor-pointer">
+                            <option value="利用者">利用者</option>
+                            <option value="司書">司書</option>
+                            <option value="管理者">管理者</option>
+                        </select>
+                    </div>
+
                     <div>
                         <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">パスワードの再設定</label>
                         <input type="text" name="password" value="password" class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-900 outline-none font-mono text-sm bg-gray-50 focus:bg-white transition-all" required />
                         <p class="text-xs text-gray-400 mt-2">※表示されているのは現在のパスワードです</p>
                     </div>
+
                     <div>
                         <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">アカウント状態</label>
                         <select name="status" class="w-full p-4 border border-gray-200 rounded-xl outline-none bg-gray-50 focus:bg-white focus:ring-2 focus:ring-gray-900 transition-all text-sm appearance-none cursor-pointer">
                             <option value="利用可能">🟢 利用可能</option>
                             <option value="利用停止">🔴 利用停止</option>
-                            <option value="貸出停止">🟡 貸出停止</option>
                         </select>
                     </div>
                     
@@ -76,7 +82,6 @@
                 </form>
             </div>
 
-            <!-- ②右側ペイン: 現在貸出中の図書リスト (2/3幅) -->
             <div class="lg:col-span-8 bg-white rounded-3xl shadow-sm border border-gray-100 flex flex-col h-full overflow-hidden">
                 <div class="p-6 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
                     <div class="flex items-center gap-3">
@@ -115,10 +120,6 @@
                             </tr>
                             
                             <%-- </c:forEach> --%>
-                            
-                            <%-- <c:if test="${empty currentLoanList}"> --%>
-                            <!-- <tr><td colSpan="4" class="p-10 text-center text-gray-400 font-medium">現在、貸出中の図書はありません。</td></tr> -->
-                            <%-- </c:if> --%>
                         </tbody>
                     </table>
                 </div>
