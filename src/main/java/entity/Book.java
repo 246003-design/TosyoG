@@ -10,6 +10,20 @@ public class Book {
 	private java.sql.Timestamp updatedAt;
 	private java.sql.Timestamp deletedAt;
 
+	// 💡 JSPで「book.bookInfo.title」や「book.bookInfo.imageUrl」などを呼び出すために、
+	// Bookエンティティの中に書籍マスタ情報（BookInfo）を格納するフィールドを追加します
+	private BookInfo bookInfo;
+
+	// 💡 追加した bookInfo のゲッターメソッド
+	public BookInfo getBookInfo() {
+		return bookInfo;
+	}
+
+	// 💡 追加した bookInfo のセッターメソッド（これでBookDAOのエラーが消えます！）
+	public void setBookInfo(BookInfo bookInfo) {
+		this.bookInfo = bookInfo;
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -53,6 +67,4 @@ public class Book {
 	public void setDeletedAt(java.sql.Timestamp deletedAt) {
 		this.deletedAt = deletedAt;
 	}
-
-
 }
