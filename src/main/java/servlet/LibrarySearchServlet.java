@@ -54,7 +54,7 @@ public class LibrarySearchServlet extends HttpServlet {
 
         // ★修正ポイント①：画面の各入力欄の「name属性」に合わせた名前で、個別に値を取得する
         String title = request.getParameter("title");       // タイトルの入力値
-        String isbn = request.getParameter("isbn");         // ISBN의 入力値
+        String isbn = request.getParameter("isbn");         // ISBN 入力値
         String author = request.getParameter("author");     // 著者の入力値
         String category = request.getParameter("category"); // 分類の選択値（プルダウン）
 
