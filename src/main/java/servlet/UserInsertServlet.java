@@ -3,6 +3,8 @@ package servlet;
 import java.io.IOException;
 import java.sql.Connection;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import dao.DBManager;
 import dao.UserDAO;
 import entity.User;
@@ -40,12 +42,14 @@ public class UserInsertServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	    String name = request.getParameter("name");
 	    String password = request.getParameter("password");
+	    String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+	    
 	    int role = Integer.parseInt(request.getParameter("role"));
 	    int status = Integer.parseInt(request.getParameter("status"));
 	    
 	    User user = new User();
 	    user.setName(name);
-	    user.setPassword(password);
+	    user.setPassword(hashedPassword);
 	    user.setRole(role);
 	    user.setStatus(status);
 	    

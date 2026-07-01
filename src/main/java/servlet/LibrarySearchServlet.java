@@ -18,9 +18,6 @@ import jakarta.servlet.http.HttpServletResponse;
 public class LibrarySearchServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
-//    // 模擬データベースのインスタンス
-//    private final Database database = new Database();
-
     /**
      * 【利用者】図書検索を要求する -> 【システム】図書検索画面を表示する
      */
@@ -45,19 +42,19 @@ public class LibrarySearchServlet extends HttpServlet {
         String inputContent = request.getParameter("inputContent");
 
         // 分岐：検索内容は空か？
-        if (inputContent == null || inputContent.trim().isEmpty()) {
-            // 【空の場合】再入力するよう表示する -> 図書検索画面を表示する
-            request.setAttribute("errorMessage", "【警告】検索キーワードが空です。再入力してください。");
+        if (inputContent == null || inputContent.isEmpty()) {
+            // キーワードが空の場合は再度検索画面を表示
+            request.setAttribute("errorMessage", "検索キーワードを入力してください。");
             request.getRequestDispatcher("WEB-INF/JSP/customer/customer_book_search.jsp").forward(request, response);
             return;
         }
 
-     // 【空でない場合】入力内容から図書情報を取得する
+        // 検索結果を格納するリスト
         List<Book> results = null;
 
         // ★修正ポイント①：画面の各入力欄の「name属性」に合わせた名前で、個別に値を取得する
         String title = request.getParameter("title");       // タイトルの入力値
-        String isbn = request.getParameter("isbn");         // ISBNの入力値
+        String isbn = request.getParameter("isbn");         // ISBN의 入力値
         String author = request.getParameter("author");     // 著者の入力値
         String category = request.getParameter("category"); // 分類の選択値（プルダウン）
 
@@ -65,15 +62,15 @@ public class LibrarySearchServlet extends HttpServlet {
         if (title == null) title = "";
         if (isbn == null) isbn = "";
         if (author == null) author = "";
+        if (category == null) category = "すべて";
 
-        // 1. データベース接続の開始
         // 1. データベース接続の開始
         try (Connection conn = DBManager.getConnection()) {
             // 2. BookDAOのインスタンス化
             BookDAO bookDAO = new BookDAO(conn);
             
-            // ★修正ポイント：大文字の「BookDAO」を小文字の「bookDAO」に変更！
-            results = bookDAO.searchBooks(title.trim(), isbn.trim(), author.trim(), category); 
+            // ★修正ポイント②：引数4つの詳細検索用メソッド「search」を正しく呼び出す
+            results = bookDAO.search(title.trim(), isbn.trim(), author.trim(), category); 
 
         } catch (SQLException e) {
         	System.err.println("サーブレットでのDB処理中にエラーが発生しました。");
@@ -87,7 +84,7 @@ public class LibrarySearchServlet extends HttpServlet {
         request.setAttribute("searchResults", results);
         request.setAttribute("keyword", inputContent);
 
-        // 【システム】検索結果を一覧表示する（結果画面、または同画面の下部に表示）
+        // 【システム】検索結果を一覧画面へ表示
         request.getRequestDispatcher("WEB-INF/JSP/customer/customer_book_search_result.jsp").forward(request, response);
     }
 }
