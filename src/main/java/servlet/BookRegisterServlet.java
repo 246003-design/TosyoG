@@ -6,7 +6,7 @@ import java.sql.Connection;
 import dao.BookDAO;
 import dao.BookInfoDAO;
 import dao.DBManager;
-import dao.MasterDAO; // 💡 追加：マスタ自動登録用のDAO
+import dao.MasterDAO;
 import entity.Book;
 import entity.BookInfo;
 import entity.User;
@@ -26,15 +26,10 @@ public class BookRegisterServlet extends HttpServlet {
 		super();
 	}
 
-	/**
-	 * 画面表示時の処理（GET）
-	 * 司書と管理者のみ画面を表示し、それ以外は強制送還する
-	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		User loginUser = (User) session.getAttribute("loginUser");
 		
-		// 🚨 未ログインの場合はログイン画面へ弾く
 		if (loginUser == null) {
 			response.sendRedirect("LoginServlet");
 			return; 
@@ -44,13 +39,10 @@ public class BookRegisterServlet extends HttpServlet {
 		String jspPath = ""; 
 		
 		if (role == 1) {
-			// 司書の場合
 			jspPath = "/WEB-INF/JSP/librarian/librarian_book_register.jsp";
 		} else if (role == 2) {
-			// 管理者の場合
 			jspPath = "/WEB-INF/JSP/admin/admin_book_register.jsp";
 		} else {
-			// それ以外（利用者など）はホームへ強制送還
 			response.sendRedirect("HomeServlet");
 			return; 
 		}
@@ -59,9 +51,6 @@ public class BookRegisterServlet extends HttpServlet {
 		dispatcher.forward(request, response);
 	}
 
-	/**
-	 * 登録ボタンが押された時の処理（POST）
-	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
 		
@@ -75,7 +64,6 @@ public class BookRegisterServlet extends HttpServlet {
 
 		int role = loginUser.getRole();
 		
-		// 画面から入力された値（文字列）を受け取る
 		String isbn = request.getParameter("isbn");
 		String title = request.getParameter("title");
 		String authorName = request.getParameter("author");
@@ -85,57 +73,79 @@ public class BookRegisterServlet extends HttpServlet {
 		
 		try (Connection conn = DBManager.getConnection()) {
 			
-			// 💡 1. MasterDAOを使って、著者名・出版社名・カテゴリ名からIDを取得（無ければ自動登録される）
-			MasterDAO masterDAO = new MasterDAO(conn);
-			int authorId = masterDAO.getOrCreateAuthor(authorName);
-			int publisherId = masterDAO.getOrCreatePublisher(publisherName);
-			int categoryId = masterDAO.getOrCreateCategory(categoryName);
+			// 💡 変更：オートコミットをOFFにしてトランザクションを開始
+			conn.setAutoCommit(false);
 			
-			// 💡 2. 確定した各IDをBookInfoにセットする
-			BookInfo bookInfo = new BookInfo();
-			bookInfo.setIsbn(isbn);
-			bookInfo.setTitle(title);
-			bookInfo.setAuthorId(authorId);
-			bookInfo.setPublisherId(publisherId);
-			bookInfo.setCategoryId(categoryId);
-			bookInfo.setImageUrl(imageUrl);
-			
-			BookInfoDAO bookInfoDAO = new BookInfoDAO(conn);
-			
-			// 💡 3. まずISBNで既に登録されているか検索する
-			BookInfo existingInfo = bookInfoDAO.findByIsbn(isbn);
-			int targetBookInfoId = 0;
-			
-			if (existingInfo != null) {
-				// 既に登録済みの本なら、そのIDを利用する（book_infoには追加しない）
-				targetBookInfoId = existingInfo.getId();
-				System.out.println("🔍 デバッグ: 登録済みの本を発見しました！ 取得したID=" + targetBookInfoId);
-			} else {
-				// まだ登録されていない本なら、新規登録して新しいIDを取得する
-				targetBookInfoId = bookInfoDAO.insert(bookInfo);
-				System.out.println("🔍 デバッグ: 未登録の本と判断し、新規登録しました。 結果ID=" + targetBookInfoId);
-			}
-			
-			if (targetBookInfoId > 0) {
-				BookDAO bookDAO = new BookDAO(conn);
-				Book book = new Book();
+			try {
+				MasterDAO masterDAO = new MasterDAO(conn);
+				int authorId = masterDAO.getOrCreateAuthor(authorName);
+				int publisherId = masterDAO.getOrCreatePublisher(publisherName);
+				int categoryId = masterDAO.getOrCreateCategory(categoryName);
 				
-				// 💡 4. 確定したIDを使って物理本(book)を登録する
-				book.setBookInfoId(targetBookInfoId);
-				book.setBookNumber(1); 
-				book.setLayoutId(1);   
+				BookInfo bookInfo = new BookInfo();
+				bookInfo.setIsbn(isbn);
+				bookInfo.setTitle(title);
+				bookInfo.setAuthorId(authorId);
+				bookInfo.setPublisherId(publisherId);
+				bookInfo.setCategoryId(categoryId);
+				bookInfo.setImageUrl(imageUrl);
 				
-				bookDAO.insert(book);
+				BookInfoDAO bookInfoDAO = new BookInfoDAO(conn);
 				
-				// ⭕ 登録成功後、再び自分自身（BookRegisterServlet）をGETで呼び出して画面をリセットする
-				response.sendRedirect("BookRegisterServlet");
+				BookInfo existingInfo = bookInfoDAO.findByIsbn(isbn);
+				int targetBookInfoId = 0;
 				
-			} else {
-				System.err.println("BookInfoの登録に失敗しました。");
-				request.setAttribute("errorMessage", "登録に失敗しました。");
-				String jspPath = (role == 1) ? "/WEB-INF/JSP/librarian/librarian_book_register.jsp" : "/WEB-INF/JSP/admin/admin_book_register.jsp";
-				RequestDispatcher dispatcher = request.getRequestDispatcher(jspPath);
-				dispatcher.forward(request, response);
+				if (existingInfo != null) {
+					targetBookInfoId = existingInfo.getId();
+					System.out.println("🔍 デバッグ: 登録済みの本を発見しました！ 取得したID=" + targetBookInfoId);
+				} else {
+					targetBookInfoId = bookInfoDAO.insert(bookInfo);
+					System.out.println("🔍 デバッグ: 未登録の本と判断し、新規登録しました。 結果ID=" + targetBookInfoId);
+				}
+				
+				if (targetBookInfoId > 0) {
+					BookDAO bookDAO = new BookDAO(conn);
+					Book book = new Book();
+					
+					book.setBookInfoId(targetBookInfoId);
+					
+					// 💡 変更：1固定ではなく、排他制御で現在の最大値+1を取得してセットする
+					int nextNumber = bookDAO.getNextBookNumberWithLock(targetBookInfoId);
+					book.setBookNumber(nextNumber); 
+					
+					book.setLayoutId(1);   
+					
+					// 💡 変更：インサート処理の成功判定を行う
+					boolean isBookInserted = bookDAO.insert(book);
+					
+					if (isBookInserted) {
+						// 💡 成功：すべての登録が終わったのでDBの変更を確定（コミット）
+						conn.commit();
+						response.sendRedirect("BookRegisterServlet");
+					} else {
+						// 失敗：図書テーブル(book)への登録に失敗したら、BookInfoなどの変更も取り消す
+						conn.rollback();
+						System.err.println("Bookテーブルへの登録に失敗しました。");
+						request.setAttribute("errorMessage", "蔵書の登録に失敗しました。");
+						String jspPath = (role == 1) ? "/WEB-INF/JSP/librarian/librarian_book_register.jsp" : "/WEB-INF/JSP/admin/admin_book_register.jsp";
+						RequestDispatcher dispatcher = request.getRequestDispatcher(jspPath);
+						dispatcher.forward(request, response);
+					}
+					
+				} else {
+					// 失敗：BookInfoテーブルへの登録に失敗した場合も取り消す
+					conn.rollback();
+					System.err.println("BookInfoの登録に失敗しました。");
+					request.setAttribute("errorMessage", "書籍情報の登録に失敗しました。");
+					String jspPath = (role == 1) ? "/WEB-INF/JSP/librarian/librarian_book_register.jsp" : "/WEB-INF/JSP/admin/admin_book_register.jsp";
+					RequestDispatcher dispatcher = request.getRequestDispatcher(jspPath);
+					dispatcher.forward(request, response);
+				}
+				
+			} catch (Exception e) {
+				// 💡 変更：SQLエラーなどが途中で起きた場合は、トランザクションをロールバック（巻き戻し）する
+				conn.rollback();
+				throw e; // エラーを外側のcatchブロックへ投げる
 			}
 			
 		} catch (Exception e) {
