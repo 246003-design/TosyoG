@@ -3,6 +3,7 @@ package servlet;
 import java.io.IOException;
 import java.sql.Connection;
 
+import dao.DBManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -34,10 +35,9 @@ public class LendServlet extends HttpServlet {
         String userIdStr = request.getParameter("userId");
         String bookIdStr = request.getParameter("bookId");
         
-        Connection conn = null; 
+        Connection conn = DBManager.getConnection();
         try {
-            // 前のステップで解決した、正しい接続取得処理をここに書きます
-            // conn = ...
+           
             
             int userId = Integer.parseInt(userIdStr);
             int bookId = Integer.parseInt(bookIdStr);
