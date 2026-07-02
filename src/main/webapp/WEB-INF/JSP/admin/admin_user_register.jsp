@@ -26,7 +26,7 @@
                 <h2 class="text-xl font-bold text-gray-800">アカウント情報の入力</h2>
             </div>
 
-            <form action="UserRegisterServlet" method="POST" class="space-y-8">
+            <form action="UserInsertServlet" method="POST" class="space-y-8">
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                     <div>
