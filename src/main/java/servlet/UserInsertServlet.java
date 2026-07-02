@@ -17,7 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
 /**
  * Servlet implementation class UserInsertServlet
  */
-@WebServlet("/UserRegisterServlet")
+@WebServlet("/UserInsertServlet")
 public class UserInsertServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -55,9 +55,12 @@ public class UserInsertServlet extends HttpServlet {
 	    
 	    Connection conn = DBManager.getConnection();
 	    UserDAO dao = new UserDAO(conn);
+	    int id = dao.insert(user);
+	    user.setId(id);
 	    
-	    if(dao.insert(user)) {
-	    	request.getRequestDispatcher("/WEB-INF/JSP/admin/admin_user_list.jsp").forward(request, response); //いったんテストで別画面に飛ぶようにしてる
+	    if(id < 0) {
+	    	request.setAttribute("registeredUser", user);
+	    	request.getRequestDispatcher("/WEB-INF/JSP/admin/admin_user_complete.jsp").forward(request, response); //いったんテストで別画面に飛ぶようにしてる
 	    }else { 
 	    	request.getRequestDispatcher("/WEB-INF/JSP/common/error.jsp").forward(request, response);
 	    }

@@ -50,7 +50,7 @@
             </a>
 
             <!-- 利用者管理 -->
-            <a href="admin_user_menu.jsp" class="group bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl border border-gray-100 hover:border-gray-900/30 transition-all duration-300 hover:-translate-y-1 flex items-center gap-6">
+            <a href="UserManagementMenuServlet" class="group bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl border border-gray-100 hover:border-gray-900/30 transition-all duration-300 hover:-translate-y-1 flex items-center gap-6">
                 <div class="bg-gray-50 text-gray-600 p-5 rounded-full group-hover:bg-gray-900 group-hover:text-white transition-colors duration-300 shadow-inner shrink-0">
                     <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                 </div>

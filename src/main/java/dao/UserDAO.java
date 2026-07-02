@@ -47,9 +47,9 @@ public class UserDAO extends BaseDAO {
 		return user;
 	}
 
-	// 2. 利用者の新規登録処理
-	public boolean insert(User user) {
-		boolean result = false;
+	// 2. 利用者の新規登録処理 エラーは-1
+	public int insert(User user) {
+		int result = -1;
 		String sql = "INSERT INTO user (name, password, role, status) VALUES (?, ?, ?, ?)";
 
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -61,7 +61,11 @@ public class UserDAO extends BaseDAO {
 			//更新された情報の数
 			int rows = pstmt.executeUpdate();
 			if (rows > 0) {
-				result = true;
+				try(ResultSet rs = pstmt.getGeneratedKeys()){
+					if(rs.next()) {
+						result = rs.getInt(1);
+					}
+				}
 			}
 		} catch (SQLException e) {
 			System.err.println("UserDAO.insertの実行中にエラーが発生しました。");

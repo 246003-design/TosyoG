@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%-- <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> --%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -38,37 +38,41 @@
                         <div class="md:col-span-2 bg-white border-2 border-blue-100 rounded-xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-sm">
                             <dt class="text-sm font-bold text-blue-800 uppercase tracking-wider">発行されたユーザーID</dt>
                             <dd class="text-4xl font-mono font-black text-gray-900 tracking-widest">
-                                <%-- <c:out value="${registeredUser.id}" /> --%>246246
+                                ${registeredUser.id}
                             </dd>
                         </div>
 
-                        <div>
-                            <dt class="text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">氏名</dt>
-                            <dd class="font-bold text-gray-900 text-lg"><%-- <c:out value="${registeredUser.name}" /> --%>広島 情報</dd>
-                        </div>
-                        <div>
-                            <dt class="text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">初期パスワード</dt>
-                            <dd class="font-mono font-bold text-gray-900 text-lg"><%-- <c:out value="${registeredUser.password}" /> --%>password123</dd>
-                        </div>
                         <div class="md:col-span-2">
-                            <dt class="text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">所属部署・団体</dt>
-                            <dd class="font-bold text-gray-900"><%-- <c:out value="${registeredUser.department}" /> --%>広島情報本部</dd>
+                            <dt class="text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">氏名</dt>
+                            <dd class="font-bold text-gray-900 text-lg">${registeredUser.name}</dd>
                         </div>
                         <div>
                             <dt class="text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">権限区分</dt>
                             <dd>
                                 <span class="bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-sm font-bold">
-                                    <%-- <c:out value="${registeredUser.type}" /> --%>利用者
+                                    <c:choose>
+                                        <c:when test="${registeredUser.role == 2}">管理者</c:when>
+                                        <c:when test="${registeredUser.role == 1}">司書</c:when>
+                                        <c:otherwise>利用者</c:otherwise>
+                                    </c:choose>
                                 </span>
                             </dd>
                         </div>
                         <div>
                             <dt class="text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">初期状態</dt>
                             <dd>
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold bg-green-100 text-green-700">
-                                    <span class="w-2 h-2 rounded-full bg-green-600"></span>
-                                    <%-- <c:out value="${registeredUser.status}" /> --%>利用可能
-                                </span>
+                                <c:choose>
+                                    <c:when test="${registeredUser.status == 1}">
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold bg-red-100 text-red-700">
+                                            <span class="w-2 h-2 rounded-full bg-red-600"></span>利用停止
+                                        </span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold bg-green-100 text-green-700">
+                                            <span class="w-2 h-2 rounded-full bg-green-600"></span>利用可能
+                                        </span>
+                                    </c:otherwise>
+                                </c:choose>
                             </dd>
                         </div>
                     </dl>
@@ -77,7 +81,7 @@
                 <div class="bg-blue-50/50 border border-blue-100 p-4 rounded-xl flex items-start gap-3 mb-8 text-left">
                     <svg class="text-blue-500 shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
                     <p class="text-sm text-blue-800 leading-relaxed font-medium">
-                        対象者へ<span class="font-bold">「ユーザーID」</span>と<span class="font-bold">「初期パスワード」</span>を必ずお伝えください。初回ログイン時に必要となります。
+                        対象者へ<span class="font-bold">「ユーザーID」</span>を必ずお伝えください。初回ログイン時に必要となります。
                     </p>
                 </div>
 
