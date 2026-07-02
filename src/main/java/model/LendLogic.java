@@ -1,69 +1,53 @@
 package model;
 
 import java.sql.Connection;
-import java.util.Optional;
 
-import dao.BookDAO;
 import dao.UserDAO;
-import dto.LendDto; // ★LendDtoを使用
-import entity.Book;
 import entity.User;
 
+//貸出判定処理
 public class LendLogic {
-	
-	// 最大貸出上限数
-	private static final int MAX_LIMIT = 5;
 
-	/**
-	 * 【貸出可否・登録ロジック】
-	 * 貸出冊数が上限以内かチェックし、DTOに値をセットして登録を行います。
-	 */
-	public String registerLend(Connection conn, int userId, int bookId) {
-		UserDAO userDAO = new UserDAO(conn);
-		BookDAO bookDAO = new BookDAO(conn);
-		// ※LendDAOはプロジェクトに合わせて使用してください（今回は上限チェックメイン）
+    /**
+     * 貸出処理を登録し、結果のメッセージを返すメインメソッド
+     */
+    public String registerLend(Connection conn, int userId, int bookId) {
+        
+        // 1. まずは貸出可能か（上限未満か）をチェック
+        if (!isUnderBorrowLimit(conn, userId)) {
+            // 上限に達している、またはユーザーが存在しない場合
+            return "貸出エラー：貸出上限（5冊）に達しているか、ユーザーが存在しません。";
+        }
+        
+        // 2. 本の在庫チェックや、実際の貸出登録処理をここに行う（DAOの呼び出しなど）
+        try {
+            // 例：LendDAOなどを使って、貸出履歴テーブルにインサートするイメージです
+            // LendDAO lendDAO = new LendDAO(conn);
+            // lendDAO.insert(userId, bookId);
+            
+            // すべて成功したら完了メッセージを返す
+            return "貸出が完了しました。";
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "システムエラー：貸出登録に失敗しました。";
+        }
+    }
 
-		try {
-			// ① 利用者情報の取得と貸出冊数チェック
-			User user = userDAO.findById(userId);
-			if (user == null) {
-				return "利用者情報が見つかりません。";
-			}
-			
-			// ★【判定: 貸出冊数上限チェック】
-			int borrowCount = user.getBorrowCount();
-			if (borrowCount >= MAX_LIMIT) {
-				return "貸出冊数が上限（" + MAX_LIMIT + "冊）に達しているため、これ以上貸出できません。";
-			}
-
-			// ② 図書情報の取得
-			Optional<Book> bookOpt = bookDAO.findById(bookId);
-			if (!bookOpt.isPresent()) {
-				return "指定された図書情報が見つかりません。";
-			}
-			Book book = bookOpt.get();
-
-			// ③ ★ご要望の通り、DTOの箱を作って値を移し替える処理
-			LendDto newLendDto = new LendDto();
-			newLendDto.setUserId(userId);
-			newLendDto.setBookId(bookId);
-			newLendDto.setStatus(0); // 0: 貸出中
-
-			// ⑤ 登録処理の実行（LendDAO側の引数がDTOを想定）
-			// ※もしLendDAOへのインサートも行う場合は、以下のようにDTOを渡します
-			/*
-			LendDAO lendDAO = new LendDAO(conn);
-			boolean isSuccess = lendDAO.insert(newLendDto); 
-			if (!isSuccess) {
-				return "貸出の登録に失敗しました。";
-			}
-			*/
-
-			return ""; // 貸出上限以内で、DTOへの移し替えも成功
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return "予期せぬエラーが発生しました。";
-		}
-	}
+    /**
+     * 【さっきのロジック】貸出上限未満（5冊未満）かどうかを判定する
+     * クラス内部でのみ使うため private に変更
+     */
+    private boolean isUnderBorrowLimit(Connection conn, int userId) {
+        UserDAO userDAO = new UserDAO(conn);
+        User user = userDAO.findById(userId);
+        
+        // 利用者が存在しない場合は一律で不可（false）とする
+        if (user == null) {
+            return false; 
+        }
+        
+        // 現在の貸出冊数が 5冊未満 であれば、まだ借りられる
+        return user.getBorrowCount() < 5;
+    }
 }

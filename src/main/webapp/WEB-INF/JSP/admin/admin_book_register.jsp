@@ -11,7 +11,7 @@
     <!-- ヘッダー -->
     <header class="bg-[#1e3a8a] text-white p-4 shadow-md flex items-center gap-3 sticky top-0 z-20">
         <!-- 戻るボタン（Servlet経由での画面遷移に合わせています） -->
-        <a href="HomeServlet" class="p-1 hover:bg-white/20 rounded-full transition-colors" title="ホームに戻る">
+        <a href="BookManagementMenuServlet" class="p-1 hover:bg-white/20 rounded-full transition-colors" title="ホームに戻る">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         </a>
         <h1 class="text-xl font-bold tracking-widest">蔵書新規登録</h1>

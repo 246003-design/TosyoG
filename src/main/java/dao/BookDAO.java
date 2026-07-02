@@ -39,6 +39,42 @@ public class BookDAO extends BaseDAO {
 		return result;
 	}
 
+	// 💡 追加: 排他制御（ロック）をかけながら、指定した本の次の番号(book_number)を取得する
+	public int getNextBookNumberWithLock(int bookInfoId) throws SQLException {
+		// FOR UPDATE をつけることで、トランザクションが終了（コミット/ロールバック）するまで他の処理を待たせます
+		String sql = "SELECT COALESCE(MAX(book_number), 0) AS max_num FROM book WHERE book_info_id = ? FOR UPDATE";
+		
+		try (PreparedStatement pStmt = conn.prepareStatement(sql)) {
+			pStmt.setInt(1, bookInfoId);
+			try (ResultSet rs = pStmt.executeQuery()) {
+				if (rs.next()) {
+					int currentMax = rs.getInt("max_num");
+					return currentMax + 1; // 現在の最大値 + 1 を返す
+				}
+			}
+		}
+		return 1; // データが1件もない場合は 1 を返す
+	}
+
+	// 図書を論理削除するメソッド（deleted_at に現在時刻をセット）
+	public boolean delete(int id) {
+		boolean result = false;
+		String sql = "UPDATE book SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?";
+
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, id);
+
+			int rows = pstmt.executeUpdate();
+			if (rows > 0) {
+				result = true;
+			}
+		} catch (SQLException e) {
+			System.err.println("BookDAO.deleteでエラーが発生しました。");
+			e.printStackTrace();
+		}
+		return result;
+	}
+
 	// IDから図書情報を1件取得する（論理削除を除く）
 	public Optional<Book> findById(int id) {
 		String sql = "SELECT b.id, b.book_info_id, b.book_number, b.layout_id, b.created_at, b.updated_at, b.deleted_at, "
@@ -69,6 +105,7 @@ public class BookDAO extends BaseDAO {
 					info.setPublisherId(rs.getInt("publisher_id"));
 					info.setCategoryId(rs.getInt("category_id"));
 					info.setImageUrl(rs.getString("imageUrl"));
+					
 					book.setBookInfo(info);
 
 					return Optional.of(book);
@@ -87,7 +124,6 @@ public class BookDAO extends BaseDAO {
 	public List<Book> searchBooks(String keyword) {
 		List<Book> list = new ArrayList<>();
 		
-		// bookテーブルとbook_infoテーブルを結合し、さらに著者情報(author)などを結合して検索できるようにします
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT b.id, b.book_info_id, b.book_number, b.layout_id, b.created_at, b.updated_at, b.deleted_at, ");
 		sql.append("bi.isbn, bi.title, bi.author_id, bi.publisher_id, bi.category_id, bi.imageUrl ");
@@ -121,7 +157,6 @@ public class BookDAO extends BaseDAO {
 					book.setUpdatedAt(rs.getTimestamp("updated_at"));
 					book.setDeletedAt(rs.getTimestamp("deleted_at"));
 
-					// BookInfoオブジェクトを作成してマスタデータをセット
 					BookInfo info = new BookInfo();
 					info.setId(rs.getInt("book_info_id"));
 					info.setIsbn(rs.getString("isbn"));
@@ -131,9 +166,7 @@ public class BookDAO extends BaseDAO {
 					info.setCategoryId(rs.getInt("category_id"));
 					info.setImageUrl(rs.getString("imageUrl"));
 					
-					// Bookの中にBookInfoを入れる
 					book.setBookInfo(info);
-
 					list.add(book);
 				}
 			}
@@ -209,8 +242,8 @@ public class BookDAO extends BaseDAO {
 					info.setPublisherId(rs.getInt("publisher_id"));
 					info.setCategoryId(rs.getInt("category_id"));
 					info.setImageUrl(rs.getString("imageUrl"));
+					
 					book.setBookInfo(info);
-
 					list.add(book);
 				}
 			}
