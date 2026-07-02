@@ -41,7 +41,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl">
             <!-- 検索メニューカード -->
-            <a href="book_search.jsp" class="group bg-white rounded-3xl p-8 shadow-sm hover:shadow-xl border border-gray-100 hover:border-[#1e5641]/30 transition-all duration-300 hover:-translate-y-1 flex flex-col items-center text-center">
+            <a href="WEB-INF/JSP/customer/customer_book_search.jsp" class="group bg-white rounded-3xl p-8 shadow-sm hover:shadow-xl border border-gray-100 hover:border-[#1e5641]/30 transition-all duration-300 hover:-translate-y-1 flex flex-col items-center text-center">
                 <div class="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mb-6 group-hover:bg-[#1e5641] group-hover:text-white text-[#1e5641] transition-colors duration-300 shadow-inner">
                     <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                 </div>
