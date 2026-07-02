@@ -6,7 +6,7 @@ import java.util.Optional;
 import dao.BookDAO;
 import dao.ReservationDAO;
 import dao.UserDAO;
-import dto.ReservationDto; // ★追加：DTOを扱うためにインポート
+import dto.ReservationDto;
 import entity.Book;
 import entity.Reservation;
 import entity.User;
@@ -25,7 +25,7 @@ public class ReservationLogic {
 		ReservationDAO reservationDAO = new ReservationDAO(conn);
 
 		try {
-			// ① 利用者情報の取得と貸出冊数チェック
+			// ① 利用者情報の確認
 			User user = userDAO.findById(userId);
 			if (user == null) {
 				return "利用者情報が見つかりません。";
@@ -59,17 +59,16 @@ public class ReservationLogic {
 				}
 			}
 
-			// ⑥ ★修正：DAOの引数（ReservationDTO）に合わせて、DTOの箱を作って値を送る！
+			// ⑥ 予約情報の登録（DAOへの指示）
 			ReservationDto newResDto = new ReservationDto();
 			newResDto.setUserId(userId);
 			newResDto.setBookInfoId(book.getBookInfoId());
 			newResDto.setBookId(bookId);
 			newResDto.setStatus(1); // 1: 予約中
 
-			// 修正したDAOの insert(ReservationDTO) を呼び出す
 			boolean isSuccess = reservationDAO.insert(newResDto); 
 			if (isSuccess) {
-				return ""; // 成功
+				return ""; // 成功時は空文字を返す
 			} else {
 				return "予約の登録に失敗しました。";
 			}
@@ -98,7 +97,6 @@ public class ReservationLogic {
 			for (Reservation r : reservationDAO.findAll()) {
 				if (r.getUserId() == userId && r.getBookInfoId() == bookInfoId && (r.getStatus() == 1 || r.getStatus() == 2)) {
 					
-					// ★修正：DAOの update(ReservationDTO) に合わせて、DTOの箱に移し替えて送る！
 					ReservationDto updateDto = new ReservationDto();
 					updateDto.setId(r.getId());
 					updateDto.setStatus(9); // 9: キャンセル
