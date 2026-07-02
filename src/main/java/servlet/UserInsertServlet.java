@@ -58,7 +58,7 @@ public class UserInsertServlet extends HttpServlet {
 	    int id = dao.insert(user);
 	    user.setId(id);
 	    
-	    if(id < 0) {
+	    if(id > 0) {
 	    	request.setAttribute("registeredUser", user);
 	    	request.getRequestDispatcher("/WEB-INF/JSP/admin/admin_user_complete.jsp").forward(request, response); //いったんテストで別画面に飛ぶようにしてる
 	    }else { 
