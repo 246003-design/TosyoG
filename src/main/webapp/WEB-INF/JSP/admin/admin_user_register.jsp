@@ -10,7 +10,7 @@
 </head>
 <body class="bg-slate-50 flex flex-col min-h-screen font-sans antialiased text-gray-800">
     <header class="bg-gray-900 text-white p-4 shadow-md flex items-center gap-4 sticky top-0 z-20">
-        <a href="admin_user_menu.jsp" class="p-2 hover:bg-white/20 rounded-full transition-colors group">
+        <a href="UserManagementMenuServlet" class="p-2 hover:bg-white/20 rounded-full transition-colors group">
             <svg class="transform group-hover:-translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         </a>
         <h1 class="text-xl font-bold tracking-widest">新規利用者登録</h1>
@@ -64,7 +64,7 @@
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-4 pt-8 border-t border-gray-100">
-                    <a href="admin_user_menu.jsp" class="w-full sm:w-1/3 py-4 border-2 border-gray-200 text-gray-600 rounded-xl font-bold text-center hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                    <a href="UserManagementMenuServlet" class="w-full sm:w-1/3 py-4 border-2 border-gray-200 text-gray-600 rounded-xl font-bold text-center hover:bg-gray-50 hover:text-gray-900 transition-colors">
                         戻る
                     </a>
                     <button type="submit" class="w-full sm:w-2/3 py-4 bg-gray-900 text-white rounded-xl font-bold text-lg hover:bg-black shadow-lg shadow-gray-900/20 active:scale-95 transition-all flex items-center justify-center gap-2" onclick="return confirm('新しいアカウントを発行します。よろしいですか？');">

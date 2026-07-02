@@ -17,7 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
 /**
  * Servlet implementation class UserInsertServlet
  */
-@WebServlet("/UserRegisterServlet")
+@WebServlet("/UserInsertServlet")
 public class UserInsertServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
