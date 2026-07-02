@@ -32,8 +32,8 @@
                 <div class="w-24 h-24 bg-teal-50 rounded-full flex items-center justify-center text-teal-600 mb-6 shadow-inner">
                     <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="m17 17-5 5-5-5"/></svg>
                 </div>
-                <h2 class="text-2xl font-bold text-gray-800 mb-2">図書の返却スキャン</h2>
-                <p class="text-gray-500">バーコードリーダーで図書をスキャンしてください</p>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">図書の返却</h2>
+                <p class="text-gray-500">図書IDを入力してください</p>
             </div>
 
             <%-- エラー（該当本なし等） --%>

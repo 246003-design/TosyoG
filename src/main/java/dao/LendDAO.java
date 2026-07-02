@@ -161,4 +161,58 @@ public class LendDAO extends BaseDAO {
 			}
 			return list;
 		}
+		
+		//返却機能	
+		// 💡 追加1: 本のIDから、現在貸出中（未返却）の貸出情報を1件取得する
+		public Lend findCurrentLendByBookId(int bookId) {
+			Lend lend = null;
+			String sql = "SELECT id, user_id, book_id, lend_date, due_date, return_date, status, created_at, updated_at, deleted_at "
+					+ "FROM lend WHERE book_id = ? AND return_date IS NULL AND deleted_at IS NULL";
+					
+			try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+				pstmt.setInt(1, bookId);
+				
+				try (ResultSet rs = pstmt.executeQuery()) {
+					if (rs.next()) {
+						lend = new Lend();
+						lend.setId(rs.getInt("id"));
+						lend.setUserId(rs.getInt("user_id"));
+						lend.setBookId(rs.getInt("book_id"));
+						lend.setLendDate(rs.getTimestamp("lend_date"));
+						lend.setDueDate(rs.getTimestamp("due_date"));
+						lend.setReturnDate(rs.getTimestamp("return_date"));
+						lend.setStatus(rs.getInt("status"));
+						lend.setCreatedAt(rs.getTimestamp("created_at"));
+						lend.setUpdatedAt(rs.getTimestamp("updated_at"));
+						lend.setDeletedAt(rs.getTimestamp("deleted_at"));
+					}
+				}
+			} catch (SQLException e) {
+				System.err.println("LendDAO.findCurrentLendByBookIdの実行中にエラーが発生しました。");
+				e.printStackTrace();
+			}
+			return lend;
+		}
+
+		// 💡 追加2: 返却日時を現在時刻にし、ステータスを更新する（返却完了処理）
+		public boolean updateReturnStatus(int id, int status) {
+			boolean result = false;
+			// return_date と updated_at に CURRENT_TIMESTAMP (現在時刻) をセットする
+			String sql = "UPDATE lend SET return_date = CURRENT_TIMESTAMP, status = ?, updated_at = CURRENT_TIMESTAMP "
+					+ "WHERE id = ? AND deleted_at IS NULL";
+
+			try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+				pstmt.setInt(1, status);
+				pstmt.setInt(2, id);
+
+				int rows = pstmt.executeUpdate();
+				if (rows > 0) {
+					result = true;
+				}
+			} catch (SQLException e) {
+				System.err.println("LendDAO.updateReturnStatusの実行中にエラーが発生しました。");
+				e.printStackTrace();
+			}
+			return result;
+		}
 }
