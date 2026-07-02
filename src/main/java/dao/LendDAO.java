@@ -102,4 +102,63 @@ public class LendDAO extends BaseDAO {
 		}
 		return list;
 	}
+	
+	//延滞一覧機能
+	// 延滞一覧を取得する（DTOなし・Map使用版）
+		public List<java.util.Map<String, Object>> findOverdueMapList(String searchQuery) {
+			List<java.util.Map<String, Object>> list = new ArrayList<>();
+			
+			// 【SQL構築】返却予定日が過去 且つ 未返却 且つ 論理削除されていないデータ
+			StringBuilder sql = new StringBuilder();
+			sql.append("SELECT b.title, u.name AS user_name, l.user_id, l.due_date ");
+			sql.append("FROM lend l ");
+			sql.append("JOIN user u ON l.user_id = u.id ");   // 💡環境に合わせてテーブル名・カラム名を調整してください
+			sql.append("JOIN book b ON l.book_id = b.id ");   // 💡環境に合わせてテーブル名・カラム名を調整してください
+			sql.append("WHERE l.return_date IS NULL AND l.due_date < CURRENT_TIMESTAMP AND l.deleted_at IS NULL ");
+			
+			// 検索キーワードがある場合、条件を追加（部分一致）
+			boolean hasQuery = (searchQuery != null && !searchQuery.trim().isEmpty());
+			if (hasQuery) {
+				sql.append("AND (CAST(l.user_id AS CHAR) LIKE ? OR u.name LIKE ?) ");
+			}
+			
+			// 期限の古い順に並び替え
+			sql.append("ORDER BY l.due_date ASC");
+			
+			try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+				if (hasQuery) {
+					String keyword = "%" + searchQuery.trim() + "%";
+					pstmt.setString(1, keyword);
+					pstmt.setString(2, keyword);
+				}
+				
+				try (ResultSet rs = pstmt.executeQuery()) {
+					// 日付フォーマットの準備 (JSPで「2024/05/10」の形式で見せるため)
+					java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy/MM/dd");
+					
+					while (rs.next()) {
+						// 1行分のデータを格納するMapを作成
+						java.util.Map<String, Object> map = new java.util.HashMap<>();
+						
+						// 💡JSPの ${overdue.xxxx} の「xxxx」の部分と完全に一致するキー名でputします
+						map.put("title", rs.getString("title"));
+						map.put("userName", rs.getString("user_name"));
+						map.put("userId", rs.getInt("user_id"));
+						
+						java.sql.Timestamp dueDate = rs.getTimestamp("due_date");
+						if (dueDate != null) {
+							map.put("dueDate", sdf.format(dueDate));
+						} else {
+							map.put("dueDate", "");
+						}
+						
+						list.add(map);
+					}
+				}
+			} catch (SQLException e) {
+				System.err.println("LendDAO.findOverdueMapListの実行中にエラーが発生しました。");
+				e.printStackTrace();
+			}
+			return list;
+		}
 }
