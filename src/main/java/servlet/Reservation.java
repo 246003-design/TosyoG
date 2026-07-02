@@ -1,23 +1,4 @@
-package servlet;
-
-import java.io.IOException;
-import java.sql.Connection;
-
-import dao.DBManager;
-import dao.ReservationDAO;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import model.ReservationLogic;
-
-@WebServlet("/ReserveServlet")
-public class Reservation extends HttpServlet {
-    private static final long serialVersionUID = 1L;
-
-    /**
+/**
      * 【図書詳細＆予約画面表示（GETリクエスト）】
      */
     @Override
@@ -38,92 +19,44 @@ public class Reservation extends HttpServlet {
             request.getRequestDispatcher("/WEB-INF/JSP/common/error.jsp").forward(request, response);
             return;
         }
-        
         int bookId = Integer.parseInt(bookIdStr);
 
         try (Connection conn = DBManager.getConnection()) {
-            ReservationDAO dao = new ReservationDAO(conn);
+            BookDAO bookDAO = new BookDAO(conn);
+            ReservationDAO reservationDAO = new ReservationDAO(conn);
             
-            // 図書詳細情報を取得
-            entity.Reservation reservationDto = dao.findById(bookId);
+            // ① 図書情報をDBから取得
+            Optional<Book> bookOpt = bookDAO.findById(bookId);
             
-            // ログイン中のユーザーがこの本を既に予約しているか確認
-            boolean isReservedByCurrentUser = dao.isReservedByUser(userId, bookId);
-            
-            request.setAttribute("book", reservationDto);
-            request.setAttribute("isReservedByCurrentUser", isReservedByCurrentUser);
+            if (bookOpt.isPresent()) {
+                Book book = bookOpt.get();
+                // JSPの ${book.title} などで表示するためにセット
+                request.setAttribute("book", book);
+                
+                // ② ログイン中のユーザーがこの図書をすでに予約しているかチェック
+                int bookInfoId = book.getBookInfoId();
+                boolean isReserved = false;
+                
+                // 全予約データから「自分」かつ「この本（bookInfoId）」かつ「有効（1:予約中, 2:準備中）」を探す
+                for (Reservation r : reservationDAO.findAll()) {
+                    if (r.getUserId() == userId && r.getBookInfoId() == bookInfoId && (r.getStatus() == 1 || r.getStatus() == 2)) {
+                        isReserved = true;
+                        break;
+                    }
+                }
+                
+                // ③ 判定結果（true/false）をリクエストスコープに格納
+                request.setAttribute("isReserved", isReserved);
+                
+            } else {
+                request.setAttribute("errorMsg", "指定された図書情報が見つかりません。");
+            }
             
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("errorMsg", "データ取得中にエラーが発生しました。");
         }
 
+        // 確定したJSPへフォワード
         request.getRequestDispatcher("/WEB-INF/JSP/customer/customer_book_detail.jsp").forward(request, response);
     }
-
-    /**
-     * 【予約の登録・キャンセル（POSTリクエスト）】
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
-            throws ServletException, IOException {
-        
-        request.setCharacterEncoding("UTF-8");
-
-        String action = request.getParameter("action"); 
-        String bookIdStr = request.getParameter("bookId");
-        
-        HttpSession session = request.getSession();
-        Integer userId = (Integer) session.getAttribute("loginUserId"); 
-
-        if (userId == null) {
-            response.sendRedirect(request.getContextPath() + "/WEB-INF/JSP/common/login.jsp");
-            return;
-        }
-
-        if (bookIdStr == null || bookIdStr.isEmpty()) {
-            request.setAttribute("errorMsg", "図書IDが指定されていません。");
-            request.getRequestDispatcher("/WEB-INF/JSP/common/error.jsp").forward(request, response);
-            return;
-        }
-
-        int bookId = Integer.parseInt(bookIdStr);
-        String resultMsg = "";
-        ReservationLogic logic = new ReservationLogic();
-
-        // 💡 サーブレットでトランザクションを管理し、ロジックに指示を出す
-        try (Connection conn = DBManager.getConnection()) {
-            
-            // オートコミットをオフ（トランザクション開始）
-            conn.setAutoCommit(false);
-            
-            if ("reserve".equals(action)) {
-                resultMsg = logic.registerReservation(conn, userId, bookId);
-            } else if ("cancel".equals(action)) {
-                resultMsg = logic.cancelReservation(conn, userId, bookId);
-            } else {
-                resultMsg = "不正なリクエストです。";
-            }
-
-            // ロジックの判定結果によって、コミットするかロールバックするか決定
-            if (resultMsg == null || resultMsg.isEmpty()) {
-                conn.commit(); // エラーがなければDBに確定
-                if ("reserve".equals(action)) {
-                    request.setAttribute("successMessage", "予約手続きが正常に完了しました。");
-                } else if ("cancel".equals(action)) {
-                    request.setAttribute("successMessage", "予約の取り消しが完了しました。");
-                }
-            } else {
-                conn.rollback(); // エラーがあればDBの変更を破棄
-                request.setAttribute("errorMsg", resultMsg);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            request.setAttribute("errorMsg", "システムエラーが発生しました。しばらく経ってから再度お試しください。");
-        }
-
-        // 処理完了後、再び画面を表示するために doGet を呼び出す
-        doGet(request, response);
-    }
-}
