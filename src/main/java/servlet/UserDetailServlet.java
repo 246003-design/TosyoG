@@ -29,16 +29,15 @@ public class UserDetailServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		int id = request.getParameter("userId");
+		int id = Integer.parseInt(request.getParameter("userId"));
 		
 		
 		try(Connection conn = DBManager.getConnection()){
 			UserDAO dao = new UserDAO(conn);
 			
-			dao.findById(id);
+			request.setAttribute("user", dao.findById(id));
 			
-			request.setAttribute("userList", dtoList);
-			request.getRequestDispatcher("/WEB-INF/JSP/admin/admin_user_list.jsp").forward(request, response);
+			request.getRequestDispatcher("/WEB-INF/JSP/admin/admin_user_detail.jsp").forward(request, response);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
