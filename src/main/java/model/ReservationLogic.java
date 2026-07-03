@@ -6,112 +6,78 @@ import java.util.Optional;
 import dao.BookDAO;
 import dao.ReservationDAO;
 import dao.UserDAO;
-import dto.ReservationDto;
 import entity.Book;
 import entity.Reservation;
 import entity.User;
 
 public class ReservationLogic {
-	
-	// 最大貸出・予約上限数
-	private static final int MAX_LIMIT = 5;
+    
+    private static final int MAX_LIMIT = 5;
 
-	/**
-	 * 【1. 予約登録ロジック】
-	 */
-	public String registerReservation(Connection conn, int userId, int bookId) {
-		UserDAO userDAO = new UserDAO(conn);
-		BookDAO bookDAO = new BookDAO(conn);
-		ReservationDAO reservationDAO = new ReservationDAO(conn);
+    /**
+     * 【予約可能かどうかの判定】
+     */
+    public String validateReservation(Connection conn, int userId, int bookId) {
+        UserDAO userDAO = new UserDAO(conn);
+        BookDAO bookDAO = new BookDAO(conn);
+        ReservationDAO reservationDAO = new ReservationDAO(conn);
 
-		try {
-			// ① 利用者情報の確認
-			User user = userDAO.findById(userId);
-			if (user == null) {
-				return "利用者情報が見つかりません。";
-			}
-			int borrowCount = user.getBorrowCount();
+        try {
+            User user = userDAO.findById(userId);
+            if (user == null) return "利用者情報が見つかりません。";
 
-			// ② 図書情報の取得
-			Optional<Book> bookOpt = bookDAO.findById(bookId);
-			if (!bookOpt.isPresent()) {
-				return "指定された図書情報が見つかりません。";
-			}
-			Book book = bookOpt.get();
+            Optional<Book> bookOpt = bookDAO.findById(bookId);
+            if (!bookOpt.isPresent()) return "指定された図書情報が見つかりません。";
+            Book book = bookOpt.get();
 
-			// ③ 現在の有効な予約数をカウント
-			int reservationCount = 0;
-			for (Reservation r : reservationDAO.findAll()) {
-				if (r.getUserId() == userId && (r.getStatus() == 1 || r.getStatus() == 2)) {
-					reservationCount++;
-				}
-			}
+            int reservationCount = 0;
+            boolean isAlreadyReserved = false;
+            
+            for (Reservation r : reservationDAO.findAll()) {
+                if (r.getUserId() == userId && (r.getStatus() == 1 || r.getStatus() == 2)) {
+                    reservationCount++;
+                    // ★物理本(bookId)が違っても、同じ作品(bookInfoId)なら二重予約エラーにする
+                    if (r.getBookInfoId() == book.getBookInfoId()) {
+                        isAlreadyReserved = true;
+                    }
+                }
+            }
 
-			// ④ 【判定: 上限チェック】
-			if ((borrowCount + reservationCount) >= MAX_LIMIT) {
-				return "貸出・予約の合計が上限（" + MAX_LIMIT + "冊）に達しているため、予約できません。";
-			}
+            if ((user.getBorrowCount() + reservationCount) >= MAX_LIMIT) {
+                return "貸出・予約の合計が上限（" + MAX_LIMIT + "冊）に達しているため、予約できません。";
+            }
+            if (isAlreadyReserved) {
+                return "すでにこの作品は予約済みです。";
+            }
 
-			// ⑤ 【判定: 二重予約チェック】
-			for (Reservation r : reservationDAO.findAll()) {
-				if (r.getUserId() == userId && r.getBookInfoId() == book.getBookInfoId() && (r.getStatus() == 1 || r.getStatus() == 2)) {
-					return "すでにこの図書は予約済みです。";
-				}
-			}
+            return ""; // 問題なければ空文字
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "予期せぬエラーが発生しました。";
+        }
+    }
 
-			// ⑥ 予約情報の登録（DAOへの指示）
-			ReservationDto newResDto = new ReservationDto();
-			newResDto.setUserId(userId);
-			newResDto.setBookInfoId(book.getBookInfoId());
-			newResDto.setBookId(bookId);
-			newResDto.setStatus(1); // 1: 予約中
+    /**
+     * 【キャンセル可能かどうかの判定】
+     */
+    public String validateCancellation(Connection conn, int userId, int bookId) {
+        ReservationDAO reservationDAO = new ReservationDAO(conn);
+        BookDAO bookDAO = new BookDAO(conn);
 
-			boolean isSuccess = reservationDAO.insert(newResDto); 
-			if (isSuccess) {
-				return ""; // 成功時は空文字を返す
-			} else {
-				return "予約の登録に失敗しました。";
-			}
+        try {
+            Optional<Book> bookOpt = bookDAO.findById(bookId);
+            if (!bookOpt.isPresent()) return "図書情報が見つかりません。";
+            int bookInfoId = bookOpt.get().getBookInfoId();
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			return "予期せぬエラーが発生しました。";
-		}
-	}
-
-	/**
-	 * 【2. キャンセルロジック】
-	 */
-	public String cancelReservation(Connection conn, int userId, int bookId) {
-		ReservationDAO reservationDAO = new ReservationDAO(conn);
-		BookDAO bookDAO = new BookDAO(conn);
-
-		try {
-			Optional<Book> bookOpt = bookDAO.findById(bookId);
-			if (!bookOpt.isPresent()) {
-				return "図書情報が見つかりません。";
-			}
-			int bookInfoId = bookOpt.get().getBookInfoId();
-
-			boolean targetFound = false;
-			for (Reservation r : reservationDAO.findAll()) {
-				if (r.getUserId() == userId && r.getBookInfoId() == bookInfoId && (r.getStatus() == 1 || r.getStatus() == 2)) {
-					
-					ReservationDto updateDto = new ReservationDto();
-					updateDto.setId(r.getId());
-					updateDto.setStatus(9); // 9: キャンセル
-					
-					if (reservationDAO.update(updateDto)) {
-						targetFound = true;
-						break;
-					}
-				}
-			}
-			return targetFound ? "" : "キャンセル対象の予約が見つかりませんでした。";
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return "キャンセル処理中にエラーが発生しました。";
-		}
-	}
+            for (Reservation r : reservationDAO.findAll()) {
+                if (r.getUserId() == userId && r.getBookInfoId() == bookInfoId && (r.getStatus() == 1 || r.getStatus() == 2)) {
+                    return ""; // 対象が見つかればOK
+                }
+            }
+            return "キャンセル対象の予約が見つかりませんでした。";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "キャンセル判定中にエラーが発生しました。";
+        }
+    }
 }
