@@ -56,6 +56,62 @@ public class BookDAO extends BaseDAO {
 		return 1; // データが1件もない場合は 1 を返す
 	}
 
+	// 蔵書情報更新（bookテーブル と book_infoテーブル）をするメソッド
+		public boolean update(Book book) {
+			boolean result = false;
+			
+			// 1. book_info テーブルの更新用SQL
+			String sqlBookInfo = "UPDATE book_info SET isbn = ?, title = ?, author_id = ?, publisher_id = ?, imageUrl = ? WHERE id = ?";
+			// 2. book テーブルの更新用SQL
+			String sqlBook = "UPDATE book SET book_number = ?, layout_id = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
+
+			try {
+				// トランザクション開始（2つのテーブルを更新するため、途中で失敗したら元に戻せるようにする）
+				conn.setAutoCommit(false);
+
+				// ① book_info テーブルの更新
+				try (PreparedStatement pstmtInfo = conn.prepareStatement(sqlBookInfo)) {
+					pstmtInfo.setString(1, book.getBookInfo().getIsbn());
+					pstmtInfo.setString(2, book.getBookInfo().getTitle());
+					pstmtInfo.setInt(3, book.getBookInfo().getAuthorId());
+					pstmtInfo.setInt(4, book.getBookInfo().getPublisherId());
+					pstmtInfo.setString(5, book.getBookInfo().getImageUrl());
+					pstmtInfo.setInt(6, book.getBookInfoId()); // WHERE id = ?
+					pstmtInfo.executeUpdate();
+				}
+
+				// ② book テーブルの更新
+				try (PreparedStatement pstmtBook = conn.prepareStatement(sqlBook)) {
+					pstmtBook.setInt(1, book.getBookNumber());
+					pstmtBook.setInt(2, book.getLayoutId());
+					pstmtBook.setInt(3, book.getId()); // WHERE id = ?
+					pstmtBook.executeUpdate();
+				}
+
+				// 両方成功したらコミット（確定）
+				conn.commit();
+				result = true;
+
+			} catch (SQLException e) {
+				System.err.println("BookDAO.updateでエラーが発生しました。ロールバックします。");
+				e.printStackTrace();
+				try {
+					// エラーが起きた場合はロールバック（変更を取り消し）
+					conn.rollback();
+				} catch (SQLException rollbackEx) {
+					rollbackEx.printStackTrace();
+				}
+			} finally {
+				try {
+					// オートコミットを元に戻す
+					conn.setAutoCommit(true);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			return result;
+		}
+	
 	// 図書を論理削除するメソッド（deleted_at に現在時刻をセット）
 	public boolean delete(int id) {
 		boolean result = false;
@@ -253,4 +309,5 @@ public class BookDAO extends BaseDAO {
 		}
 		return list;
 	}
+
 }
