@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import dao.DBManager;
 import dao.UserDAO;
 import entity.User;
@@ -50,7 +52,7 @@ public class UserDetailServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		int id = Integer.parseInt(request.getParameter("userID"));
+		int id = Integer.parseInt(request.getParameter("userId"));
 		String name = request.getParameter("name");
 		String password = request.getParameter("password");
 		int role = Integer.parseInt(request.getParameter("role"));
@@ -69,7 +71,8 @@ public class UserDetailServlet extends HttpServlet {
 			if(password == null) {
 				success = dao.update(user);
 			}else {
-				user.setPassword(password);
+			    String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+				user.setPassword(hashedPassword);
 				success = dao.updateWithPassword(user);
 			}
 			
