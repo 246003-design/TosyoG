@@ -25,7 +25,7 @@ public class LibrarySearchServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         // 検索画面（JSP）へ遷移
-        request.getRequestDispatcher("/search.jsp").forward(request, response);
+        request.getRequestDispatcher("WEB-INF/JSP/customer/customer_book_search.jsp").forward(request, response);
     }
 
     /**
@@ -45,7 +45,7 @@ public class LibrarySearchServlet extends HttpServlet {
         if (inputContent == null || inputContent.trim().isEmpty()) {
             // 【空の場合】再入力するよう表示する -> 図書検索画面を表示する
             request.setAttribute("errorMessage", "【警告】検索キーワードが空です。再入力してください。");
-            request.getRequestDispatcher("/search.jsp").forward(request, response);
+            request.getRequestDispatcher("WEB-INF/JSP/customer/customer_book_search.jsp").forward(request, response);
             return;
         }
 
@@ -57,6 +57,6 @@ public class LibrarySearchServlet extends HttpServlet {
         request.setAttribute("keyword", inputContent);
 
         // 【システム】検索結果を一覧表示する（結果画面、または同画面の下部に表示）
-        request.getRequestDispatcher("/search.jsp").forward(request, response);
+        request.getRequestDispatcher("WEB-INF/JSP/customer/customer_book_search_result.jsp").forward(request, response);
     }
 }
