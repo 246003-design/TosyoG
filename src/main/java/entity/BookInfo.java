@@ -6,6 +6,7 @@ public class BookInfo {
 	private String isbn;
 	private String title;
 	private int authorId;
+	private String authorName;
 	private int publisherId;
 	private int categoryId;
 	private String imageUrl;
@@ -72,6 +73,12 @@ public class BookInfo {
 	}
 	public void setDeletedAt(java.sql.Timestamp deletedAt) {
 		this.deletedAt = deletedAt;
+	}
+	public String getAuthorName() {
+		return authorName;
+	}
+	public void setAuthorName(String authorName) {
+		this.authorName = authorName;
 	}
 
 
