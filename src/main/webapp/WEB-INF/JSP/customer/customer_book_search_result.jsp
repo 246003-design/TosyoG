@@ -2,7 +2,7 @@
 　　　　　　　　　　　　　　　　　　　<%--      検索結果画面　　　　 --%>
 
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%-- <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> --%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -24,7 +24,7 @@
             <p class="text-gray-600 font-medium bg-white px-4 py-2 rounded-lg border border-gray-200 inline-block shadow-sm">
                 該当件数: <span class="font-bold text-[#1e5641] text-lg mx-1">4</span> 件
             </p>
-            <a href="book_search.jsp" class="inline-flex items-center justify-center gap-2 text-sm bg-white border border-[#1e5641] text-[#1e5641] px-5 py-2.5 rounded-lg hover:bg-green-50 transition-colors font-bold shadow-sm">
+            <a href="LibrarySearchServlet" class="inline-flex items-center justify-center gap-2 text-sm bg-white border border-[#1e5641] text-[#1e5641] px-5 py-2.5 rounded-lg hover:bg-green-50 transition-colors font-bold shadow-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
                 条件を変えて再検索
             </a>
@@ -33,7 +33,7 @@
         <!-- 蔵書カードのグリッドレイアウト -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             
-            <%-- <c:forEach var="book" items="${bookList}"> --%>
+            <c:forEach var="book" items="${bookList}">
             
             <!-- カードデザインの洗練 -->
             <div class="bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 overflow-hidden flex flex-col group transition-all duration-300 hover:-translate-y-1">
@@ -44,16 +44,16 @@
                     <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-xl group-hover:scale-150 transition-transform duration-700"></div>
                     
                     <h3 class="font-bold text-xl leading-tight relative z-10 text-shadow drop-shadow-md">
-                        <%-- <c:out value="${book.title}" /> --%>
+                        <c:out value="${book.title}" />
                         Web UIデザイン論
                     </h3>
                     
-                    <%-- <c:if test="${book.isReserved}"> --%>
+                    <c:if test="${book.isReserved}">
                     <div class="absolute top-3 right-3 bg-amber-500/90 backdrop-blur text-white text-xs font-black px-3 py-1.5 rounded-md shadow-sm border border-amber-400 z-20 flex items-center gap-1">
                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                         予約済
                     </div>
-                    <%-- </c:if> --%>
+                    </c:if>
                 </div>
 
                 <!-- テキストエリア -->
@@ -61,18 +61,18 @@
                     <div class="mb-6">
                         <p class="text-sm font-bold text-gray-400 mb-1 tracking-wider uppercase">Author</p>
                         <p class="text-base text-gray-700 font-medium">
-                            <%-- <c:out value="${book.author}" /> --%>田中三郎
+                            <c:out value="${book.author}" />
                         </p>
                     </div>
                     
-                    <a href="BookDetailServlet?id=123" class="w-full py-3 bg-gray-50 border border-gray-200 text-[#1e5641] rounded-xl font-bold hover:bg-[#1e5641] hover:text-white hover:border-[#1e5641] transition-all text-center flex items-center justify-center gap-2">
+                    <a href="ReserveServlet?id=123" class="w-full py-3 bg-gray-50 border border-gray-200 text-[#1e5641] rounded-xl font-bold hover:bg-[#1e5641] hover:text-white hover:border-[#1e5641] transition-all text-center flex items-center justify-center gap-2">
                         詳細を見る
                         <svg class="opacity-50" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                     </a>
                 </div>
             </div>
             
-            <%-- </c:forEach> --%>
+            </c:forEach>
 
         </div>
     </main>
