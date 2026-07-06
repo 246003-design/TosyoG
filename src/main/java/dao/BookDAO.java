@@ -233,7 +233,7 @@ public class BookDAO extends BaseDAO {
 		return list;
 	}
 
-	/**
+	/**図書検索機能
 	 * 条件に合致する図書情報を複数条件から検索する
 	 */
 	public List<Book> search(String title, String isbn, String author, String category) {
@@ -256,8 +256,8 @@ public class BookDAO extends BaseDAO {
 		if (author != null && !author.isEmpty()) {
 			sql.append("AND a.name LIKE ? ");
 		}
-		if (category != null && !category.isEmpty() && !category.equals("すべて")) {
-			sql.append("AND c.name = ? ");
+		if (category != null && !category.trim().isEmpty() && !category.equals("すべて")) {
+		    sql.append("AND c.name = ? ");
 		}
 		
 		sql.append("ORDER BY b.id DESC");
@@ -274,8 +274,8 @@ public class BookDAO extends BaseDAO {
 			if (author != null && !author.isEmpty()) {
 				pstmt.setString(paramIndex++, "%" + author + "%");
 			}
-			if (category != null && !category.isEmpty() && !category.equals("すべて")) {
-				pstmt.setString(paramIndex++, category);
+			if (category != null && !category.trim().isEmpty() && !category.equals("すべて")) {
+			    pstmt.setString(paramIndex++, category);
 			}
 			
 			try (ResultSet rs = pstmt.executeQuery()) {
