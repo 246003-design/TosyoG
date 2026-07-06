@@ -11,7 +11,7 @@ import java.util.Optional;
 import entity.Book;
 import entity.BookInfo;
 
-// 図書DAO
+// 図書DAO、図書詳細情報も取得できる
 public class BookDAO extends BaseDAO {
 	
 	public BookDAO(Connection conn) {
