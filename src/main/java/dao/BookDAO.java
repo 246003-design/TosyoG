@@ -293,7 +293,7 @@ public class BookDAO extends BaseDAO {
 					info.setId(rs.getInt("book_info_id"));
 					info.setIsbn(rs.getString("isbn"));
 					info.setTitle(rs.getString("title"));
-					info.setAuthorId(rs.getInt("author_name"));
+					info.setAuthorName(rs.getString("author_name"));
 					info.setPublisherId(rs.getInt("publisher_id"));
 					info.setCategoryId(rs.getInt("category_id"));
 					info.setImageUrl(rs.getString("imageUrl"));
