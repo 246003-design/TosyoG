@@ -15,6 +15,11 @@ public class LibrarySearch {
         // 利用者が図書検索フローを開始する
         user.startBookSearch();
     }
+
+	public static List<entity.BookInfo> searchBooks(String trim) {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
+	}
 }
 
 // ==========================================

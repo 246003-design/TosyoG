@@ -13,7 +13,7 @@
 <body class="bg-stone-50 flex flex-col min-h-screen font-sans antialiased text-gray-800">
     
     <header class="bg-[#1e5641] text-white p-4 shadow-md flex items-center gap-4 sticky top-0 z-20">
-        <a href="user_home.jsp" class="p-2 hover:bg-white/20 rounded-full transition-colors group">
+        <a href="HomeServlet" class="p-2 hover:bg-white/20 rounded-full transition-colors group">
             <svg class="transform group-hover:-translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         </a>
         <h1 class="text-xl font-bold tracking-widest">図書検索</h1>
@@ -55,7 +55,7 @@
                 </div>
                 
                 <div class="flex flex-col sm:flex-row justify-end gap-4 border-t border-gray-100 pt-8">
-                    <a href="user_home.jsp" class="px-8 py-4 border-2 border-gray-200 text-gray-600 rounded-xl font-bold text-center hover:bg-gray-50 hover:text-gray-800 transition-colors">
+                    <a href="HomeServlet" class="px-8 py-4 border-2 border-gray-200 text-gray-600 rounded-xl font-bold text-center hover:bg-gray-50 hover:text-gray-800 transition-colors">
                         メニューへ戻る
                     </a>
                     <button type="submit" class="px-10 py-4 bg-[#1e5641] text-white rounded-xl font-bold text-lg hover:bg-[#164030] shadow-lg shadow-green-900/20 active:scale-95 transition-all flex items-center justify-center gap-2">
