@@ -241,8 +241,7 @@ public class BookDAO extends BaseDAO {
 		
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT b.id, b.book_info_id, b.book_number, b.layout_id, b.created_at, b.updated_at, b.deleted_at, ");
-		sql.append("bi.isbn, bi.title, bi.author_id, bi.publisher_id, bi.category_id, bi.imageUrl ");
-		sql.append("FROM book b ");
+		sql.append("bi.isbn, bi.title, bi.author_id, bi.publisher_id, bi.category_id, bi.imageUrl, a.name AS author_name ");		sql.append("FROM book b ");
 		sql.append("INNER JOIN book_info bi ON b.book_info_id = bi.id ");
 		sql.append("LEFT JOIN author a ON bi.author_id = a.id ");
 		sql.append("LEFT JOIN category c ON bi.category_id = c.id ");
@@ -294,7 +293,7 @@ public class BookDAO extends BaseDAO {
 					info.setId(rs.getInt("book_info_id"));
 					info.setIsbn(rs.getString("isbn"));
 					info.setTitle(rs.getString("title"));
-					info.setAuthorId(rs.getInt("author_id"));
+					info.setAuthorId(rs.getInt("author_name"));
 					info.setPublisherId(rs.getInt("publisher_id"));
 					info.setCategoryId(rs.getInt("category_id"));
 					info.setImageUrl(rs.getString("imageUrl"));
