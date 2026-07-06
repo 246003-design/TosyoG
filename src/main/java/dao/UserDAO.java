@@ -75,18 +75,17 @@ public class UserDAO extends BaseDAO {
 		return result;
 	}
 
+
 	// 3. 利用者の情報更新処理
 	public boolean update(User user) {
 		boolean result = false;
-		String sql = "UPDATE user SET name = ?, password = ?, role = ?, status = ?, borrow_count = ? WHERE id = ? AND deleted_at IS NULL";
+		String sql = "UPDATE user SET name = ?, role = ?, status = ? WHERE id = ?";
 
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setString(1, user.getName());
-			pstmt.setString(2, user.getPassword());
-			pstmt.setInt(3, user.getRole());
-			pstmt.setInt(4, user.getStatus());
-			pstmt.setInt(5, user.getBorrowCount());
-			pstmt.setInt(6, user.getId());
+	        pstmt.setString(1, user.getName());
+	        pstmt.setInt(2, user.getRole());
+	        pstmt.setInt(3, user.getStatus());
+	        pstmt.setInt(4, user.getId());  
 
 			int rows = pstmt.executeUpdate();
 			if (rows > 0) {
@@ -98,7 +97,31 @@ public class UserDAO extends BaseDAO {
 		}
 		return result;
 	}
+	
+	//パスワード更新があったらこっちつかう
+	public boolean updateWithPassword (User user) {
+		boolean result = false;
+		String sql = "UPDATE user SET name = ?, password = ?, role = ?, status = ? WHERE id = ?";
 
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	        pstmt.setString(1, user.getName());
+	        pstmt.setString(2, user.getPassword());
+	        pstmt.setInt(3, user.getRole());
+	        pstmt.setInt(4, user.getStatus());
+	        pstmt.setInt(5, user.getId());  
+
+			int rows = pstmt.executeUpdate();
+			if (rows > 0) {
+				result = true;
+			}
+		} catch (SQLException e) {
+			System.err.println("UserDAO.updateWithPasswordの実行中にエラーが発生しました。");
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	
 	// 4. 利用者の論理削除処理
 	public boolean delete(int id) {
 		boolean result = false;
