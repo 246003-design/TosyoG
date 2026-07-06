@@ -96,7 +96,7 @@
                 
                 <div>
                     <label class="block text-xs font-bold text-gray-500 uppercase mb-1">ISBN</label>
-                    <input type="text" name="isbn" id="editIsbn" readonly class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-500 focus:outline-none">
+                    <input type="text" name="isbn" id="editIsbn"required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
                 </div>
 
                 <div>

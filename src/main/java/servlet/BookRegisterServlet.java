@@ -72,36 +72,37 @@ public class BookRegisterServlet extends HttpServlet {
 		String imageUrl = request.getParameter("imageUrl");
 		
 		try (Connection conn = DBManager.getConnection()) {
-			
-			// 💡 変更：オートコミットをOFFにしてトランザクションを開始
-			conn.setAutoCommit(false);
-			
-			try {
-				MasterDAO masterDAO = new MasterDAO(conn);
-				int authorId = masterDAO.getOrCreateAuthor(authorName);
-				int publisherId = masterDAO.getOrCreatePublisher(publisherName);
-				int categoryId = masterDAO.getOrCreateCategory(categoryName);
-				
-				BookInfo bookInfo = new BookInfo();
-				bookInfo.setIsbn(isbn);
-				bookInfo.setTitle(title);
-				bookInfo.setAuthorId(authorId);
-				bookInfo.setPublisherId(publisherId);
-				bookInfo.setCategoryId(categoryId);
-				bookInfo.setImageUrl(imageUrl);
-				
-				BookInfoDAO bookInfoDAO = new BookInfoDAO(conn);
-				
-				BookInfo existingInfo = bookInfoDAO.findByIsbn(isbn);
-				int targetBookInfoId = 0;
-				
-				if (existingInfo != null) {
-					targetBookInfoId = existingInfo.getId();
-					System.out.println("🔍 デバッグ: 登録済みの本を発見しました！ 取得したID=" + targetBookInfoId);
-				} else {
-					targetBookInfoId = bookInfoDAO.insert(bookInfo);
-					System.out.println("🔍 デバッグ: 未登録の本と判断し、新規登録しました。 結果ID=" + targetBookInfoId);
-				}
+		    conn.setAutoCommit(false);
+		    
+		    try {
+		        BookInfoDAO bookInfoDAO = new BookInfoDAO(conn);
+		        
+		        // 💡 変更：先にISBNで登録済みかチェックする
+		        BookInfo existingInfo = bookInfoDAO.findByIsbn(isbn);
+		        int targetBookInfoId = 0;
+		        
+		        if (existingInfo != null) {
+		            // 既に登録済みの場合はそのIDをそのまま使う（著者などの新規登録は不要）
+		            targetBookInfoId = existingInfo.getId();
+		            System.out.println("🔍 デバッグ: 登録済みの本を発見しました！ 取得したID=" + targetBookInfoId);
+		        } else {
+		            // 未登録の場合のみ、著者・出版社などのマスター登録とBookInfoの新規登録を行う
+		            MasterDAO masterDAO = new MasterDAO(conn);
+		            int authorId = masterDAO.getOrCreateAuthor(authorName);
+		            int publisherId = masterDAO.getOrCreatePublisher(publisherName);
+		            int categoryId = masterDAO.getOrCreateCategory(categoryName);
+		            
+		            BookInfo bookInfo = new BookInfo();
+		            bookInfo.setIsbn(isbn);
+		            bookInfo.setTitle(title);
+		            bookInfo.setAuthorId(authorId);
+		            bookInfo.setPublisherId(publisherId);
+		            bookInfo.setCategoryId(categoryId);
+		            bookInfo.setImageUrl(imageUrl);
+		            
+		            targetBookInfoId = bookInfoDAO.insert(bookInfo);
+		            System.out.println("🔍 デバッグ: 未登録の本と判断し、新規登録しました。 結果ID=" + targetBookInfoId);
+		        }
 				
 				if (targetBookInfoId > 0) {
 					BookDAO bookDAO = new BookDAO(conn);

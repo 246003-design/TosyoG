@@ -100,72 +100,115 @@
     </main>
 
     <!-- 💡 ここが修正された安全なJavaScriptです！ -->
-    <script>
-    document.getElementById('search-btn').addEventListener('click', function() {
-        const isbn = document.getElementById('isbn').value.trim();
-        const statusText = document.getElementById('search-status');
+<script>
+// 検索ボタンが押された時の処理
+document.getElementById('search-btn').addEventListener('click', function() {
+    const isbn = document.getElementById('isbn').value.trim();
+    const statusText = document.getElementById('search-status');
 
-        if (!isbn) {
-            statusText.innerText = "⚠️ ISBNコードを入力してください。";
-            statusText.className = "text-xs font-bold mt-1 text-red-500";
-            return;
-        }
+    // ISBNが空欄の場合のチェック
+    if (!isbn) {
+        statusText.innerText = "⚠️ ISBNコードを入力してください。";
+        statusText.className = "text-xs font-bold mt-1 text-red-500";
+        return;
+    }
 
-        statusText.innerText = "⏳ Google Books から情報を検索中...";
-        statusText.className = "text-xs font-bold mt-1 text-blue-500";
+    statusText.innerText = "⏳ まず自システムのデータベースを確認中...";
+    statusText.className = "text-xs font-bold mt-1 text-blue-500";
 
-        const url = 'https://www.googleapis.com/books/v1/volumes?q=isbn:' + isbn;
-
-        fetch(url)
-            .then(response => {
-                // 429エラーなどの通信拒否があった場合はここでキャッチ
-                if (!response.ok) {
-                    throw new Error("通信エラー: " + response.status);
+    // 1. 【今回追加】まず自作API（ローカルDB）に存在するか問い合わせる
+    fetch('CheckBookApiServlet?isbn=' + isbn)
+        .then(response => {
+            if (!response.ok) throw new Error("DB Check Error");
+            return response.json();
+        })
+        .then(dbData => {
+            if (dbData.exists) {
+                // 🌟 DBに既に存在した場合：すべての入力欄にDBから取ってきた本物の情報をセット！
+                document.getElementById('title').value = dbData.title || '';
+                document.getElementById('author').value = dbData.author || '';
+                document.getElementById('publisher').value = dbData.publisher || '';
+                
+                const categorySelect = document.getElementById('category');
+                if (categorySelect) {
+                    categorySelect.value = dbData.category || '';
                 }
-                return response.json();
-            })
-            .then(data => {
-                // 🌟 超重要：データがちゃんと存在するか（undefinedじゃないか）をチェックする安全装置
-                if (data.items && data.items.length > 0) {
-                    
-                    // 無事にデータがあった場合のみ取り出し処理をする
-                    const bookInfo = data.items[0].volumeInfo;
-                    
-                    document.getElementById('title').value = bookInfo.title || '';
-                    document.getElementById('author').value = bookInfo.authors ? bookInfo.authors.join(', ') : '';
-                    document.getElementById('publisher').value = bookInfo.publisher || '';
 
-                    // 画像URLの取得とプレビュー表示
-                    const previewArea = document.getElementById('cover-preview-area');
-                    const coverImg = document.getElementById('cover-img');
-                    const imageUrlHidden = document.getElementById('imageUrl');
+                const previewArea = document.getElementById('cover-preview-area');
+                const coverImg = document.getElementById('cover-img');
+                const imageUrlHidden = document.getElementById('imageUrl');
 
-                    if (bookInfo.imageLinks && bookInfo.imageLinks.thumbnail) {
-                        const secureUrl = bookInfo.imageLinks.thumbnail.replace('http://', 'https://');
-                        coverImg.src = secureUrl;
-                        imageUrlHidden.value = secureUrl; 
-                        previewArea.classList.remove('hidden');
-                    } else {
-                        previewArea.classList.add('hidden');
-                        imageUrlHidden.value = '';
-                    }
-
-                    statusText.innerText = "✨ 情報を自動入力しました！";
-                    statusText.className = "text-xs font-bold mt-1 text-green-600";
-                    
+                if (dbData.imageUrl) {
+                    coverImg.src = dbData.imageUrl;
+                    imageUrlHidden.value = dbData.imageUrl;
+                    previewArea.classList.remove('hidden');
                 } else {
-                    // 🌟 安全装置その2：通信は成功したけど「本が見つからなかった」場合
-                    statusText.innerText = "⚠️ 該当する本が見つかりませんでした。手入力してください。";
-                    statusText.className = "text-xs font-bold mt-1 text-yellow-600";
+                    previewArea.classList.add('hidden');
+                    imageUrlHidden.value = '';
                 }
-            })
-            .catch(error => {
-                // 💥 429エラー(Too Many Requests)などが起きた場合はここに来る
-                console.error('API Error:', error);
-                statusText.innerText = "💥 通信制限中、またはエラーが発生しました。手入力してください。";
-                statusText.className = "text-xs font-bold mt-1 text-red-500";
-            });
-    });
-    </script>
+
+                statusText.innerText = "📚 既に当館に登録されている書籍情報が見つかりました！自動入力しました。";
+                statusText.className = "text-xs font-bold mt-1 text-green-600";
+            } else {
+                // 🌟 DBに存在しない場合：2.のGoogle Books APIへ進む
+                fetchGoogleBooks(isbn, statusText);
+            }
+        })
+        .catch(error => {
+            console.error('DB API Error:', error);
+            // DB確認でエラーが出た場合も、念のためGoogle Booksを見に行く
+            fetchGoogleBooks(isbn, statusText);
+        });
+});
+
+// 2. 【元々あった処理】Google Books APIから情報を取得する関数
+function fetchGoogleBooks(isbn, statusText) {
+    statusText.innerText = "⏳ Google Books から情報を検索中...";
+    statusText.className = "text-xs font-bold mt-1 text-blue-500";
+
+    const url = 'https://www.googleapis.com/books/v1/volumes?q=isbn:' + isbn;
+    fetch(url)
+        .then(response => {
+            if (!response.ok) throw new Error("通信エラー: " + response.status);
+            return response.json();
+        })
+        .then(data => {
+            if (data.items && data.items.length > 0) {
+                const bookInfo = data.items[0].volumeInfo;
+                document.getElementById('title').value = bookInfo.title || '';
+                document.getElementById('author').value = bookInfo.authors ? bookInfo.authors.join(', ') : '';
+                document.getElementById('publisher').value = bookInfo.publisher || '';
+
+                const previewArea = document.getElementById('cover-preview-area');
+                const coverImg = document.getElementById('cover-img');
+                const imageUrlHidden = document.getElementById('imageUrl');
+
+                if (bookInfo.imageLinks && bookInfo.imageLinks.thumbnail) {
+                    const secureUrl = bookInfo.imageLinks.thumbnail.replace('http://', 'https://');
+                    coverImg.src = secureUrl;
+                    imageUrlHidden.value = secureUrl; 
+                    previewArea.classList.remove('hidden');
+                } else {
+                    previewArea.classList.add('hidden');
+                    imageUrlHidden.value = '';
+                }
+
+                statusText.innerText = "✨ Google Booksから新規情報を取得しました！";
+                statusText.className = "text-xs font-bold mt-1 text-green-600";
+                
+            } else {
+                // 安全装置：通信は成功したけど本が見つからなかった場合
+                statusText.innerText = "⚠️ 該当する本が見つかりませんでした。手入力してください。";
+                statusText.className = "text-xs font-bold mt-1 text-yellow-600";
+            }
+        })
+        .catch(error => {
+            // 429エラー(Too Many Requests)などが起きた場合
+            console.error('API Error:', error);
+            statusText.innerText = "💥 通信制限中、またはエラーが発生しました。手入力してください。";
+            statusText.className = "text-xs font-bold mt-1 text-red-500";
+        });
+}
+</script>
 </body>
 </html>
