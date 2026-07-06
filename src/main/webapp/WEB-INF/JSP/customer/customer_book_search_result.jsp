@@ -39,7 +39,7 @@
                     <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-xl group-hover:scale-150 transition-transform duration-700"></div>
                     
                     <h3 class="font-bold text-xl leading-tight relative z-10 text-shadow drop-shadow-md">
-                        <c:out value="${book.title}" />
+                        <c:out value="${book.bookInfo.title}" />
                     </h3>
                     
                     <c:if test="${book.isReserved}">
@@ -54,7 +54,7 @@
                     <div class="mb-6">
                         <p class="text-sm font-bold text-gray-400 mb-1 tracking-wider uppercase">Author</p>
                         <p class="text-base text-gray-700 font-medium">
-                            <c:out value="${book.author}" />
+                            <c:out value="${book.bookInfo.authorName}" />
                         </p>
                     </div>
                     
