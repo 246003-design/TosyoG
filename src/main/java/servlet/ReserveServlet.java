@@ -4,19 +4,18 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.util.Optional;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-
 import dao.BookDAO;
 import dao.DBManager;
 import dao.ReservationDAO;
 import dto.ReservationDto;
 import entity.Book;
 import entity.Reservation;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import model.ReservationLogic;
 
 @WebServlet("/ReserveServlet")
@@ -128,4 +127,42 @@ public class ReserveServlet extends HttpServlet {
         
      // おすすめの修正
         doGet(request, response);    }
+    
+    /**
+     * 【画面表示処理（GET）】
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        
+        String bookIdStr = request.getParameter("bookId");
+        
+        // bookIdが存在する場合、画面表示に必要な図書データを取得してJSPに渡す
+        if (bookIdStr != null && !bookIdStr.isEmpty()) {
+            try (Connection conn = DBManager.getConnection()) {
+                BookDAO bookDAO = new BookDAO(conn);
+                int bookId = Integer.parseInt(bookIdStr);
+                
+                Optional<Book> bookOpt = bookDAO.findById(bookId);
+                if (bookOpt.isPresent()) {
+                    // JSPで ${book.xxx} として使えるようにセット
+                    request.setAttribute("book", bookOpt.get());
+                } else {
+                    request.setAttribute("errorMsg", "該当する図書データが見つかりません。");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                request.setAttribute("errorMsg", "図書情報の取得中にエラーが発生しました。");
+            }
+        }
+
+        // ==========================================
+        // JSPへフォワード（画面遷移）
+        // ==========================================
+        // ※注意: 下記のパスはご自身のプロジェクト構成に合わせて正しいJSPファイルのパスに変更してください
+        // 例: "/WEB-INF/JSP/bookDetail.jsp" や "/bookDetail.jsp" など
+        String viewPath = "/WEB-INF/JSP/customer/customer_book_detail.jsp";
+        
+        request.getRequestDispatcher(viewPath).forward(request, response);
+    }
 }
