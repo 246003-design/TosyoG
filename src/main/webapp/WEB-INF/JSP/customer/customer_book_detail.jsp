@@ -46,13 +46,19 @@
                 
                 <div class="md:w-2/3 p-6 md:p-10 flex flex-col justify-between">
                     <div>
+<<<<<<< HEAD
                         <%-- 💡 前の画面の出し分けルール（bookReserverMap）と同様に、自分が予約しているか判定します --%>
                         <c:if test="${bookReserverMap[book.id] == loginUserId}">
+=======
+                        <%-- 予約済みバッジの表示 (利用者本人が予約している場合のみ表示など、条件を設定) --%>
+                        <c:if test="${book.reservedByCurrentUser}">
+>>>>>>> branch 'master' of https://github.com/246003-design/TosyoG.git
                         <div class="inline-flex items-center gap-2 bg-yellow-100 text-yellow-800 px-3 py-1.5 rounded-full text-sm font-bold mb-4 border border-yellow-200">
                             現在あなたが予約済みです
                         </div>
                         </c:if>
 
+<<<<<<< HEAD
                         <%-- 💡 修正：bookInfo を経由させ、余分なコメントタグを削除 --%>
                         <h2 class="text-3xl font-bold text-gray-900 mb-2">
                             <c:out value="${book.bookInfo.title}" default="Web UIデザイン論(データ未取得)" />
@@ -60,11 +66,19 @@
                         <p class="text-lg text-gray-600 mb-6 border-b pb-4">
                             著者: <c:out value="${book.bookInfo.authorName}" default="田中三郎" />
                         </p>
+=======
+                        <h2 class="text-3xl font-bold text-gray-900 mb-2"><c:out value="${book.title}" />
+                        <p class="text-lg text-gray-600 mb-6 border-b pb-4">著者: <c:out value="${book.author}" />
+>>>>>>> branch 'master' of https://github.com/246003-design/TosyoG.git
                         
                         <div class="mb-8">
                             <h4 class="text-sm font-bold text-gray-500 mb-2 uppercase tracking-wider">ISBN</h4>
                             <p class="text-gray-700 leading-relaxed text-sm md:text-base">
+<<<<<<< HEAD
                                 <c:out value="${book.bookInfo.isbn}" default="未設定" />
+=======
+                                <c:out value="${book.synopsis}" />
+>>>>>>> branch 'master' of https://github.com/246003-design/TosyoG.git
                             </p>
                         </div>
                     </div>

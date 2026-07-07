@@ -5,6 +5,8 @@ public class LendDetailDto {
 	private java.sql.Timestamp lendDate;
 	private java.sql.Timestamp dueDate;
 	private boolean overdue;
+	private String bookId;
+	private boolean hasReservation;
 	
 	
 	
@@ -32,6 +34,23 @@ public class LendDetailDto {
 	public void setOverdue(boolean overdue) {
 		this.overdue = overdue;
 	}
+	public boolean isHasReservation() {
+		// TODO 自動生成されたメソッド・スタブ
+		return false;
+	}
+	public String getBookId() {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
+	}
+	public void setBookId(String string) {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+	public void setHasReservation(boolean b) {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+	
 
 	
 	
