@@ -33,7 +33,7 @@
         </a>
 
         <!-- サーブレット経由で一覧画面へ -->
-        <a href="UserSearchServlet" class="group bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl border border-gray-100 transition-all duration-300 hover:-translate-y-1 flex items-center justify-between">
+        <a href="UserListServlet" class="group bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl border border-gray-100 transition-all duration-300 hover:-translate-y-1 flex items-center justify-between">
             <div class="flex items-center gap-6">
                 <div class="bg-indigo-50 text-indigo-600 p-5 rounded-full group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-300 shadow-inner">
                     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M16 21v-2a4 4 0 0 0-4-4H6"/></svg>

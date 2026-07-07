@@ -9,11 +9,11 @@
 </head>
 <body class="bg-slate-50 flex flex-col min-h-screen font-sans antialiased text-gray-800">
     
-    <header class="bg-gray-900 text-white p-4 shadow-md flex items-center justify-between sticky top-0 z-20">
-        <h1 class="text-xl font-bold tracking-widest">利用者情報更新</h1>
-        <a href="UserListServlet" class="px-5 py-2 border border-white text-white rounded font-bold text-sm hover:bg-white hover:text-gray-900 transition-colors">
-            戻る
+    <header class="bg-gray-900 text-white p-4 shadow-md flex items-center gap-4 sticky top-0 z-20">
+        <a href="UserListServlet" class="p-2 hover:bg-white/20 rounded-full transition-colors group">
+            <svg class="transform group-hover:-translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         </a>
+        <h1 class="text-xl font-bold tracking-widest">利用者情報更新</h1>
     </header>
 
     <main class="flex-1 p-4 md:p-8 max-w-5xl mx-auto w-full flex items-center justify-center">
