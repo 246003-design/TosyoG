@@ -36,7 +36,7 @@
 
         <div class="grid grid-cols-2 md:grid-cols-3 gap-6 w-full">
             <!-- 貸出 -->
-            <a href="ReturnServlet" class="group bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl border border-gray-100 transition-all duration-300 hover:-translate-y-1 flex flex-col items-center justify-center gap-4">
+            <a href="LendServlet" class="group bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl border border-gray-100 transition-all duration-300 hover:-translate-y-1 flex flex-col items-center justify-center gap-4">
                 <div class="bg-emerald-50 text-emerald-600 p-5 rounded-full group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-300 shadow-inner">
                     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="m17 7-5-5-5 5"/></svg>
                 </div>
@@ -44,7 +44,7 @@
             </a>
             
             <!-- 返却 -->
-            <a href="librarian_return.jsp" class="group bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl border border-gray-100 transition-all duration-300 hover:-translate-y-1 flex flex-col items-center justify-center gap-4">
+            <a href="ReturnBookServlet" class="group bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl border border-gray-100 transition-all duration-300 hover:-translate-y-1 flex flex-col items-center justify-center gap-4">
                 <div class="bg-teal-50 text-teal-600 p-5 rounded-full group-hover:bg-teal-600 group-hover:text-white transition-colors duration-300 shadow-inner">
                     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="m17 17-5 5-5-5"/></svg>
                 </div>
@@ -68,7 +68,7 @@
             </a>
             
             <!-- 延滞一覧表 (共通画面へ) -->
-            <a href="OverdueServlet" class="group bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl border border-gray-100 transition-all duration-300 hover:-translate-y-1 flex flex-col items-center justify-center gap-4">
+            <a href="overdue_list.jsp" class="group bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl border border-gray-100 transition-all duration-300 hover:-translate-y-1 flex flex-col items-center justify-center gap-4">
                 <div class="bg-orange-50 text-orange-600 p-5 rounded-full group-hover:bg-orange-500 group-hover:text-white transition-colors duration-300 shadow-inner">
                     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
                 </div>

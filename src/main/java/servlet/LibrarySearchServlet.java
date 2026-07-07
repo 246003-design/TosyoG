@@ -18,6 +18,9 @@ import jakarta.servlet.http.HttpServletResponse;
 public class LibrarySearchServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
+
+
+//github.com/246003-design/TosyoG.git
     /**
      * 【利用者】図書検索を要求する -> 【システム】図書検索画面を表示する
      */
@@ -65,17 +68,19 @@ public class LibrarySearchServlet extends HttpServlet {
             System.err.println("サーブレットでのDB処理中にエラーが発生しました。");
             e.printStackTrace();
             request.setAttribute("errorMessage", "システムエラーが発生しました。");
-            // ★修正：先頭に「/」を追加
             request.getRequestDispatcher("/WEB-INF/JSP/customer/customer_book_search.jsp").forward(request, response);
             return;
         }
+
+        // 💡【修正】不要なエラー箇所を削除しました
+        // (以前の LibrarySearch.searchBooks を使う古いコード、または書きかけのコードだったため)
 
         // ★修正：JSPの items="${bookList}" と名前を一致させる
         request.setAttribute("bookList", results);
         
         // ★修正：JSPの <c:out value="${totalCount}" /> に件数を渡す
         int count = (results != null) ? results.size() : 0;
-        request.setAttribute("totalCount", count);
+        request.setAttribute("totalCount", count);       
 
         // 【システム】検索結果を一覧画面へ表示
         request.getRequestDispatcher("/WEB-INF/JSP/customer/customer_book_search_result.jsp").forward(request, response);
