@@ -59,10 +59,10 @@
                         </p>
                     </div>
                     
-                    <a href="ReserveServlet?id=${book.id}" class="w-full py-3 bg-gray-50 border border-gray-200 text-[#1e5641] rounded-xl font-bold hover:bg-[#1e5641] hover:text-white hover:border-[#1e5641] transition-all text-center flex items-center justify-center gap-2">
-                        詳細を見る
-                        <svg class="opacity-50" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                    </a>
+                   <a href="ReserveServlet?bookId=${book.id}" class="w-full py-3 bg-gray-50 border border-gray-200 text-[#1e5641] rounded-xl font-bold hover:bg-[#1e5641] hover:text-white hover:border-[#1e5641] transition-all text-center flex items-center justify-center gap-2">
+    詳細を見る
+    <svg class="opacity-50" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+</a>
                 </div>
             </div>
             

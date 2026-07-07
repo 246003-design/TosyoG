@@ -2,6 +2,7 @@ package servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.List;
 import java.util.Optional;
 
 import dao.BookDAO;
@@ -109,25 +110,32 @@ public class ReserveServlet extends HttpServlet {
                 }
             }
 
-            // ==========================================
+         // ==========================================
             // コミット or ロールバック
             // ==========================================
             if (resultMsg.isEmpty()) {
                 conn.commit(); 
-                request.setAttribute("successMessage", "reserve".equals(action) ? "予約手続きが完了しました。" : "予約をキャンセルしました。");
+                // 💡 requestではなく、セッション(session)にメッセージを保存します（リダイレクトで消えないようにするため）
+                session.setAttribute("successMessage", "reserve".equals(action) ? "予約手続きが完了しました。" : "予約をキャンセルしました。");
             } else {
                 conn.rollback(); 
-                request.setAttribute("errorMsg", resultMsg);
+                session.setAttribute("errorMsg", resultMsg);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("errorMsg", "システムエラーが発生しました。");
+            session.setAttribute("errorMsg", "システムエラーが発生しました。");
         }
         
-     // おすすめの修正
-        doGet(request, response);    }
+      
+        
+        // ⭕ 修正後：処理が終わったら、検索一覧サーブレットへリダイレクト（転送）する
+        response.sendRedirect(request.getContextPath() + "/LibrarySearchServlet");
+    }
     
+    /**
+     * 【画面表示処理（GET）】
+     */
     /**
      * 【画面表示処理（GET）】
      */
@@ -137,32 +145,46 @@ public class ReserveServlet extends HttpServlet {
         
         String bookIdStr = request.getParameter("bookId");
         
-        // bookIdが存在する場合、画面表示に必要な図書データを取得してJSPに渡す
+        // 💡 セッションから現在のログインユーザーIDを取得する
+        HttpSession session = request.getSession();
+        Integer loginUserId = (Integer) session.getAttribute("loginUserId");
+        
         if (bookIdStr != null && !bookIdStr.isEmpty()) {
             try (Connection conn = DBManager.getConnection()) {
                 BookDAO bookDAO = new BookDAO(conn);
                 int bookId = Integer.parseInt(bookIdStr);
                 
+                // 図書データを取得
                 Optional<Book> bookOpt = bookDAO.findById(bookId);
                 if (bookOpt.isPresent()) {
-                    // JSPで ${book.xxx} として使えるようにセット
                     request.setAttribute("book", bookOpt.get());
                 } else {
                     request.setAttribute("errorMsg", "該当する図書データが見つかりません。");
                 }
+
+                // 💡 【ここを追加】詳細画面でも予約状況を判定するために、マップを作成してJSPに渡す
+                ReservationDAO reservationDAO = new ReservationDAO(conn);
+                List<Reservation> allReservations = reservationDAO.findAll();
+
+                java.util.Map<Integer, Integer> bookReserverMap = new java.util.HashMap<>();
+                for (Reservation r : allReservations) {
+                    if (r.getStatus() == 1 || r.getStatus() == 2) { // 1:予約中、2:受取待ち
+                        bookReserverMap.put(r.getBookId(), r.getUserId());
+                    }
+                }
+
+                // JSPへデータを送る
+                request.setAttribute("bookReserverMap", bookReserverMap);
+                request.setAttribute("loginUserId", loginUserId);
+
             } catch (Exception e) {
                 e.printStackTrace();
                 request.setAttribute("errorMsg", "図書情報の取得中にエラーが発生しました。");
             }
         }
 
-        // ==========================================
-        // JSPへフォワード（画面遷移）
-        // ==========================================
-        // ※注意: 下記のパスはご自身のプロジェクト構成に合わせて正しいJSPファイルのパスに変更してください
-        // 例: "/WEB-INF/JSP/bookDetail.jsp" や "/bookDetail.jsp" など
+        // JSPへフォワード
         String viewPath = "/WEB-INF/JSP/customer/customer_book_detail.jsp";
-        
         request.getRequestDispatcher(viewPath).forward(request, response);
     }
 }
