@@ -50,6 +50,7 @@
                             <option value="IT">IT・技術</option>
                             <option value="デザイン">デザイン</option>
                             <option value="業務">業務・ビジネス</option>
+                            <option value="文学">文学</option>
                         </select>
                     </div>
                 </div>
