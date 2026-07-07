@@ -61,7 +61,7 @@
             </a>
 
             <!-- 図書検索 -->
-            <a href="book_search.jsp" class="group bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl border border-gray-100 hover:border-gray-900/30 transition-all duration-300 hover:-translate-y-1 flex items-center gap-6">
+            <a href="LibrarySearchServlet" class="group bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl border border-gray-100 hover:border-gray-900/30 transition-all duration-300 hover:-translate-y-1 flex items-center gap-6">
                 <div class="bg-gray-50 text-gray-600 p-5 rounded-full group-hover:bg-gray-900 group-hover:text-white transition-colors duration-300 shadow-inner shrink-0">
                     <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                 </div>
@@ -72,7 +72,7 @@
             </a>
 
             <!-- 延滞一覧表 -->
-            <a href="overdue_list.jsp" class="group bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl border border-gray-100 hover:border-gray-900/30 transition-all duration-300 hover:-translate-y-1 flex items-center gap-6">
+            <a href="OverdueServlet" class="group bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl border border-gray-100 hover:border-gray-900/30 transition-all duration-300 hover:-translate-y-1 flex items-center gap-6">
                 <div class="bg-gray-50 text-gray-600 p-5 rounded-full group-hover:bg-gray-900 group-hover:text-white transition-colors duration-300 shadow-inner shrink-0">
                     <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
                 </div>
