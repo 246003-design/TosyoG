@@ -11,7 +11,7 @@ import java.util.Optional;
 import entity.Book;
 import entity.BookInfo;
 
-// 図書DAO
+// 図書DAO、図書詳細情報も取得できる
 public class BookDAO extends BaseDAO {
 	
 	public BookDAO(Connection conn) {
@@ -233,7 +233,7 @@ public class BookDAO extends BaseDAO {
 		return list;
 	}
 
-	/**
+	/**図書検索機能
 	 * 条件に合致する図書情報を複数条件から検索する
 	 */
 	public List<Book> search(String title, String isbn, String author, String category) {
@@ -241,8 +241,7 @@ public class BookDAO extends BaseDAO {
 		
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT b.id, b.book_info_id, b.book_number, b.layout_id, b.created_at, b.updated_at, b.deleted_at, ");
-		sql.append("bi.isbn, bi.title, bi.author_id, bi.publisher_id, bi.category_id, bi.imageUrl ");
-		sql.append("FROM book b ");
+		sql.append("bi.isbn, bi.title, bi.author_id, bi.publisher_id, bi.category_id, bi.imageUrl, a.name AS author_name ");		sql.append("FROM book b ");
 		sql.append("INNER JOIN book_info bi ON b.book_info_id = bi.id ");
 		sql.append("LEFT JOIN author a ON bi.author_id = a.id ");
 		sql.append("LEFT JOIN category c ON bi.category_id = c.id ");
@@ -257,8 +256,8 @@ public class BookDAO extends BaseDAO {
 		if (author != null && !author.isEmpty()) {
 			sql.append("AND a.name LIKE ? ");
 		}
-		if (category != null && !category.isEmpty() && !category.equals("すべて")) {
-			sql.append("AND c.name = ? ");
+		if (category != null && !category.trim().isEmpty() && !category.equals("すべて")) {
+		    sql.append("AND c.name = ? ");
 		}
 		
 		sql.append("ORDER BY b.id DESC");
@@ -275,8 +274,8 @@ public class BookDAO extends BaseDAO {
 			if (author != null && !author.isEmpty()) {
 				pstmt.setString(paramIndex++, "%" + author + "%");
 			}
-			if (category != null && !category.isEmpty() && !category.equals("すべて")) {
-				pstmt.setString(paramIndex++, category);
+			if (category != null && !category.trim().isEmpty() && !category.equals("すべて")) {
+			    pstmt.setString(paramIndex++, category);
 			}
 			
 			try (ResultSet rs = pstmt.executeQuery()) {
@@ -294,7 +293,7 @@ public class BookDAO extends BaseDAO {
 					info.setId(rs.getInt("book_info_id"));
 					info.setIsbn(rs.getString("isbn"));
 					info.setTitle(rs.getString("title"));
-					info.setAuthorId(rs.getInt("author_id"));
+					info.setAuthorName(rs.getString("author_name"));
 					info.setPublisherId(rs.getInt("publisher_id"));
 					info.setCategoryId(rs.getInt("category_id"));
 					info.setImageUrl(rs.getString("imageUrl"));

@@ -6,6 +6,7 @@ public class BookInfo {
 	private String isbn;
 	private String title;
 	private int authorId;
+	private String authorName;
 	private int publisherId;
 	private int categoryId;
 	private String imageUrl;
@@ -36,6 +37,12 @@ public class BookInfo {
 	}
 	public void setAuthorId(int authorId) {
 		this.authorId = authorId;
+	}
+	public String getAuthorName() {
+		return authorName;
+	}
+	public void setAuthorName(String authorName) {
+		this.authorName = authorName;
 	}
 	public int getPublisherId() {
 		return publisherId;

@@ -29,7 +29,7 @@
                 <h2 class="text-xl font-bold text-gray-800">検索条件を指定してください</h2>
             </div>
 
-            <form action="BookSearchServlet" method="GET">
+            <form action="LibrarySearchServlet" method="POST">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mb-10">
                     <div>
                         <label class="block text-sm font-bold text-gray-600 mb-2 uppercase tracking-wider">タイトル</label>
@@ -50,6 +50,7 @@
                             <option value="IT">IT・技術</option>
                             <option value="デザイン">デザイン</option>
                             <option value="業務">業務・ビジネス</option>
+                            <option value="文学">文学</option>
                         </select>
                     </div>
                 </div>
