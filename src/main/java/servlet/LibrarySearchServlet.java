@@ -15,8 +15,7 @@ import model.LibrarySearch;
 public class LibrarySearchServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
-    // 模擬データベースのインスタンス
-    private final LibrarySearch database = new LibrarySearch();
+   
 
     /**
      * 【利用者】図書検索を要求する -> 【システム】図書検索画面を表示する
