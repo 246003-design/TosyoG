@@ -72,7 +72,7 @@
             </div>
             
             <div class="p-6 bg-gray-50/50 border-t border-gray-100 flex justify-center">
-                <a href="user_home.jsp" class="px-8 py-3.5 bg-white border-2 border-gray-200 text-gray-600 rounded-xl font-bold hover:bg-gray-50 hover:text-gray-900 transition-colors shadow-sm">
+                <a href="HomeServlet" class="px-8 py-3.5 bg-white border-2 border-gray-200 text-gray-600 rounded-xl font-bold hover:bg-gray-50 hover:text-gray-900 transition-colors shadow-sm">
                     メニューへ戻る
                 </a>
             </div>
