@@ -10,7 +10,7 @@
 </head>
 <body class="bg-slate-50 flex flex-col min-h-screen font-sans antialiased text-gray-800">
     <header class="bg-gray-900 text-white p-4 shadow-md flex items-center gap-4 sticky top-0 z-20">
-        <a href="admin_user_menu.jsp" class="p-2 hover:bg-white/20 rounded-full transition-colors group">
+        <a href="UserManagementMenuServlet" class="p-2 hover:bg-white/20 rounded-full transition-colors group">
             <svg class="transform group-hover:-translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         </a>
         <h1 class="text-xl font-bold tracking-widest">利用者検索・情報更新</h1>
@@ -61,7 +61,7 @@
                                     <c:choose>
                                         <c:when test="${user.status == 1}">
                                             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700 border border-red-200">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-red-600"></span>貸出停止
+                                                <span class="w-1.5 h-1.5 rounded-full bg-red-600"></span>利用停止
                                             </span>
                                         </c:when>
                                         <c:otherwise>

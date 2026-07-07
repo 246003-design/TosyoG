@@ -86,10 +86,10 @@
                 </div>
 
                 <div class="flex flex-col sm:flex-row justify-center gap-4">
-                    <a href="admin_user_menu.jsp" class="px-8 py-4 border-2 border-gray-200 text-gray-600 rounded-xl font-bold hover:bg-gray-50 hover:text-gray-900 transition-colors w-full sm:w-auto text-center">
+                    <a href="HomeServlet" class="px-8 py-4 border-2 border-gray-200 text-gray-600 rounded-xl font-bold hover:bg-gray-50 hover:text-gray-900 transition-colors w-full sm:w-auto text-center">
                         メニューへ戻る
                     </a>
-                    <a href="admin_user_register.jsp" class="px-8 py-4 bg-gray-900 text-white rounded-xl font-bold hover:bg-black shadow-lg shadow-gray-900/20 active:scale-95 transition-all flex items-center justify-center gap-2 w-full sm:w-auto">
+                    <a href="UserInsertServlet" class="px-8 py-4 bg-gray-900 text-white rounded-xl font-bold hover:bg-black shadow-lg shadow-gray-900/20 active:scale-95 transition-all flex items-center justify-center gap-2 w-full sm:w-auto">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                         続けて登録する
                     </a>
