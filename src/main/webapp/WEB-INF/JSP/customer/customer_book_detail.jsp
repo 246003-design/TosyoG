@@ -48,20 +48,19 @@
                 <div class="md:w-2/3 p-6 md:p-10 flex flex-col justify-between">
                     <div>
                         <%-- 予約済みバッジの表示 (利用者本人が予約している場合のみ表示など、条件を設定) --%>
-                        <c:if test="${book.isReservedByCurrentUser}">
+                        <c:if test="${book.reservedByCurrentUser}">
                         <div class="inline-flex items-center gap-2 bg-yellow-100 text-yellow-800 px-3 py-1.5 rounded-full text-sm font-bold mb-4 border border-yellow-200">
                             現在予約済みです
                         </div>
                         </c:if>
 
-                        <h2 class="text-3xl font-bold text-gray-900 mb-2"><c:out value="${book.title}" /> --%>Web UIデザイン論</h2>
-                        <p class="text-lg text-gray-600 mb-6 border-b pb-4">著者: <c:out value="${book.author}" />田中三郎</p>
+                        <h2 class="text-3xl font-bold text-gray-900 mb-2"><c:out value="${book.title}" />
+                        <p class="text-lg text-gray-600 mb-6 border-b pb-4">著者: <c:out value="${book.author}" />
                         
                         <div class="mb-8">
                             <h4 class="text-sm font-bold text-gray-500 mb-2 uppercase tracking-wider">あらすじ</h4>
                             <p class="text-gray-700 leading-relaxed text-sm md:text-base">
                                 <c:out value="${book.synopsis}" />
-                                現代のWeb開発において不可欠なUIデザインの基礎から応用までを網羅したベストセラー。
                             </p>
                         </div>
                     </div>

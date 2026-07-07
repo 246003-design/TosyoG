@@ -39,10 +39,10 @@
                     <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-xl group-hover:scale-150 transition-transform duration-700"></div>
                     
                     <h3 class="font-bold text-xl leading-tight relative z-10 text-shadow drop-shadow-md">
-                        <c:out value="${book.bookInfo.title}" />
+                        <c:out value="${book.title}" />
                     </h3>
                     
-                    <c:if test="${book.isReserved}">
+                    <c:if test="${book.setReservedByCurrentUser}">
                     <div class="absolute top-3 right-3 bg-amber-500/90 backdrop-blur text-white text-xs font-black px-3 py-1.5 rounded-md shadow-sm border border-amber-400 z-20 flex items-center gap-1">
                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                         予約済
@@ -58,7 +58,7 @@
                         </p>
                     </div>
                     
-                    <a href="ReserveServlet?id=${book.id}" class="w-full py-3 bg-gray-50 border border-gray-200 text-[#1e5641] rounded-xl font-bold hover:bg-[#1e5641] hover:text-white hover:border-[#1e5641] transition-all text-center flex items-center justify-center gap-2">
+                    <a href="ReserveServlet?bookid=${book.id}" class="w-full py-3 bg-gray-50 border border-gray-200 text-[#1e5641] rounded-xl font-bold hover:bg-[#1e5641] hover:text-white hover:border-[#1e5641] transition-all text-center flex items-center justify-center gap-2">
                         詳細を見る
                         <svg class="opacity-50" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                     </a>
