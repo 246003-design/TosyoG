@@ -308,5 +308,24 @@ public class BookDAO extends BaseDAO {
 		}
 		return list;
 	}
+	/**
+	 * 💡 追加: 現在予約中（または受取待ち）の図書IDの一覧を取得する
+	 */
+	public List<Integer> getReservedBookIds() {
+		List<Integer> list = new ArrayList<>();
+		// 予約ステータスが 0(予約中) または 1(受取待ち) のものを対象とする場合
+		String sql = "SELECT book_id FROM reservation WHERE status IN (0, 1)";
+		
+		try (PreparedStatement pstmt = conn.prepareStatement(sql);
+			 ResultSet rs = pstmt.executeQuery()) {
+			while (rs.next()) {
+				list.add(rs.getInt("book_id"));
+			}
+		} catch (SQLException e) {
+			System.err.println("BookDAO.getReservedBookIdsでエラーが発生しました。");
+			e.printStackTrace();
+		}
+		return list;
+	}
 
 }

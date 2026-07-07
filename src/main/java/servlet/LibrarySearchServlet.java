@@ -59,7 +59,19 @@ public class LibrarySearchServlet extends HttpServlet {
             BookDAO bookDAO = new BookDAO(conn);
             
             // 引数4つの詳細検索用メソッド「search」を呼び出す
-            results = bookDAO.search(title.trim(), isbn.trim(), author.trim(), category); 
+            results = bookDAO.search(title.trim(), isbn.trim(), author.trim(), category);
+
+            // 💡 【ここを追加】データベースから「予約中の図書IDリスト」を取得する
+                List<Integer> reservedIds = bookDAO.getReservedBookIds();
+                
+                // JSPで「この本のIDは予約中？」と一発で判定できるように Map（連想配列）に変換する
+                java.util.Map<Integer, Boolean> reservedMap = new java.util.HashMap<>();
+                for (Integer bookId : reservedIds) {
+                    reservedMap.put(bookId, true); // 予約されているIDをキーにして true を入れる
+                }
+                
+                // 2. 予約中のMapをJSPに送る荷物に加える！
+                request.setAttribute("reservedMap", reservedMap);
 
         } catch (SQLException e) {
             System.err.println("サーブレットでのDB処理中にエラーが発生しました。");
