@@ -41,7 +41,7 @@ public class OverdueServlet extends HttpServlet {
 			overdueList = lendDao.findOverdueMapList(searchQuery);
 			
 		} catch (Exception e) {
-			System.err.println("OverdueServletの実行中にエラーが発生しました。");
+			System.err.println("OveDueServletの実行中にエラーが発生しました。");
 			e.printStackTrace();
 		} finally {
 			// 💡サーブレット側で取得したConnectionを確実にクローズする

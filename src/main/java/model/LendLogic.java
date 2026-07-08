@@ -21,9 +21,9 @@ public class LendLogic {
         
         // 2. 本の在庫チェックや、実際の貸出登録処理をここに行う（DAOの呼び出しなど）
         try {
-            // 例：LendDAOなどを使って、貸出履歴テーブルにインサートするイメージです
-            // LendDAO lendDAO = new LendDAO(conn);
-            // lendDAO.insert(userId, bookId);
+            // ⭕ 修正：ダミーのコメントを外し、実際にLendDAOを呼び出してDBに保存する
+            dao.LendDAO lendDAO = new dao.LendDAO(conn);
+            lendDAO.insert(userId, bookId);
             
             // すべて成功したら完了メッセージを返す
             return "貸出が完了しました。";

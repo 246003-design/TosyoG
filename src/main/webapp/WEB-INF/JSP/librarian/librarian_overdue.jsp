@@ -11,11 +11,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 flex flex-col min-h-screen">
-    <header class="bg-[#1e3a8a] text-white p-4 shadow-md flex items-center gap-3 sticky top-0 z-10">
-        <a href="librarian_home.jsp" class="p-1 hover:bg-white/20 rounded-full transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+    <header class="bg-[#1e3a8a] text-white p-4 shadow-md flex items-center gap-4 sticky top-0 z-20">
+        <a href="HomeServlet" class="p-2 hover:bg-white/20 rounded-full transition-colors group">
+            <svg class="transform group-hover:-translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         </a>
-        <h1 class="text-xl font-bold tracking-wider">延滞一覧表</h1>
+        <h1 class="text-xl font-bold tracking-widest">延滞一覧表</h1>
     </header>
     
     <main class="flex-1 p-4 md:p-8 max-w-5xl mx-auto w-full">
@@ -63,7 +63,7 @@
             </div>
             
             <div class="p-4 bg-gray-50 text-center border-t border-gray-200">
-                <a href="librarian_home.jsp" class="inline-block px-8 py-2 border-2 border-gray-300 text-gray-700 font-bold rounded hover:bg-white transition-colors">
+                <a href="HomeServlet" class="inline-block px-8 py-2 border-2 border-gray-300 text-gray-700 font-bold rounded hover:bg-white transition-colors">
                     戻る
                 </a>
             </div>

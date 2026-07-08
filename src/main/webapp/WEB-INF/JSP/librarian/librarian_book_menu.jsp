@@ -9,7 +9,7 @@
 <body class="bg-gray-50 flex flex-col min-h-screen">
     <header class="bg-[#1e3a8a] text-white p-4 shadow-md flex items-center justify-between sticky top-0 z-20">
         <div class="flex items-center gap-3">
-            <a href="librarian_home.jsp" class="p-1 hover:bg-white/20 rounded-full transition-colors">
+            <a href="HomeServlet" class="p-1 hover:bg-white/20 rounded-full transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
             </a>
             <h1 class="text-xl font-bold tracking-wider">蔵書管理</h1>
