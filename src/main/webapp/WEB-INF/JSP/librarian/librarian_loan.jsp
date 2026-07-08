@@ -1,5 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%-- <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> --%>
+<%
+    // 追加：サーブレットから渡されたメッセージを取得
+    String successMessage = (String) request.getAttribute("successMessage");
+    String errorMessage = (String) request.getAttribute("errorMessage");
+%>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -9,7 +13,7 @@
 </head>
 <body class="bg-slate-50 flex flex-col min-h-screen font-sans antialiased text-gray-800">
     <header class="bg-[#1e3a8a] text-white p-4 shadow-md flex items-center gap-4 sticky top-0 z-20">
-        <a href="librarian_home.jsp" class="p-2 hover:bg-white/20 rounded-full transition-colors group">
+        <a href="HomeServlet" class="p-2 hover:bg-white/20 rounded-full transition-colors group">
             <svg class="transform group-hover:-translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         </a>
         <h1 class="text-xl font-bold tracking-widest">貸出処理</h1>
@@ -17,14 +21,13 @@
     
     <main class="flex-1 p-4 md:p-8 max-w-3xl mx-auto w-full relative">
         
-        <%-- サーブレットからの完了メッセージ表示 --%>
-        <%-- <c:if test="${not empty successMessage}"> --%>
+        <%-- 修正：完了メッセージがある場合のみ表示する --%>
+        <% if (successMessage != null && !successMessage.isEmpty()) { %>
         <div class="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-800 px-5 py-4 rounded-xl flex items-center gap-3 font-bold shadow-sm">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
-            <%-- <c:out value="${successMessage}" /> --%>
-            貸出手続きが完了しました。
+            <%= successMessage %>
         </div>
-        <%-- </c:if> --%>
+        <% } %>
 
         <div class="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-gray-100">
             
@@ -35,8 +38,8 @@
                 <h2 class="text-xl font-bold text-gray-800">貸出スキャン</h2>
             </div>
 
-            <%-- サーブレットからのエラー表示（貸出上限等） --%>
-            <%-- <c:if test="${not empty errorMessage}"> --%>
+            <%-- 修正：エラーメッセージがある場合のみ表示する --%>
+            <% if (errorMessage != null && !errorMessage.isEmpty()) { %>
             <div class="mb-8 bg-red-50 border border-red-100 p-5 rounded-2xl shadow-sm">
                 <div class="flex items-start gap-4">
                     <div class="bg-red-100 p-2 rounded-full text-red-600 shrink-0">
@@ -45,15 +48,15 @@
                     <div>
                         <h4 class="text-red-800 font-bold text-lg mb-1">貸出エラー</h4>
                         <p class="text-sm text-red-700 leading-relaxed">
-                            <%-- <c:out value="${errorMessage}" /> --%>
-                            貸出上限数を超過、または返却遅延があります。これ以上の貸出は出来ません。
+                            <%= errorMessage %>
                         </p>
                     </div>
                 </div>
             </div>
-            <%-- </c:if> --%>
+            <% } %>
 
-            <form action="LoanProcessServlet" method="POST" class="space-y-8">
+            <%-- actionを "LendServlet" に変更 --%>
+            <form action="LendServlet" method="POST" class="space-y-8">
                 <div>
                     <label class="block text-sm font-bold text-gray-600 mb-3 uppercase tracking-wider">1. 利用者ID</label>
                     <input 
@@ -77,10 +80,7 @@
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-4 pt-8 border-t border-gray-100">
-                 <!--    <a href="/WEB-INF/JSP/librarian/librarian_home.jsp" class="w-full sm:w-1/3 py-4 border-2 border-gray-200 text-gray-600 rounded-xl font-bold text-center hover:bg-gray-50 hover:text-gray-900 transition-colors">
-                        戻る
-                    </a> -->
-                    <a href="javascript:history.back();" class="w-full sm:w-1/3 py-4 border-2 border-gray-200 text-gray-600 rounded-xl font-bold text-center hover:bg-gray-50 hover:text-gray-900 transition-colors">戻る</a>
+                    <a href="HomeServlet" class="w-full sm:w-1/3 py-4 border-2 border-gray-200 text-gray-600 rounded-xl font-bold text-center hover:bg-gray-50 hover:text-gray-900 transition-colors">戻る</a>
                     <button type="submit" class="w-full sm:w-2/3 py-4 bg-[#1e3a8a] text-white rounded-xl font-bold text-lg hover:bg-blue-900 shadow-lg shadow-blue-900/20 active:scale-95 transition-all flex items-center justify-center gap-2" onclick="return confirm('図書の貸出を確定します。よろしいですか？');">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                         貸出内容を確定

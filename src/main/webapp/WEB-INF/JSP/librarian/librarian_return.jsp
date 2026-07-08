@@ -58,7 +58,7 @@
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-4">
-                    <a href="librarian_home.jsp" class="w-full sm:w-1/3 py-4 border-2 border-gray-200 text-gray-600 rounded-xl font-bold text-center hover:bg-gray-50 hover:text-gray-900 transition-colors">戻る</a>
+                    <a href="HomeServlet" class="w-full sm:w-1/3 py-4 border-2 border-gray-200 text-gray-600 rounded-xl font-bold text-center hover:bg-gray-50 hover:text-gray-900 transition-colors">戻る</a>
                     <button type="submit" class="w-full sm:w-2/3 py-4 bg-teal-600 text-white rounded-xl font-bold text-lg hover:bg-teal-700 shadow-lg shadow-teal-700/20 active:scale-95 transition-all">
                         返却確認
                     </button>
