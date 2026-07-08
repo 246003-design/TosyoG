@@ -2,7 +2,6 @@ package servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.util.List;
 import java.util.Optional;
 
 import dao.BookDAO;
@@ -11,6 +10,7 @@ import dao.ReservationDAO;
 import dto.ReservationDto;
 import entity.Book;
 import entity.Reservation;
+import entity.User; // 💡 追加：Userエンティティをインポート
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -35,15 +35,15 @@ public class ReserveServlet extends HttpServlet {
         String bookIdStr = request.getParameter("bookId");
         
         HttpSession session = request.getSession();
-        Integer userId = (Integer) session.getAttribute("loginUserId"); 
-
-        if (userId == null) {
-            response.sendRedirect(request.getContextPath() + "/WEB-INF/JSP/common/login.jsp");
-            return;
-        }
+        
+        // 💡 修正箇所1：LoginServletに合わせて "loginUser" で取得
+        User loginUser = (User) session.getAttribute("loginUser"); 
+        
+        // 💡 修正箇所2：UserオブジェクトからIDを取り出す
+        // ※もしエンティティのメソッド名が違う場合は getId() を getUserId() 等に変更してください
+        int userId = loginUser.getId();
 
         if (bookIdStr == null || bookIdStr.isEmpty()) {
-            // 💡 修正：リダイレクトするので、エラーメッセージもセッション（一時保存）に入れる
             session.setAttribute("errorMsg", "図書IDが指定されていません。");
             response.sendRedirect(request.getContextPath() + "/LibrarySearchServlet");
             return;
@@ -109,20 +109,11 @@ public class ReserveServlet extends HttpServlet {
                 }
             }
 
-<<<<<<< HEAD
-         // ==========================================
-            // コミット or ロールバック
-=======
             // ==========================================
-            // コミット or ロールバック（💡 重複を排除して1つに統合）
->>>>>>> branch 'master' of https://github.com/246003-design/TosyoG.git
+            // コミット or ロールバック
             // ==========================================
             if (resultMsg.isEmpty()) {
                 conn.commit(); 
-<<<<<<< HEAD
-                // 💡 requestではなく、セッション(session)にメッセージを保存します（リダイレクトで消えないようにするため）
-=======
->>>>>>> branch 'master' of https://github.com/246003-design/TosyoG.git
                 session.setAttribute("successMessage", "reserve".equals(action) ? "予約手続きが完了しました。" : "予約をキャンセルしました。");
             } else {
                 conn.rollback(); 
@@ -134,20 +125,10 @@ public class ReserveServlet extends HttpServlet {
             session.setAttribute("errorMsg", "システムエラーが発生しました。");
         }
         
-<<<<<<< HEAD
-      
-        
-        // ⭕ 修正後：処理が終わったら、検索一覧サーブレットへリダイレクト（転送）する
-        response.sendRedirect(request.getContextPath() + "/LibrarySearchServlet");
-=======
-        // 処理が終わったら、URLを綺麗にするために自分自身（GET）へリダイレクトする
-        response.sendRedirect(request.getContextPath() + "/ReserveServlet?bookId=" + bookId);
->>>>>>> branch 'master' of https://github.com/246003-design/TosyoG.git
+        // 💡 修正箇所3：bookIdの大文字小文字を合わせ、元の詳細画面へUターン（リダイレクト）
+        response.sendRedirect("ReserveServlet?bookId=" + bookId);
     }
     
-    /**
-     * 【画面表示処理（GET）】
-     */
     /**
      * 【画面表示処理（GET）】
      */
@@ -157,15 +138,15 @@ public class ReserveServlet extends HttpServlet {
         
         String bookIdStr = request.getParameter("bookId");
         
-<<<<<<< HEAD
-        // 💡 セッションから現在のログインユーザーIDを取得する
         HttpSession session = request.getSession();
-        Integer loginUserId = (Integer) session.getAttribute("loginUserId");
-=======
-        HttpSession session = request.getSession();
-        Integer loginUserId = (Integer) session.getAttribute("loginUserId");
         
-        // 💡 修正：リダイレクト先（doPost）からセッション経由で届いたメッセージを、リクエストに詰め替えてJSPに渡す（フラッシュメッセージ）
+        // 💡 修正箇所4：LoginServletに合わせて "loginUser" で取得
+        User loginUser = (User) session.getAttribute("loginUser");
+        Integer loginUserId = null;
+        if (loginUser != null) {
+            loginUserId = loginUser.getId(); // ※ getId() メソッド名は環境に合わせてください
+        }
+        
         String successMessage = (String) session.getAttribute("successMessage");
         if (successMessage != null) {
             request.setAttribute("successMessage", successMessage);
@@ -176,7 +157,6 @@ public class ReserveServlet extends HttpServlet {
             request.setAttribute("errorMsg", errorMsg);
             session.removeAttribute("errorMsg"); // 使い終わったら消す
         }
->>>>>>> branch 'master' of https://github.com/246003-design/TosyoG.git
         
         if (bookIdStr != null && !bookIdStr.isEmpty()) {
             try (Connection conn = DBManager.getConnection()) {
@@ -184,22 +164,10 @@ public class ReserveServlet extends HttpServlet {
                 // --- ① 図書情報の取得 ---
                 BookDAO bookDAO = new BookDAO(conn);
                 int bookId = Integer.parseInt(bookIdStr);
-<<<<<<< HEAD
-                
-                // 図書データを取得
-=======
->>>>>>> branch 'master' of https://github.com/246003-design/TosyoG.git
                 Optional<Book> bookOpt = bookDAO.findById(bookId);
                 
                 if (bookOpt.isPresent()) {
-<<<<<<< HEAD
-                    request.setAttribute("book", bookOpt.get());
-=======
                     Book book = bookOpt.get();
-                    
-                    // 💡 もしBookDAOでJOINしてない場合、作成済みのBookInfoDAOを使うならココに以下の2行を入れる
-                    // dao.BookInfoDAO bookInfoDAO = new dao.BookInfoDAO(conn);
-                    // book.setBookInfo(bookInfoDAO.findById(book.getBookInfoId()));
                     
                     request.setAttribute("book", book);
                     
@@ -207,51 +175,31 @@ public class ReserveServlet extends HttpServlet {
                     ReservationDAO reservationDAO = new ReservationDAO(conn);
                     boolean isReservedByCurrentUser = false;
 
-                    for (Reservation r : reservationDAO.findAll()) {
-                        if (r.getUserId() == loginUserId && r.getBookId() == bookId && (r.getStatus() == 1 || r.getStatus() == 2)) {
-                            isReservedByCurrentUser = true; 
-                            break;
+                    // 💡 修正箇所5：ログイン済みの場合のみ自分の予約履歴をチェック
+                    if (loginUserId != null) {
+                        for (Reservation r : reservationDAO.findAll()) {
+                            if (r.getUserId() == loginUserId && r.getBookId() == bookId && (r.getStatus() == 1 || r.getStatus() == 2)) {
+                                isReservedByCurrentUser = true; 
+                                break;
+                            }
                         }
                     }
 
-                    // 💡 修正：詳細画面JSPの記述（book.reservedByCurrentUser）に合わせて、Bookエンティティにフラグを仕込む
+                    // 詳細画面JSPの記述に合わせて、Bookエンティティにフラグを仕込む
                     book.setReservedByCurrentUser(isReservedByCurrentUser);
                     
-                    // 画面のボタン切り替え等に使う単体オブジェクト（JSPのc:choose用）
+                    // 画面のボタン切り替え等に使う単体オブジェクト
                     request.setAttribute("isReserved", isReservedByCurrentUser);
->>>>>>> branch 'master' of https://github.com/246003-design/TosyoG.git
                 } else {
                     request.setAttribute("errorMsg", "該当する図書データが見つかりません。");
                 }
 
-<<<<<<< HEAD
-                // 💡 【ここを追加】詳細画面でも予約状況を判定するために、マップを作成してJSPに渡す
-                ReservationDAO reservationDAO = new ReservationDAO(conn);
-                List<Reservation> allReservations = reservationDAO.findAll();
-
-                java.util.Map<Integer, Integer> bookReserverMap = new java.util.HashMap<>();
-                for (Reservation r : allReservations) {
-                    if (r.getStatus() == 1 || r.getStatus() == 2) { // 1:予約中、2:受取待ち
-                        bookReserverMap.put(r.getBookId(), r.getUserId());
-                    }
-                }
-
-                // JSPへデータを送る
-                request.setAttribute("bookReserverMap", bookReserverMap);
-                request.setAttribute("loginUserId", loginUserId);
-
-=======
->>>>>>> branch 'master' of https://github.com/246003-design/TosyoG.git
             } catch (Exception e) {
                 e.printStackTrace();
                 request.setAttribute("errorMsg", "図書情報の取得中にエラーが発生しました。");
             }
         }
 
-<<<<<<< HEAD
-        // JSPへフォワード
-=======
->>>>>>> branch 'master' of https://github.com/246003-design/TosyoG.git
         String viewPath = "/WEB-INF/JSP/customer/customer_book_detail.jsp";
         request.getRequestDispatcher(viewPath).forward(request, response);
     }
