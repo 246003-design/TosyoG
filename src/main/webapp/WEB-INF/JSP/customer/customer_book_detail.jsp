@@ -1,5 +1,4 @@
 <%-- 図書詳細＆予約画面 --%>
-
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
@@ -34,6 +33,14 @@
         </div>
         </c:if>
 
+        <%-- 処理エラーメッセージ --%>
+        <c:if test="${not empty errorMsg}">
+        <div class="mb-6 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg flex items-center gap-2 font-bold shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <c:out value="${errorMsg}" />
+        </div>
+        </c:if>
+
         <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
             <div class="md:flex">
                 <div class="md:w-1/3 h-80 md:h-auto bg-gray-100 p-6 flex items-center justify-center border-r border-gray-100">
@@ -46,39 +53,37 @@
                 
                 <div class="md:w-2/3 p-6 md:p-10 flex flex-col justify-between">
                     <div>
-<<<<<<< HEAD
-                        <%-- 💡 前の画面の出し分けルール（bookReserverMap）と同様に、自分が予約しているか判定します --%>
-                        <c:if test="${bookReserverMap[book.id] == loginUserId}">
-=======
-                        <%-- 予約済みバッジの表示 (利用者本人が予約している場合のみ表示など、条件を設定) --%>
-                        <c:if test="${book.reservedByCurrentUser}">
->>>>>>> branch 'master' of https://github.com/246003-design/TosyoG.git
+                       <%-- ➔ 変更後：sessionScope.loginUser.id を直接比較に使用します --%>
+                        <c:if test="${book.reservedByCurrentUser || bookReserverMap[book.id] == sessionScope.loginUser.id}">
                         <div class="inline-flex items-center gap-2 bg-yellow-100 text-yellow-800 px-3 py-1.5 rounded-full text-sm font-bold mb-4 border border-yellow-200">
                             現在あなたが予約済みです
                         </div>
                         </c:if>
 
-<<<<<<< HEAD
-                        <%-- 💡 修正：bookInfo を経由させ、余分なコメントタグを削除 --%>
+                        <%-- 💡 図書マスタ(BookInfo)から取得する形に統一 --%>
                         <h2 class="text-3xl font-bold text-gray-900 mb-2">
-                            <c:out value="${book.bookInfo.title}" default="Web UIデザイン論(データ未取得)" />
+                            <c:out value="${book.bookInfo.title}" default="図書タイトル未設定" />
                         </h2>
                         <p class="text-lg text-gray-600 mb-6 border-b pb-4">
-                            著者: <c:out value="${book.bookInfo.authorName}" default="田中三郎" />
+                            著者: <c:out value="${book.bookInfo.authorName}" default="未設定" />
                         </p>
-=======
-                        <h2 class="text-3xl font-bold text-gray-900 mb-2"><c:out value="${book.title}" />
-                        <p class="text-lg text-gray-600 mb-6 border-b pb-4">著者: <c:out value="${book.author}" />
->>>>>>> branch 'master' of https://github.com/246003-design/TosyoG.git
                         
-                        <div class="mb-8">
-                            <h4 class="text-sm font-bold text-gray-500 mb-2 uppercase tracking-wider">ISBN</h4>
-                            <p class="text-gray-700 leading-relaxed text-sm md:text-base">
-<<<<<<< HEAD
+                        <div class="mb-4">
+                            <h4 class="text-sm font-bold text-gray-500 mb-1 uppercase tracking-wider">ISBN</h4>
+                            <p class="text-gray-700 text-sm md:text-base">
                                 <c:out value="${book.bookInfo.isbn}" default="未設定" />
-=======
-                                <c:out value="${book.synopsis}" />
->>>>>>> branch 'master' of https://github.com/246003-design/TosyoG.git
+                            </p>
+                        </div>
+
+                        <div class="mb-4">
+                            <h4 class="text-sm font-bold text-gray-500 mb-1 uppercase tracking-wider">状態</h4>
+                            <p class="text-gray-700 text-sm md:text-base">
+                                <c:choose>
+                                    <c:when test="${book.status == 1}">貸出可能</c:when>
+                                    <c:when test="${book.status == 2}">貸出中</c:when>
+                                    <c:when test="${book.status == 3}">予約中</c:when>
+                                    <c:otherwise>利用不可</c:otherwise>
+                                </c:choose>
                             </p>
                         </div>
                     </div>
@@ -88,18 +93,19 @@
                             戻る
                         </a>
                         
-                        <%-- 💡 利用者（USER）のみ「予約処理フォーム」を表示 --%>
-                        <c:if test="${sessionScope.role == 'USER'}">
+                        <%-- ➔ 変更後：loginUserの中にある role を見に行くようにします --%>
+                        <c:if test="${sessionScope.loginUser.role == 'USER'}">
                         <form action="ReserveServlet" method="POST" class="flex-1 flex">
                             <input type="hidden" name="bookId" value="${book.id}" />
 
                             <c:choose>
-                                <%-- 💡 自分が予約中の場合は「キャンセル」のフォームを構成 --%>
-                                <c:when test="${bookReserverMap[book.id] == loginUserId}">
+                               <%-- ➔ 変更後：ここも sessionScope.loginUser.id に統一します --%>
+                               <c:when test="${book.reservedByCurrentUser || bookReserverMap[book.id] == sessionScope.loginUser.id}">
                                 <button type="submit" name="action" value="cancel" class="w-full py-3.5 bg-white border-2 border-red-600 text-red-600 rounded-xl font-bold hover:bg-red-50 transition-colors" onclick="return confirm('予約を取り消しますか？');">
                                     予約を取り消す
                                 </button>
                                 </c:when>
+                                <%-- 予約していない場合は「予約する」ボタン --%>
                                 <c:otherwise>
                                 <button type="submit" name="action" value="reserve" class="w-full py-3.5 ${themeBg} text-white rounded-xl font-bold shadow-md opacity-90 hover:opacity-100 transition-all" onclick="return confirm('この図書を予約してよろしいですか？');">
                                     予約する
