@@ -67,4 +67,9 @@ public class Book {
 	public void setDeletedAt(java.sql.Timestamp deletedAt) {
 		this.deletedAt = deletedAt;
 	}
+
+	public void setReservedByCurrentUser(boolean isReserved) {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
 }

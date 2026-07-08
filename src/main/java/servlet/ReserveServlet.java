@@ -2,6 +2,7 @@ package servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.List;
 import java.util.Optional;
 
 import dao.BookDAO;
@@ -42,8 +43,9 @@ public class ReserveServlet extends HttpServlet {
         }
 
         if (bookIdStr == null || bookIdStr.isEmpty()) {
-            request.setAttribute("errorMsg", "図書IDが指定されていません。");
-            request.getRequestDispatcher("/WEB-INF/JSP/common/error.jsp").forward(request, response);
+            // 💡 修正：リダイレクトするので、エラーメッセージもセッション（一時保存）に入れる
+            session.setAttribute("errorMsg", "図書IDが指定されていません。");
+            response.sendRedirect(request.getContextPath() + "/LibrarySearchServlet");
             return;
         }
 
@@ -66,11 +68,10 @@ public class ReserveServlet extends HttpServlet {
                 if (resultMsg.isEmpty()) {
                     Optional<Book> bookOpt = bookDAO.findById(bookId);
                     if (bookOpt.isPresent()) {
-                        // ★ここでDTOを活用してデータを受け渡す
                         ReservationDto dto = new ReservationDto();
                         dto.setUserId(userId);
-                        dto.setBookId(bookId); // 物理本ID
-                        dto.setBookInfoId(bookOpt.get().getBookInfoId()); // 作品マスタID
+                        dto.setBookId(bookId); 
+                        dto.setBookInfoId(bookOpt.get().getBookInfoId()); 
                         dto.setStatus(1); // 1: 予約中
 
                         if (!reservationDAO.insert(dto)) {
@@ -93,7 +94,6 @@ public class ReserveServlet extends HttpServlet {
                         
                         for (Reservation r : reservationDAO.findAll()) {
                             if (r.getUserId() == userId && r.getBookInfoId() == bookInfoId && (r.getStatus() == 1 || r.getStatus() == 2)) {
-                                // ★ここでもDTOを活用して更新データを渡す
                                 ReservationDto dto = new ReservationDto();
                                 dto.setId(r.getId());
                                 dto.setStatus(9); // 9: キャンセル
@@ -109,25 +109,45 @@ public class ReserveServlet extends HttpServlet {
                 }
             }
 
-            // ==========================================
+<<<<<<< HEAD
+         // ==========================================
             // コミット or ロールバック
+=======
+            // ==========================================
+            // コミット or ロールバック（💡 重複を排除して1つに統合）
+>>>>>>> branch 'master' of https://github.com/246003-design/TosyoG.git
             // ==========================================
             if (resultMsg.isEmpty()) {
                 conn.commit(); 
-                request.setAttribute("successMessage", "reserve".equals(action) ? "予約手続きが完了しました。" : "予約をキャンセルしました。");
+<<<<<<< HEAD
+                // 💡 requestではなく、セッション(session)にメッセージを保存します（リダイレクトで消えないようにするため）
+=======
+>>>>>>> branch 'master' of https://github.com/246003-design/TosyoG.git
+                session.setAttribute("successMessage", "reserve".equals(action) ? "予約手続きが完了しました。" : "予約をキャンセルしました。");
             } else {
                 conn.rollback(); 
-                request.setAttribute("errorMsg", resultMsg);
+                session.setAttribute("errorMsg", resultMsg);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("errorMsg", "システムエラーが発生しました。");
+            session.setAttribute("errorMsg", "システムエラーが発生しました。");
         }
         
-     // おすすめの修正
-        doGet(request, response);    }
+<<<<<<< HEAD
+      
+        
+        // ⭕ 修正後：処理が終わったら、検索一覧サーブレットへリダイレクト（転送）する
+        response.sendRedirect(request.getContextPath() + "/LibrarySearchServlet");
+=======
+        // 処理が終わったら、URLを綺麗にするために自分自身（GET）へリダイレクトする
+        response.sendRedirect(request.getContextPath() + "/ReserveServlet?bookId=" + bookId);
+>>>>>>> branch 'master' of https://github.com/246003-design/TosyoG.git
+    }
     
+    /**
+     * 【画面表示処理（GET）】
+     */
     /**
      * 【画面表示処理（GET）】
      */
@@ -137,32 +157,102 @@ public class ReserveServlet extends HttpServlet {
         
         String bookIdStr = request.getParameter("bookId");
         
-        // bookIdが存在する場合、画面表示に必要な図書データを取得してJSPに渡す
+<<<<<<< HEAD
+        // 💡 セッションから現在のログインユーザーIDを取得する
+        HttpSession session = request.getSession();
+        Integer loginUserId = (Integer) session.getAttribute("loginUserId");
+=======
+        HttpSession session = request.getSession();
+        Integer loginUserId = (Integer) session.getAttribute("loginUserId");
+        
+        // 💡 修正：リダイレクト先（doPost）からセッション経由で届いたメッセージを、リクエストに詰め替えてJSPに渡す（フラッシュメッセージ）
+        String successMessage = (String) session.getAttribute("successMessage");
+        if (successMessage != null) {
+            request.setAttribute("successMessage", successMessage);
+            session.removeAttribute("successMessage"); // 使い終わったら消す
+        }
+        String errorMsg = (String) session.getAttribute("errorMsg");
+        if (errorMsg != null) {
+            request.setAttribute("errorMsg", errorMsg);
+            session.removeAttribute("errorMsg"); // 使い終わったら消す
+        }
+>>>>>>> branch 'master' of https://github.com/246003-design/TosyoG.git
+        
         if (bookIdStr != null && !bookIdStr.isEmpty()) {
             try (Connection conn = DBManager.getConnection()) {
+                
+                // --- ① 図書情報の取得 ---
                 BookDAO bookDAO = new BookDAO(conn);
                 int bookId = Integer.parseInt(bookIdStr);
+<<<<<<< HEAD
                 
+                // 図書データを取得
+=======
+>>>>>>> branch 'master' of https://github.com/246003-design/TosyoG.git
                 Optional<Book> bookOpt = bookDAO.findById(bookId);
+                
                 if (bookOpt.isPresent()) {
-                    // JSPで ${book.xxx} として使えるようにセット
+<<<<<<< HEAD
                     request.setAttribute("book", bookOpt.get());
+=======
+                    Book book = bookOpt.get();
+                    
+                    // 💡 もしBookDAOでJOINしてない場合、作成済みのBookInfoDAOを使うならココに以下の2行を入れる
+                    // dao.BookInfoDAO bookInfoDAO = new dao.BookInfoDAO(conn);
+                    // book.setBookInfo(bookInfoDAO.findById(book.getBookInfoId()));
+                    
+                    request.setAttribute("book", book);
+                    
+                    // --- ② 予約情報の取得と判定 ---
+                    ReservationDAO reservationDAO = new ReservationDAO(conn);
+                    boolean isReservedByCurrentUser = false;
+
+                    for (Reservation r : reservationDAO.findAll()) {
+                        if (r.getUserId() == loginUserId && r.getBookId() == bookId && (r.getStatus() == 1 || r.getStatus() == 2)) {
+                            isReservedByCurrentUser = true; 
+                            break;
+                        }
+                    }
+
+                    // 💡 修正：詳細画面JSPの記述（book.reservedByCurrentUser）に合わせて、Bookエンティティにフラグを仕込む
+                    book.setReservedByCurrentUser(isReservedByCurrentUser);
+                    
+                    // 画面のボタン切り替え等に使う単体オブジェクト（JSPのc:choose用）
+                    request.setAttribute("isReserved", isReservedByCurrentUser);
+>>>>>>> branch 'master' of https://github.com/246003-design/TosyoG.git
                 } else {
                     request.setAttribute("errorMsg", "該当する図書データが見つかりません。");
                 }
+
+<<<<<<< HEAD
+                // 💡 【ここを追加】詳細画面でも予約状況を判定するために、マップを作成してJSPに渡す
+                ReservationDAO reservationDAO = new ReservationDAO(conn);
+                List<Reservation> allReservations = reservationDAO.findAll();
+
+                java.util.Map<Integer, Integer> bookReserverMap = new java.util.HashMap<>();
+                for (Reservation r : allReservations) {
+                    if (r.getStatus() == 1 || r.getStatus() == 2) { // 1:予約中、2:受取待ち
+                        bookReserverMap.put(r.getBookId(), r.getUserId());
+                    }
+                }
+
+                // JSPへデータを送る
+                request.setAttribute("bookReserverMap", bookReserverMap);
+                request.setAttribute("loginUserId", loginUserId);
+
+=======
+>>>>>>> branch 'master' of https://github.com/246003-design/TosyoG.git
             } catch (Exception e) {
                 e.printStackTrace();
                 request.setAttribute("errorMsg", "図書情報の取得中にエラーが発生しました。");
             }
         }
 
-        // ==========================================
-        // JSPへフォワード（画面遷移）
-        // ==========================================
-        // ※注意: 下記のパスはご自身のプロジェクト構成に合わせて正しいJSPファイルのパスに変更してください
-        // 例: "/WEB-INF/JSP/bookDetail.jsp" や "/bookDetail.jsp" など
+<<<<<<< HEAD
+        // JSPへフォワード
+=======
+>>>>>>> branch 'master' of https://github.com/246003-design/TosyoG.git
         String viewPath = "/WEB-INF/JSP/customer/customer_book_detail.jsp";
-        
         request.getRequestDispatcher(viewPath).forward(request, response);
     }
 }
