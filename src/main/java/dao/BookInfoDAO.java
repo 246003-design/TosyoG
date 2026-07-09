@@ -150,4 +150,45 @@ public class BookInfoDAO extends BaseDAO {
 			}
 			return newId; 
 		}
+		/**
+		 * 🌟【新しく追加】IDから著者名も含めた「図書の詳細情報」を取得する
+		 * 元々BookDAOが結合していたauthorテーブルを、こちらで結合して著者名を取得します。
+		 */
+		public BookInfo findDetailById(int id) {
+			BookInfo bookInfo = null;
+			
+			StringBuilder sql = new StringBuilder();
+			sql.append("SELECT bi.id, bi.title, bi.isbn, bi.author_id, bi.publisher_id, bi.category_id, bi.imageUrl, bi.created_at, bi.updated_at, bi.deleted_at, ");
+			sql.append("a.name AS author_name ");
+			sql.append("FROM book_info bi ");
+			sql.append("LEFT JOIN author a ON bi.author_id = a.id ");
+			sql.append("WHERE bi.id = ? AND bi.deleted_at IS NULL");
+					
+			try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+				pstmt.setInt(1, id);
+				
+				try (ResultSet rs = pstmt.executeQuery()) {
+					if (rs.next()) {
+						bookInfo = new BookInfo();
+						bookInfo.setId(rs.getInt("id"));
+						bookInfo.setTitle(rs.getString("title"));
+						bookInfo.setIsbn(rs.getString("isbn"));
+						bookInfo.setAuthorId(rs.getInt("author_id"));
+						bookInfo.setPublisherId(rs.getInt("publisher_id"));
+						bookInfo.setCategoryId(rs.getInt("category_id"));
+						bookInfo.setImageUrl(rs.getString("imageUrl"));
+						bookInfo.setCreatedAt(rs.getTimestamp("created_at"));
+						bookInfo.setUpdatedAt(rs.getTimestamp("updated_at"));
+						bookInfo.setDeletedAt(rs.getTimestamp("deleted_at"));
+						
+						// 💡 BookDAOから移譲された「著者名」をセットする処理
+						bookInfo.setAuthorName(rs.getString("author_name"));
+					}
+				}
+			} catch (SQLException e) {
+				System.err.println("BookInfoDAO.findDetailByIdでエラーが発生しました。");
+				e.printStackTrace();
+			}
+			return bookInfo;
+		}
 	}
