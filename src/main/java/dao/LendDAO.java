@@ -108,12 +108,13 @@ public class LendDAO extends BaseDAO {
 	public List<java.util.Map<String, Object>> findOverdueMapList(String searchQuery) {
 		List<java.util.Map<String, Object>> list = new ArrayList<>();
 		
-		// 【SQL構築】返却予定日が過去 且つ 未返却 且つ 論理削除されていないデータ
+		// 💡修正：ここで book_info を JOIN して bi.title を取得するように直しました！
 		StringBuilder sql = new StringBuilder();
-		sql.append("SELECT b.title, u.name AS user_name, l.user_id, l.due_date ");
+		sql.append("SELECT bi.title AS title, u.name AS user_name, l.user_id, l.due_date ");
 		sql.append("FROM lend l ");
-		sql.append("JOIN user u ON l.user_id = u.id ");   // 💡環境に合わせてテーブル名・カラム名を調整してください
-		sql.append("JOIN book b ON l.book_id = b.id ");   // 💡環境に合わせてテーブル名・カラム名を調整してください
+		sql.append("JOIN user u ON l.user_id = u.id ");
+		sql.append("JOIN book b ON l.book_id = b.id ");
+		sql.append("JOIN book_info bi ON b.book_info_id = bi.id ");
 		sql.append("WHERE l.return_date IS NULL AND l.due_date < CURRENT_TIMESTAMP AND l.deleted_at IS NULL ");
 		
 		// 検索キーワードがある場合、条件を追加（部分一致）
@@ -142,14 +143,14 @@ public class LendDAO extends BaseDAO {
 					
 					// 💡JSPの ${overdue.xxxx} の「xxxx」の部分と完全に一致するキー名でputします
 					map.put("title", rs.getString("title"));
-					map.put("userName", rs.getString("user_name"));
-					map.put("userId", rs.getInt("user_id"));
+					map.put("user_name", rs.getString("user_name"));
+					map.put("user_id", rs.getInt("user_id"));
 					
 					java.sql.Timestamp dueDate = rs.getTimestamp("due_date");
 					if (dueDate != null) {
-						map.put("dueDate", sdf.format(dueDate));
+						map.put("due_date", sdf.format(dueDate));
 					} else {
-						map.put("dueDate", "");
+						map.put("due_date", "");
 					}
 					
 					list.add(map);
@@ -166,9 +167,10 @@ public class LendDAO extends BaseDAO {
 	// 💡 追加1: 本のIDから、現在貸出中（未返却）の貸出情報を1件取得する
 	public Lend findCurrentLendByBookId(int bookId) {
 		Lend lend = null;
+		// 💡修正：誤って上書きされていたSQLを、元の正しいLendテーブル取得用SQLに戻しました！
 		String sql = "SELECT id, user_id, book_id, lend_date, due_date, return_date, status, created_at, updated_at, deleted_at "
-				+ "FROM lend WHERE book_id = ? AND return_date IS NULL AND deleted_at IS NULL";
-				
+		           + "FROM lend WHERE book_id = ? AND return_date IS NULL AND deleted_at IS NULL";
+				   
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setInt(1, bookId);
 			
