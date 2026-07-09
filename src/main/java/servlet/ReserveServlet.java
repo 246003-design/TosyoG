@@ -17,7 +17,6 @@ import entity.Book;
 import entity.BookInfo;
 import entity.Reservation;
 import entity.User; // 💡 追加：Userエンティティをインポート
-import entity.User; // 🌟 Userエンティティをインポート
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
