@@ -44,7 +44,7 @@
             </a>
             
             <!-- 返却 -->
-            <a href="ReturnBookServlet" class="group bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl border border-gray-100 transition-all duration-300 hover:-translate-y-1 flex flex-col items-center justify-center gap-4">
+            <a href="ReturnServlet" class="group bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl border border-gray-100 transition-all duration-300 hover:-translate-y-1 flex flex-col items-center justify-center gap-4">
                 <div class="bg-teal-50 text-teal-600 p-5 rounded-full group-hover:bg-teal-600 group-hover:text-white transition-colors duration-300 shadow-inner">
                     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="m17 17-5 5-5-5"/></svg>
                 </div>
