@@ -233,20 +233,19 @@ public class BookDAO extends BaseDAO {
 		return list;
 	}
 
-	/**図書検索機能
-	 * 条件に合致する図書情報を複数条件から検索する
-	 */
 	public List<Book> search(String title, String isbn, String author, String category) {
 		List<Book> list = new ArrayList<>();
 		
 		StringBuilder sql = new StringBuilder();
-		sql.append("SELECT b.id, b.book_info_id, b.book_number, b.layout_id, b.created_at, b.updated_at, b.deleted_at, ");
-		sql.append("bi.isbn, bi.title, bi.author_id, bi.publisher_id, bi.category_id, bi.imageUrl, a.name AS author_name ");		sql.append("FROM book b ");
+		// 🔴 SELECT句から book_info や author などの詳細情報のカラムを削除しました
+		sql.append("SELECT b.id, b.book_info_id, b.book_number, b.layout_id, b.created_at, b.updated_at, b.deleted_at ");
+		sql.append("FROM book b ");
 		sql.append("INNER JOIN book_info bi ON b.book_info_id = bi.id ");
 		sql.append("LEFT JOIN author a ON bi.author_id = a.id ");
 		sql.append("LEFT JOIN category c ON bi.category_id = c.id ");
 		sql.append("WHERE b.deleted_at IS NULL ");
 		
+		// 💡 検索の絞り込みを行うために、WHERE句の結合条件は残しています
 		if (title != null && !title.isEmpty()) {
 			sql.append("AND bi.title LIKE ? ");
 		}
@@ -289,16 +288,8 @@ public class BookDAO extends BaseDAO {
 					book.setUpdatedAt(rs.getTimestamp("updated_at"));
 					book.setDeletedAt(rs.getTimestamp("deleted_at"));
 
-					BookInfo info = new BookInfo();
-					info.setId(rs.getInt("book_info_id"));
-					info.setIsbn(rs.getString("isbn"));
-					info.setTitle(rs.getString("title"));
-					info.setAuthorName(rs.getString("author_name"));
-					info.setPublisherId(rs.getInt("publisher_id"));
-					info.setCategoryId(rs.getInt("category_id"));
-					info.setImageUrl(rs.getString("imageUrl"));
+					// 🔴 BookInfoオブジェクトの生成、および book.setBookInfo(info) の処理を削除しました
 					
-					book.setBookInfo(info);
 					list.add(book);
 				}
 			}
@@ -308,12 +299,12 @@ public class BookDAO extends BaseDAO {
 		}
 		return list;
 	}
+
 	/**
-	 * 💡 追加: 現在予約中（または受取待ち）の図書IDの一覧を取得する
+	 * 💡 現在予約中（または受取待ち）の図書IDの一覧を取得する
 	 */
 	public List<Integer> getReservedBookIds() {
 		List<Integer> list = new ArrayList<>();
-		// 予約ステータスが 0(予約中) または 1(受取待ち) のものを対象とする場合
 		String sql = "SELECT book_id FROM reservation WHERE status IN (0, 1)";
 		
 		try (PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -327,5 +318,4 @@ public class BookDAO extends BaseDAO {
 		}
 		return list;
 	}
-
 }

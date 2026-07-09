@@ -72,4 +72,10 @@ public class Book {
 		// TODO 自動生成されたメソッド・スタブ
 		
 	}
+	// entity.Book.java にもし無ければ追加
+	private boolean reservedByCurrentUser; // フィールド
+
+	public boolean isReservedByCurrentUser() {
+	    return reservedByCurrentUser;
+	}
 }

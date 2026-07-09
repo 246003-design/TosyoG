@@ -1,8 +1,7 @@
-
-　　　　　　　　　　　　　　　　　　　<%--      図書検索画面　　　　 --%>
-
-
+<%--      図書検索画面      --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%-- 💡 修正：エラーメッセージ表示のためJSTLタグライブラリを追加 --%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -20,6 +19,15 @@
     </header>
     
     <main class="flex-1 p-4 md:p-8 max-w-4xl mx-auto w-full">
+        
+        <%-- 💡 修正：サーブレットからエラーが返ってきた場合のメッセージ表示枠を追加 --%>
+        <c:if test="${not empty errorMsg}">
+        <div class="mb-6 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg flex items-center gap-2 font-bold shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <c:out value="${errorMsg}" />
+        </div>
+        </c:if>
+
         <div class="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-gray-100">
             
             <div class="flex items-center gap-3 mb-8 pb-4 border-b border-gray-100">
