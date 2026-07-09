@@ -38,15 +38,10 @@
                     <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-xl group-hover:scale-150 transition-transform duration-700"></div>
                     
                     <h3 class="font-bold text-xl leading-tight relative z-10 text-shadow drop-shadow-md">
-
-                        <c:out value="${book.bookInfo.title}" />
-
                         <%-- 💡 修正：図書マスタ(BookInfo)からタイトルを取得するように統一 --%>
                         <c:out value="${not empty book.bookInfo.title ? book.bookInfo.title : '図書タイトル未設定'}" />
                     </h3>
-
-                   <c:if test="${book.reservedByCurrentUser}">
-
+                    
                     <%-- 💡 修正：コンフリクトマーカーを削除し、予約Mapによる判定を採用 --%>
                     <c:if test="${reservedMap[book.id]}">
                     <div class="absolute top-3 right-3 bg-amber-500/90 backdrop-blur text-white text-xs font-black px-3 py-1.5 rounded-md shadow-sm border border-amber-400 z-20 flex items-center gap-1">
@@ -65,7 +60,6 @@
                         </p>
                     </div>
                     
-                    <a href="ReserveServlet?bookid=${book.id}" class="w-full py-3 bg-gray-50 border border-gray-200 text-[#1e5641] rounded-xl font-bold hover:bg-[#1e5641] hover:text-white hover:border-[#1e5641] transition-all text-center flex items-center justify-center gap-2">
                     <%-- 💡 修正：コンフリクトマーカーを削除し、大文字の bookId に統一 --%>
                     <a href="ReserveServlet?bookId=${book.id}" class="w-full py-3 bg-gray-50 border border-gray-200 text-[#1e5641] rounded-xl font-bold hover:bg-[#1e5641] hover:text-white hover:border-[#1e5641] transition-all text-center flex items-center justify-center gap-2">
                         詳細を見る

@@ -19,7 +19,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession; // 💡 追加：セッション用にインポート
 import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/LibrarySearchServlet")
@@ -53,19 +52,7 @@ public class LibrarySearchServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
-        // リクエストの文字コード設定
         request.setCharacterEncoding("UTF-8");
-        
-        // 💡 修正：セッションオブジェクトをリクエストから取得する
-        HttpSession session = request.getSession();
-
-        // 画面の各入力欄の「name属性」に合わせた名前で、個別に値を取得する
-        String title = request.getParameter("title");       // タイトルの入力値
-        String isbn = request.getParameter("isbn");         // ISBNの入力値
-        String author = request.getParameter("author");     // 著者の入力値
-        String category = request.getParameter("category"); // 分類の選択値（プルダウン）
-
-        // nullが入ってきた場合の対策（空文字にしておく）
 
         // 1. まず最初にログインチェック！（doGetと同じ処理）
         HttpSession session = request.getSession();
@@ -151,7 +138,6 @@ public class LibrarySearchServlet extends HttpServlet {
             request.setAttribute("bookList", results);         
             request.setAttribute("totalCount", results != null ? results.size() : 0);
             
-            // 💡 修正：【超重要】検索結果を表示するために、JSPへフォワードする処理を追加！
           
             request.setAttribute("reservedMap", bookReserverMap); 
             

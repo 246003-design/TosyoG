@@ -2,7 +2,6 @@ package servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +15,7 @@ import dto.ReservationDto;
 import entity.Book;
 import entity.BookInfo;
 import entity.Reservation;
-import entity.User; // 💡 追加：Userエンティティをインポート
+import entity.User; // 🌟 Userエンティティをインポート
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -42,12 +41,6 @@ public class ReserveServlet extends HttpServlet {
         
         HttpSession session = request.getSession();
         
-        // 💡 修正箇所1：LoginServletに合わせて "loginUser" で取得
-        User loginUser = (User) session.getAttribute("loginUser"); 
-        
-        // 💡 修正箇所2：UserオブジェクトからIDを取り出す
-        // ※もしエンティティのメソッド名が違う場合は getId() を getUserId() 等に変更してください
-        int userId = loginUser.getId();
         // 🌟 ログインサーブレットに合わせて「loginUser」オブジェクトとして取得
         User loginUser = (User) session.getAttribute("loginUser");
 
@@ -124,8 +117,6 @@ public class ReserveServlet extends HttpServlet {
 
             // ==========================================
             // コミット or ロールバック
-            // ==========================================
-
             if (resultMsg.isEmpty()) {
                 conn.commit(); 
                 session.setAttribute("successMessage", "reserve".equals(action) ? "予約手続きが完了しました。" : "予約をキャンセルしました。");
@@ -139,8 +130,6 @@ public class ReserveServlet extends HttpServlet {
             session.setAttribute("errorMsg", "システムエラーが発生しました。");
         }
         
-        // 💡 修正箇所3：bookIdの大文字小文字を合わせ、元の詳細画面へUターン（リダイレクト）
-        response.sendRedirect("ReserveServlet?bookId=" + bookId);
         // 詳細画面（GET）へリダイレクト
         response.sendRedirect(request.getContextPath() + "/ReserveServlet?bookId=" + bookId);
     }
@@ -155,13 +144,6 @@ public class ReserveServlet extends HttpServlet {
         String bookIdStr = request.getParameter("bookId");
         
         HttpSession session = request.getSession();
-        
-        // 💡 修正箇所4：LoginServletに合わせて "loginUser" で取得
-        User loginUser = (User) session.getAttribute("loginUser");
-        Integer loginUserId = null;
-        if (loginUser != null) {
-            loginUserId = loginUser.getId(); // ※ getId() メソッド名は環境に合わせてください
-        }
         
         // 🌟 GET（詳細画面表示）でも同様に「loginUser」オブジェクトからIDを取得する
         User loginUser = (User) session.getAttribute("loginUser");
@@ -178,20 +160,18 @@ public class ReserveServlet extends HttpServlet {
             request.setAttribute("errorMsg", errorMsg);
             session.removeAttribute("removeAttribute"); 
         }
-        
 
         if (bookIdStr != null && !bookIdStr.isEmpty()) {
             try (Connection conn = DBManager.getConnection()) {
                 
                 BookDAO bookDAO = new BookDAO(conn);
                 int bookId = Integer.parseInt(bookIdStr);
-
+                
                 Optional<Book> bookOpt = bookDAO.findById(bookId);
                 
                 if (bookOpt.isPresent()) {
                     Book book = bookOpt.get();
                     
-
                     // BookInfoDAOを使って詳細を補填
                     BookInfoDAO bookInfoDAO = new BookInfoDAO(conn);
                     BookInfo info = bookInfoDAO.findDetailById(book.getBookInfoId());
@@ -206,12 +186,6 @@ public class ReserveServlet extends HttpServlet {
                     boolean isReservedByCurrentUser = false;
                     Map<Integer, Integer> bookReserverMap = new HashMap<>();
 
-                    // 💡 修正箇所5：ログイン済みの場合のみ自分の予約履歴をチェック
-                    if (loginUserId != null) {
-                        for (Reservation r : reservationDAO.findAll()) {
-                            if (r.getUserId() == loginUserId && r.getBookId() == bookId && (r.getStatus() == 1 || r.getStatus() == 2)) {
-                                isReservedByCurrentUser = true; 
-                                break;
                     if (allReservations != null) {
                         for (Reservation r : allReservations) {
                             if (r.getStatus() == 1 || r.getStatus() == 2) { 
@@ -225,15 +199,13 @@ public class ReserveServlet extends HttpServlet {
                         }
                     }
 
-                    // 詳細画面JSPの記述に合わせて、Bookエンティティにフラグを仕込む
                     // エンティティにフラグを仕込む
                     book.setReservedByCurrentUser(isReservedByCurrentUser);
                     
-                    // 画面のボタン切り替え等に使う単体オブジェクト
                     // JSPへデータを送る
                     request.setAttribute("isReserved", isReservedByCurrentUser);
-
                     request.setAttribute("bookReserverMap", bookReserverMap);
+
                 } else {
                     request.setAttribute("errorMsg", "該当する図書データが見つかりません。");
                 }

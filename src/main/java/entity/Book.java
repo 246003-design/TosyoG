@@ -78,4 +78,14 @@ public class Book {
 	public boolean isReservedByCurrentUser() {
 	    return reservedByCurrentUser;
 	}
+	// entity/Book.java の中に追加するイメージ
+	private int status;
+
+	public int getStatus() {
+	    return status;
+	}
+
+	public void setStatus(int status) {
+	    this.status = status;
+	}
 }
