@@ -58,6 +58,6 @@ public class OverdueServlet extends HttpServlet {
 		request.setAttribute("overdueList", overdueList);
 		
 		// 延滞一覧画面のJSPへ転送（ファイル名が overdue_list.jsp の場合）
-		request.getRequestDispatcher("WEB-INF/JSP/librarian/librarian_overdue.jsp").forward(request, response);
+		request.getRequestDispatcher("/WEB-INF/JSP/librarian/librarian_overdue.jsp").forward(request, response);
 	}
 }

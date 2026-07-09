@@ -2,7 +2,7 @@
 　　　　　　　　　　　　　　　　　　　<%--      司書　延滞一覧画面　　　　 --%>
 
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%-- <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> --%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -41,32 +41,30 @@
                             <th class="p-4 font-bold text-sm text-center">状況</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200">
-                        <%-- <c:forEach var="overdue" items="${overdueList}"> --%>
-                        <tr class="hover:bg-orange-50 transition-colors bg-white">
-                            <td class="p-4 font-bold text-gray-800">システム設計の基礎</td>
-                            <td class="p-4">
-                                <!-- ユーザー詳細画面へのリンク -->
-                                <a href="UserDetailServlet?userId=246246" class="text-blue-600 hover:underline font-semibold">情報 太郎</a>
-                            </td>
-                            <td class="p-4 text-gray-500 font-mono text-sm">246246</td>
-                            <td class="p-4 text-red-600 font-bold">2024/05/10</td>
-                            <td class="p-4 text-center">
-                                <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold border border-red-200">
-                                    超過
-                                </span>
-                            </td>
-                        </tr>
-                        <%-- </c:forEach> --%>
-                    </tbody>
+						<tbody class="divide-y divide-gray-200">
+						    <c:forEach var="overdue" items="${overdueList}">
+						        <tr class="hover:bg-orange-50 transition-colors bg-white">
+						            <td class="p-4 font-bold text-gray-800"><c:out value="${overdue.title}" /></td>
+						            
+						            <td class="p-4">
+						                <a href="UserDetailServlet?userId=${overdue.user_id}" class="text-blue-600 hover:underline font-semibold"><c:out value="${overdue.user_name}" /></a>
+						            </td>
+						            
+						            <td class="p-4 text-gray-500 font-mono text-sm"><c:out value="${overdue.user_id}" /></td>
+						            
+						            <td class="p-4 text-red-600 font-bold"><c:out value="${overdue.due_date}" /></td>
+						            
+						            <td class="p-4 text-center">
+						                <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold border border-red-200">
+						                    超過
+						                </span>
+						            </td>
+						        </tr>
+						    </c:forEach>
+						</tbody>
                 </table>
             </div>
-            
-            <div class="p-4 bg-gray-50 text-center border-t border-gray-200">
-                <a href="HomeServlet" class="inline-block px-8 py-2 border-2 border-gray-300 text-gray-700 font-bold rounded hover:bg-white transition-colors">
-                    戻る
-                </a>
-            </div>
+
         </div>
     </main>
 </body>
