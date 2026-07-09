@@ -10,10 +10,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.ReturnLogic;
 
-@WebServlet("/ReturnProcessServlet")
+@WebServlet("/ReturnServlet")
 public class ReturnServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private static final String RETURN_JSP_PATH = "WEB-INF/JSP/librarian/librarian_return.jsp";
+    private static final String RETURN_JSP_PATH = "/WEB-INF/JSP/librarian/librarian_return.jsp";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 

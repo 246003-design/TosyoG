@@ -17,7 +17,7 @@
     </header>
 
     <main class="flex-1 p-6 max-w-3xl mx-auto w-full flex flex-col justify-center gap-6">
-        <a href="librarian_book_register.jsp" class="w-full bg-white p-8 rounded-xl shadow-sm hover:shadow-md border border-gray-200 flex items-center justify-between group hover:border-[#1e3a8a] transition-all">
+        <a href="BookRegisterServlet" class="w-full bg-white p-8 rounded-xl shadow-sm hover:shadow-md border border-gray-200 flex items-center justify-between group hover:border-[#1e3a8a] transition-all">
             <div class="flex items-center gap-4">
                 <div class="bg-blue-100 p-4 rounded-full text-blue-700 group-hover:bg-[#1e3a8a] group-hover:text-white transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>

@@ -5,7 +5,7 @@ import java.sql.Timestamp;
 import java.util.Optional;
 
 import dao.BookDAO;
-import dao.DBManager; // 独自のDB接続クラス
+import dao.DBManager;
 import dao.LendDAO;
 import dao.UserDAO;
 import dto.LendDto;
@@ -19,7 +19,7 @@ public class ReturnLogic {
     public LendDto executeReturn(int bookId) throws Exception {
         
         try (Connection conn = DBManager.getConnection()) {
-            conn.setAutoCommit(false);
+            conn.setAutoCommit(false); // トランザクション開始
             
             BookDAO bookDao = new BookDAO(conn);
             LendDAO lendDao = new LendDAO(conn);
@@ -35,21 +35,25 @@ public class ReturnLogic {
                 // ② 貸出中かチェック
                 Lend lend = lendDao.findCurrentLendByBookId(bookId);
                 if (lend == null) {
-                    throw new Exception("この図書は現在貸出中ではありません。");
+                    throw new Exception("この図書（ID: " + bookId + "）は現在貸出中ではありません。");
                 }
 
-                // ③・④ 更新処理
-                boolean isLendUpdated = lendDao.updateReturnStatus(lend.getId(), 2);
+                // ③ 貸出状況の更新処理
+                // ★修正：ステータスを「1 (返却済)」に更新する
+                boolean isLendUpdated = lendDao.updateReturnStatus(lend.getId(), 1);
+                
+                // ④ ユーザーの貸出冊数を減らす処理
                 User user = userDao.findById(lend.getUserId());
                 boolean isUserUpdated = false;
                 if (user != null) {
+                    // 貸出冊数を1減らす（0未満にはならないように制御）
                     user.setBorrowCount(Math.max(0, user.getBorrowCount() - 1));
                     isUserUpdated = userDao.update(user);
                 }
 
                 // ⑤ コミットとDTOの作成
                 if (isLendUpdated && isUserUpdated) {
-                    conn.commit();
+                    conn.commit(); // 変更を確定
                     
                     LendDto returnDto = new LendDto();
                     returnDto.setId(lend.getId());
@@ -58,11 +62,10 @@ public class ReturnLogic {
                     returnDto.setLendDate(lend.getLendDate());
                     returnDto.setReturnDate(new Timestamp(System.currentTimeMillis()));
                     
-                    // タイトルをDTOの空きフィールドや別の方法で渡す工夫をしてもOKです
                     return returnDto; 
                 } else {
-                    conn.rollback();
-                    throw new Exception("返却処理中にエラーが発生しました。");
+                    conn.rollback(); // 失敗した場合は取り消し
+                    throw new Exception("返却情報の更新に失敗しました。");
                 }
             } catch (Exception e) {
                 conn.rollback();
