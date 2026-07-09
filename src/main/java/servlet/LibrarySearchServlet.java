@@ -150,7 +150,7 @@ public class LibrarySearchServlet extends HttpServlet {
         } catch (Exception e) {
             System.err.println("検索処理中にエラーが発生しました。");
             e.printStackTrace();
-            // 💡 ここも "errorMsg" に変更してJSPに送る
+            // ここも "errorMsg" に変更してJSPに送る
             request.setAttribute("errorMsg", "システムエラーが発生しました。");
             request.getRequestDispatcher("/WEB-INF/JSP/customer/customer_book_search.jsp").forward(request, response);
         }
