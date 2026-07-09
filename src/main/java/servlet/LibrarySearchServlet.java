@@ -35,6 +35,7 @@ public class LibrarySearchServlet extends HttpServlet {
         // 1. セッションから loginUser オブジェクトを取得
         HttpSession session = request.getSession();
         User loginUser = (User) session.getAttribute("loginUser");
+        
 
         // 2. ログイン情報を維持できているか（nullでないか）チェック
         if (loginUser == null) {

@@ -1,6 +1,7 @@
 <%-- 図書詳細＆予約画面 --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %> <%-- 💡 追加：日付フォーマット用 --%>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -18,7 +19,7 @@
     </c:choose>
 
     <header class="${themeBg} text-white p-4 shadow-md flex items-center gap-3 sticky top-0 z-10 transition-colors">
-        <a href="javascript:history.back()" class="p-1 hover:bg-white/20 rounded-full transition-colors">
+        <a href="LibrarySearchServlet" class="p-1 hover:bg-white/20 rounded-full transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         </a>
         <h1 class="text-xl font-bold tracking-wider">図書詳細</h1>
@@ -75,21 +76,32 @@
                             </p>
                         </div>
 
-                        <div class="mb-4">
+                      <div class="mb-4">
                             <h4 class="text-sm font-bold text-gray-500 mb-1 uppercase tracking-wider">状態</h4>
-                            <p class="text-gray-700 text-sm md:text-base">
+                            <p class="text-gray-700 text-sm md:text-base flex items-center gap-2">
                                 <c:choose>
-                                    <c:when test="${book.status == 1}">貸出可能</c:when>
-                                    <c:when test="${book.status == 2}">貸出中</c:when>
-                                    <c:when test="${book.status == 3}">予約中</c:when>
-                                    <c:otherwise>利用不可</c:otherwise>
+                                    <%-- 💡 貸出DAOから取得したリアルタイムな判定を最優先する --%>
+                                    <c:when test="${isLentOut}">
+                                        <span class="text-red-600 font-bold">貸出中</span>
+                                        <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
+                                            返却予定日: <fmt:formatDate value="${currentLend.dueDate}" pattern="yyyy/MM/dd" />
+                                        </span>
+                                    </c:when>
+                                    <c:when test="${book.status == 3}">
+                                        <span class="text-amber-600 font-bold">予約中</span>
+                                    </c:when>
+                                    <c:when test="${book.status == 1}">
+                                        <span class="text-green-600 font-bold">貸出可能</span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span class="text-gray-500 font-bold">利用不可</span>
+                                    </c:otherwise>
                                 </c:choose>
                             </p>
                         </div>
-                    </div>
 
                     <div class="flex flex-col sm:flex-row gap-4 mt-8 pt-6 border-t border-gray-100">
-                        <a href="javascript:history.back()" class="flex-1 py-3.5 border-2 border-gray-300 text-gray-700 rounded-xl font-bold text-center hover:bg-gray-50 transition-colors">
+                        <a href="LibrarySearchServlet" class="flex-1 py-3.5 border-2 border-gray-300 text-gray-700 rounded-xl font-bold text-center hover:bg-gray-50 transition-colors">
                             戻る
                         </a>
                         

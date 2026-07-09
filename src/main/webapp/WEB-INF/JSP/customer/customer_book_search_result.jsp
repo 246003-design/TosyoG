@@ -43,8 +43,7 @@
                     </h3>
                     
                     <%-- 💡 修正：コンフリクトマーカーを削除し、予約Mapによる判定を採用 --%>
-                    <c:if test="${reservedMap[book.id]}">
-                    <div class="absolute top-3 right-3 bg-amber-500/90 backdrop-blur text-white text-xs font-black px-3 py-1.5 rounded-md shadow-sm border border-amber-400 z-20 flex items-center gap-1">
+                    <c:if test="${not empty reservedMap[book.id]}">                    <div class="absolute top-3 right-3 bg-amber-500/90 backdrop-blur text-white text-xs font-black px-3 py-1.5 rounded-md shadow-sm border border-amber-400 z-20 flex items-center gap-1">
                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                         予約済
                     </div>

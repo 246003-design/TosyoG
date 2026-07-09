@@ -10,10 +10,12 @@ import java.util.Optional;
 import dao.BookDAO;
 import dao.BookInfoDAO;
 import dao.DBManager;
+import dao.LendDAO;
 import dao.ReservationDAO;
 import dto.ReservationDto;
 import entity.Book;
 import entity.BookInfo;
+import entity.Lend;
 import entity.Reservation;
 import entity.User; // 🌟 Userエンティティをインポート
 import jakarta.servlet.ServletException;
@@ -103,7 +105,7 @@ public class ReserveServlet extends HttpServlet {
                         if (r.getUserId() == userId && r.getBookInfoId() == bookInfoId && (r.getStatus() == 1 || r.getStatus() == 2)) {
                             ReservationDto dto = new ReservationDto();
                             dto.setId(r.getId());
-                            dto.setStatus(9); // 9: キャンセル
+                            dto.setStatus(3); // キャンセル
                             
                             if (reservationDAO.update(dto)) {
                                 isUpdated = true;
@@ -198,7 +200,19 @@ public class ReserveServlet extends HttpServlet {
                             }
                         }
                     }
+                 // --- 💡 追加：貸出情報の取得と判定 ---
+                    LendDAO lendDAO = new LendDAO(conn);
+                    Lend currentLend = lendDAO.findCurrentLendByBookId(bookId);
+                    boolean isLentOut = (currentLend != null);
+                    
+                    request.setAttribute("isLentOut", isLentOut);
+                    if (isLentOut) {
+                        request.setAttribute("currentLend", currentLend);
+                    }
+                    // ----------------------------------
 
+                    // エンティティにフラグを仕込む
+                    book.setReservedByCurrentUser(isReservedByCurrentUser);
                     // エンティティにフラグを仕込む
                     book.setReservedByCurrentUser(isReservedByCurrentUser);
                     
