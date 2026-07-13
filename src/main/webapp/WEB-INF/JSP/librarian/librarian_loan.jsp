@@ -69,7 +69,7 @@
                     />
                 </div>
                 <div>
-                    <label class="block text-sm font-bold text-gray-600 mb-3 uppercase tracking-wider">2. 図書ISBN / 蔵書ID</label>
+                    <label class="block text-sm font-bold text-gray-600 mb-3 uppercase tracking-wider">2.蔵書ID</label>
                     <input 
                         type="text" 
                         name="bookId"
