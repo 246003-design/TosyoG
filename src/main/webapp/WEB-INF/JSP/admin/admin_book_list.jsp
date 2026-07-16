@@ -51,14 +51,14 @@
                         <c:forEach var="book" items="${bookList}">
                             <!-- カードをクリックすると、右側の詳細フォームにデータをセットする設計 -->
                             <!-- 💡 book.bookInfo から各情報を安全に取得 -->
-                            <div onclick="selectBook('${book.id}', '${book.bookInfo.isbn}', '${book.bookInfo.title}', '${book.bookInfo.authorId}', '${book.bookInfo.publisherId}', '${book.bookInfo.categoryId}', '${book.bookInfo.imageUrl}', '${book.bookNumber}', '${book.layoutId}')"
+                            <div onclick="selectBook('${book.id}', '${book.isbn}', '${book.title}', '${book.authorId}', '${book.publisherId}', '${book.categoryId}', '${book.imageUrl}', '${book.bookNumber}', '${book.layoutId}')"
                                  class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:border-blue-300 hover:shadow transition-all cursor-pointer flex gap-4">
                                 
                                 <!-- 本の画像 -->
                                 <div class="w-16 h-24 bg-gray-100 rounded overflow-hidden flex-shrink-0 flex items-center justify-center">
                                     <c:choose>
-                                        <c:when test="${not empty book.bookInfo.imageUrl}">
-                                            <img src="${book.bookInfo.imageUrl}" alt="${book.bookInfo.title}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/150x200?text=No+Image'">
+                                        <c:when test="${not empty book.imageUrl}">
+                                            <img src="${book.imageUrl}" alt="${book.title}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/150x200?text=No+Image'">
                                         </c:when>
                                         <c:otherwise>
                                             <span class="text-xs text-gray-400">No Image</span>
@@ -70,12 +70,12 @@
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center gap-2 mb-1">
                                         <span class="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full font-bold">図書ID: ${book.id}</span>
-                                        <span class="text-xs text-gray-400">ISBN: ${book.bookInfo.isbn}</span>
+                                        <span class="text-xs text-gray-400">ISBN: ${book.isbn}</span>
                                     </div>
-                                    <h3 class="font-bold text-gray-900 truncate">${book.bookInfo.title}</h3>
-                                    <p class="text-sm text-gray-500 truncate">著者ID: ${book.bookInfo.authorId} / 出版社ID: ${book.bookInfo.publisherId}</p>
+                                    <h3 class="font-bold text-gray-900 truncate">${book.title}</h3>
+                                    <p class="text-sm text-gray-500 truncate">著者: ${book.authorName} / 出版社ID: ${book.publisherName}</p>
                                     <div class="mt-2 flex gap-4 text-xs text-gray-400">
-                                        <span>配置場所: ${book.layoutId}</span>
+                                        <span>配置場所: ${book.layoutLocation}</span>
                                         <span>本番号: ${book.bookNumber}</span>
                                     </div>
                                 </div>
