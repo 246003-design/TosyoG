@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import dto.BookListDto;
 import entity.Book;
 import entity.BookInfo;
 
@@ -317,5 +318,71 @@ public class BookDAO extends BaseDAO {
 			e.printStackTrace();
 		}
 		return list;
+	}
+	
+	public List<BookListDto> searchBooksForManagement(String keyword) {
+	    List<BookListDto> list = new ArrayList<>();
+
+	    StringBuilder sql = new StringBuilder();
+	    sql.append("SELECT ");
+	    sql.append("b.id, b.book_number, b.layout_id, ");
+	    sql.append("bi.isbn, bi.title, bi.author_id, bi.publisher_id, bi.category_id, bi.imageUrl, ");
+	    sql.append("a.name AS author_name, ");
+	    sql.append("p.name AS publisher_name, ");
+	    sql.append("c.name AS category_name, ");
+	    sql.append("l.location AS layout_location ");
+	    sql.append("FROM book b ");
+	    sql.append("INNER JOIN book_info bi ON b.book_info_id = bi.id ");
+	    sql.append("LEFT JOIN author a ON bi.author_id = a.id ");
+	    sql.append("LEFT JOIN publisher p ON bi.publisher_id = p.id ");
+	    sql.append("LEFT JOIN category c ON bi.category_id = c.id ");
+	    sql.append("LEFT JOIN layout l ON b.layout_id = l.id ");
+	    sql.append("WHERE b.deleted_at IS NULL ");
+
+	    if (keyword != null && !keyword.trim().isEmpty()) {
+	        sql.append("AND (bi.title LIKE ? OR bi.isbn LIKE ? OR a.name LIKE ?) ");
+	    }
+
+	    sql.append("ORDER BY b.id DESC");
+
+	    try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+	        if (keyword != null && !keyword.trim().isEmpty()) {
+	            String likeKeyword = "%" + keyword.trim() + "%";
+	            pstmt.setString(1, likeKeyword);
+	            pstmt.setString(2, likeKeyword);
+	            pstmt.setString(3, likeKeyword);
+	        }
+
+	        try (ResultSet rs = pstmt.executeQuery()) {
+	            while (rs.next()) {
+	                BookListDto dto = new BookListDto();
+
+	                // ID系
+	                dto.setId(rs.getInt("id"));
+	                dto.setBookNumber(rs.getInt("book_number"));
+	                dto.setLayoutId(rs.getInt("layout_id"));
+	                dto.setAuthorId(rs.getInt("author_id"));
+	                dto.setPublisherId(rs.getInt("publisher_id"));
+	                dto.setCategoryId(rs.getInt("category_id"));
+
+	                // 文字列(book_info由来)
+	                dto.setIsbn(rs.getString("isbn"));
+	                dto.setTitle(rs.getString("title"));
+	                dto.setImageUrl(rs.getString("imageUrl"));
+
+	                // 表示用の名前(JOIN由来、ASで付けたエイリアス名で取得)
+	                dto.setAuthorName(rs.getString("author_name"));
+	                dto.setPublisherName(rs.getString("publisher_name"));
+	                dto.setCategoryName(rs.getString("category_name"));
+	                dto.setLayoutLocation(rs.getString("layout_location"));
+
+	                list.add(dto);
+	            }
+	        }
+	    } catch (SQLException e) {
+	        System.err.println("BookDAO.searchBooksForManagementでエラーが発生しました。");
+	        e.printStackTrace();
+	    }
+	    return list;
 	}
 }

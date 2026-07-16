@@ -6,7 +6,7 @@ import java.util.List;
 
 import dao.BookDAO;
 import dao.DBManager;
-import entity.Book;
+import dto.BookListDto;
 import entity.User;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -54,7 +54,7 @@ public class BookListServlet extends HttpServlet {
 			BookDAO bookDAO = new BookDAO(conn);
 			
 			// 💡 BookDAOに実装した検索メソッドを呼び出す
-			List<Book> bookList = bookDAO.searchBooks(keyword);
+			List<BookListDto> bookList = bookDAO.searchBooksForManagement(keyword);
 			
 			// 取得したリストをリクエストスコープにセット
 			request.setAttribute("bookList", bookList);
