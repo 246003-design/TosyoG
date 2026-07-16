@@ -30,22 +30,23 @@ public class ReservationLogic {
             if (!bookOpt.isPresent()) return "指定された図書情報が見つかりません。";
             Book book = bookOpt.get();
 
-            int reservationCount = 0;
+            // 🌟 1. 貸出・予約上限の判定
+            // 予約時にborrowCountが増減するため、単純に現在のborrowCountと比較するだけでOK
+            if (user.getBorrowCount() >= MAX_LIMIT) {
+                return "貸出・予約の合計が上限（" + MAX_LIMIT + "冊）に達しているため、予約できません。";
+            }
+
+            // 🌟 2. 同一作品の二重予約チェック
             boolean isAlreadyReserved = false;
-            
             for (Reservation r : reservationDAO.findAll()) {
                 if (r.getUserId() == userId && (r.getStatus() == 1 || r.getStatus() == 2)) {
-                    reservationCount++;
-                    // ★物理本(bookId)が違っても、同じ作品(bookInfoId)なら二重予約エラーにする
                     if (r.getBookInfoId() == book.getBookInfoId()) {
                         isAlreadyReserved = true;
+                        break; // 見つかった時点でループを抜ける
                     }
                 }
             }
 
-            if ((user.getBorrowCount() + reservationCount) >= MAX_LIMIT) {
-                return "貸出・予約の合計が上限（" + MAX_LIMIT + "冊）に達しているため、予約できません。";
-            }
             if (isAlreadyReserved) {
                 return "すでにこの作品は予約済みです。";
             }

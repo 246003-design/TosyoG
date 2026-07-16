@@ -21,7 +21,7 @@
         <div class="flex items-center gap-5">
             <span class="text-sm hidden sm:flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/20">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                管理者: <%-- <c:out value="${sessionScope.adminName}" /> --%>System Admin 様
+                管理者 <%-- <c:out value="${sessionScope.adminName}" /> --%> 様
             </span>
             <a href="LogoutServlet" class="text-sm font-medium hover:text-gray-300 transition-colors flex items-center gap-1.5" onclick="return confirm('ログアウトしますか？');">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>

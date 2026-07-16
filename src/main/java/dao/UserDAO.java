@@ -260,4 +260,30 @@ public class UserDAO extends BaseDAO {
 		}
 		return list;
 	}
+	
+//	// 利用者の貸出冊数(borrow_count)を+1するメソッド
+//    public void incrementBorrowCount(int userId) throws SQLException {
+//        String sql = "UPDATE user SET borrow_count = borrow_count + 1, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
+//        
+//        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+//            pstmt.setInt(1, userId);
+//            pstmt.executeUpdate();
+//        }
+//    }
+	
+	// 利用者の現在の実際の貸出数を計算し、borrow_countを正確な値に上書き（同期）するメソッド
+	public void syncBorrowCount(int userId) throws SQLException {
+	    // lendテーブルから「未返却（return_date IS NULL）」の数を数え、
+	    // その結果をuserテーブルのborrow_countにセットするSQL
+	    String sql = "UPDATE user SET borrow_count = "
+	               + "(SELECT COUNT(*) FROM lend WHERE user_id = ? AND return_date IS NULL AND deleted_at IS NULL), "
+	               + "updated_at = CURRENT_TIMESTAMP "
+	               + "WHERE id = ?";
+	    
+	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	        pstmt.setInt(1, userId); // サブクエリ（SELECT）用のuserId
+	        pstmt.setInt(2, userId); // UPDATE用のuserId
+	        pstmt.executeUpdate();
+	    }
+	}
 }

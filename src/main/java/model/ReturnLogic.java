@@ -11,7 +11,6 @@ import dao.UserDAO;
 import dto.LendDto;
 import entity.Book;
 import entity.Lend;
-import entity.User;
 
 public class ReturnLogic {
 
@@ -39,34 +38,24 @@ public class ReturnLogic {
                 }
 
                 // ③ 貸出状況の更新処理
-                // ★修正：ステータスを「1 (返却済)」に更新する
+                // ステータスを「1 (返却済)」に更新する
                 boolean isLendUpdated = lendDao.updateReturnStatus(lend.getId(), 1);
                 
                 // ④ ユーザーの貸出冊数を減らす処理
-                User user = userDao.findById(lend.getUserId());
-                boolean isUserUpdated = false;
-                if (user != null) {
-                    // 貸出冊数を1減らす（0未満にはならないように制御）
-                    user.setBorrowCount(Math.max(0, user.getBorrowCount() - 1));
-                    isUserUpdated = userDao.update(user);
-                }
+                userDao.syncBorrowCount(lend.getUserId());
 
                 // ⑤ コミットとDTOの作成
-                if (isLendUpdated && isUserUpdated) {
-                    conn.commit(); // 変更を確定
-                    
-                    LendDto returnDto = new LendDto();
-                    returnDto.setId(lend.getId());
-                    returnDto.setUserId(lend.getUserId());
-                    returnDto.setBookId(lend.getBookId());
-                    returnDto.setLendDate(lend.getLendDate());
-                    returnDto.setReturnDate(new Timestamp(System.currentTimeMillis()));
-                    
-                    return returnDto; 
-                } else {
-                    conn.rollback(); // 失敗した場合は取り消し
-                    throw new Exception("返却情報の更新に失敗しました。");
-                }
+conn.commit(); // 変更を確定
+                
+                LendDto returnDto = new LendDto();
+                returnDto.setId(lend.getId());
+                returnDto.setUserId(lend.getUserId());
+                returnDto.setBookId(lend.getBookId());
+                returnDto.setLendDate(lend.getLendDate());
+                returnDto.setReturnDate(new Timestamp(System.currentTimeMillis()));
+                
+                return returnDto; 
+
             } catch (Exception e) {
                 conn.rollback();
                 throw e; // エラーメッセージをServletに引き継ぐ
