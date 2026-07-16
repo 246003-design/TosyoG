@@ -62,7 +62,7 @@
                     <input 
                         type="text" 
                         name="userId"
-                        placeholder="カードをスキャン" 
+                        placeholder="利用者IDを入力" 
                         class="w-full p-5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#1e3a8a]/20 focus:border-[#1e3a8a] transition-all text-xl font-mono tracking-widest placeholder-gray-400 text-gray-800 font-bold shadow-inner"
                         required
                         autofocus
@@ -73,7 +73,7 @@
                     <input 
                         type="text" 
                         name="bookId"
-                        placeholder="バーコードをスキャン" 
+                        placeholder="図書IDを入力" 
                         class="w-full p-5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#1e3a8a]/20 focus:border-[#1e3a8a] transition-all text-xl font-mono tracking-widest placeholder-gray-400 text-gray-800 font-bold shadow-inner"
                         required
                     />

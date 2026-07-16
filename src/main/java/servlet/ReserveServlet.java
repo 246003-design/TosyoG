@@ -12,12 +12,13 @@ import dao.BookInfoDAO;
 import dao.DBManager;
 import dao.LendDAO;
 import dao.ReservationDAO;
+import dao.UserDAO;
 import dto.ReservationDto;
 import entity.Book;
 import entity.BookInfo;
 import entity.Lend;
 import entity.Reservation;
-import entity.User; // 🌟 Userエンティティをインポート
+import entity.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -43,16 +44,13 @@ public class ReserveServlet extends HttpServlet {
         
         HttpSession session = request.getSession();
         
-        // 🌟 ログインサーブレットに合わせて「loginUser」オブジェクトとして取得
+        // ログインチェック
         User loginUser = (User) session.getAttribute("loginUser");
-
-        // オブジェクト自体が存在するか（ログインしているか）をチェック
         if (loginUser == null) {
             response.sendRedirect(request.getContextPath() + "/LoginServlet");
             return;
         }
 
-        // ログインが確認できたら、オブジェクトからユーザーIDを抽出（アンボクシング対策でint型へ）
         int userId = loginUser.getId();
 
         if (bookIdStr == null || bookIdStr.isEmpty()) {
@@ -68,8 +66,10 @@ public class ReserveServlet extends HttpServlet {
         try (Connection conn = DBManager.getConnection()) {
             conn.setAutoCommit(false); // トランザクション開始
             
+         // try-with-resources 内でUserDAOを準備
             ReservationDAO reservationDAO = new ReservationDAO(conn);
             BookDAO bookDAO = new BookDAO(conn);
+            UserDAO userDAO = new UserDAO(conn); // 🌟 追加
 
             // ==========================================
             // 予約処理
@@ -86,7 +86,15 @@ public class ReserveServlet extends HttpServlet {
                     dto.setBookInfoId(book.getBookInfoId()); 
                     dto.setStatus(1); // 1: 予約中
 
-                    if (!reservationDAO.insert(dto)) {
+                    if (reservationDAO.insert(dto)) {
+                        // 🌟【追加】予約成功時に、利用者の貸出カウント（borrowCount）を増やす
+                        if (userDAO.incrementBorrowCount(userId)) {
+                            // セッション内のログインユーザー情報も同期して更新
+                            loginUser.setBorrowCount(loginUser.getBorrowCount() + 1);
+                        } else {
+                            resultMsg = "貸出カウントの更新に失敗しました。";
+                        }
+                    } else {
                         resultMsg = "予約データの登録に失敗しました。";
                     }
                 }
@@ -108,12 +116,21 @@ public class ReserveServlet extends HttpServlet {
                             dto.setStatus(3); // キャンセル
                             
                             if (reservationDAO.update(dto)) {
-                                isUpdated = true;
+                                // 🌟【追加】キャンセル成功時に、利用者の貸出カウント（borrowCount）を減らす
+                                if (userDAO.decrementBorrowCount(userId)) {
+                                    isUpdated = true;
+                                    // セッション内のログインユーザー情報も同期して更新
+                                    loginUser.setBorrowCount(loginUser.getBorrowCount() - 1);
+                                } else {
+                                    resultMsg = "貸出カウントの更新に失敗しました。";
+                                }
                                 break;
                             }
                         }
                     }
-                    if (!isUpdated) resultMsg = "キャンセルの更新に失敗しました。";
+                    if (!isUpdated && resultMsg.isEmpty()) {
+                        resultMsg = "キャンセルの更新に失敗しました。";
+                    }
                 }
             }
 
