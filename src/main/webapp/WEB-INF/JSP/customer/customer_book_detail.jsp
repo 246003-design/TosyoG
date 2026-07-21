@@ -105,8 +105,8 @@
                             戻る
                         </a>
                         
-<%-- 司書(1)でも管理者(2)でもない場合にボタンを表示 --%>
-<c:if test="${sessionScope.loginUser.role != 1 && sessionScope.loginUser.role != 2}">
+                        <%-- 司書(1)でも管理者(2)でもない場合にボタンを表示 --%>
+						<c:if test="${sessionScope.loginUser.role != 1 && sessionScope.loginUser.role != 2}">
                         <form action="ReserveServlet" method="POST" class="flex-1 flex">
                             <input type="hidden" name="bookId" value="${book.id}" />
 
