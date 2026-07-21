@@ -1,5 +1,4 @@
-
-　　　　　　　　　　　　　　　　　　　<%--      司書　延滞一覧画面　　　　 --%>
+<%--      司書　延滞一覧画面      --%>
 
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -41,27 +40,35 @@
                             <th class="p-4 font-bold text-sm text-center">状況</th>
                         </tr>
                     </thead>
-						<tbody class="divide-y divide-gray-200">
-						    <c:forEach var="overdue" items="${overdueList}">
-						        <tr class="hover:bg-orange-50 transition-colors bg-white">
-						            <td class="p-4 font-bold text-gray-800"><c:out value="${overdue.title}" /></td>
-						            
-						            <td class="p-4">
-						                <a href="UserDetailServlet?userId=${overdue.user_id}" class="text-blue-600 hover:underline font-semibold"><c:out value="${overdue.user_name}" /></a>
-						            </td>
-						            
-						            <td class="p-4 text-gray-500 font-mono text-sm"><c:out value="${overdue.user_id}" /></td>
-						            
-						            <td class="p-4 text-red-600 font-bold"><c:out value="${overdue.due_date}" /></td>
-						            
-						            <td class="p-4 text-center">
-						                <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold border border-red-200">
-						                    超過
-						                </span>
-						            </td>
-						        </tr>
-						    </c:forEach>
-						</tbody>
+                    <tbody class="divide-y divide-gray-200">
+                        <c:forEach var="overdue" items="${overdueList}">
+                            <tr class="hover:bg-orange-50 transition-colors bg-white">
+                                <td class="p-4 font-bold text-gray-800"><c:out value="${overdue.title}" /></td>
+                                
+                                <%-- 管理者のみリンク表示。司書はテキストのみ --%>
+                                <td class="p-4">
+                                    <c:choose>
+                                        <c:when test="${sessionScope.loginUser.role == 2}">
+                                            <a href="UserDetailServlet?userId=${overdue.user_id}" class="text-blue-600 hover:underline font-semibold"><c:out value="${overdue.user_name}" /></a>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="font-semibold text-gray-700"><c:out value="${overdue.user_name}" /></span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                                
+                                <td class="p-4 text-gray-500 font-mono text-sm"><c:out value="${overdue.user_id}" /></td>
+                                
+                                <td class="p-4 text-red-600 font-bold"><c:out value="${overdue.due_date}" /></td>
+                                
+                                <td class="p-4 text-center">
+                                    <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold border border-red-200">
+                                        超過
+                                    </span>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
                 </table>
             </div>
 
