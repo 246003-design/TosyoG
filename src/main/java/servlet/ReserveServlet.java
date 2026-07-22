@@ -13,7 +13,6 @@ import dao.DBManager;
 import dao.LendDAO;
 import dao.ReservationDAO;
 import dao.UserDAO;
-import dto.ReservationDto;
 import entity.Book;
 import entity.BookInfo;
 import entity.Lend;
@@ -30,7 +29,7 @@ import model.ReservationLogic;
 @WebServlet("/ReserveServlet")
 public class ReserveServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-
+//予約
     /**
      * 【予約・キャンセル処理（POST）】
      */
@@ -60,93 +59,34 @@ public class ReserveServlet extends HttpServlet {
         }
 
         int bookId = Integer.parseInt(bookIdStr);
-        String resultMsg = "";
         ReservationLogic logic = new ReservationLogic();
 
-        try (Connection conn = DBManager.getConnection()) {
-            conn.setAutoCommit(false); // トランザクション開始
-            
-         // try-with-resources 内でUserDAOを準備
-            ReservationDAO reservationDAO = new ReservationDAO(conn);
-            BookDAO bookDAO = new BookDAO(conn);
-            UserDAO userDAO = new UserDAO(conn); // 🌟 追加
-
+        try {
             // ==========================================
-            // 予約処理
+            // 1. 予約・キャンセル処理（DBの更新 ＋ syncBorrowCount が実行される）
             // ==========================================
             if ("reserve".equals(action)) {
-                resultMsg = logic.validateReservation(conn, userId, bookId);
-                
-                if (resultMsg.isEmpty()) {
-                    Book book = bookDAO.findById(bookId).get(); 
-                    
-                    ReservationDto dto = new ReservationDto();
-                    dto.setUserId(userId);
-                    dto.setBookId(bookId); 
-                    dto.setBookInfoId(book.getBookInfoId()); 
-                    dto.setStatus(1); // 1: 予約中
+                logic.executeReservation(userId, bookId);
+                session.setAttribute("successMessage", "予約手続きが完了しました。");
 
-                    if (reservationDAO.insert(dto)) {
-                        // 🌟【追加】予約成功時に、利用者の貸出カウント（borrowCount）を増やす
-                        if (userDAO.incrementBorrowCount(userId)) {
-                            // セッション内のログインユーザー情報も同期して更新
-                            loginUser.setBorrowCount(loginUser.getBorrowCount() + 1);
-                        } else {
-                            resultMsg = "貸出カウントの更新に失敗しました。";
-                        }
-                    } else {
-                        resultMsg = "予約データの登録に失敗しました。";
-                    }
-                }
-                
-            // ==========================================
-            // キャンセル処理
-            // ==========================================
             } else if ("cancel".equals(action)) {
-                resultMsg = logic.validateCancellation(conn, userId, bookId);
-                
-                if (resultMsg.isEmpty()) {
-                    int bookInfoId = bookDAO.findById(bookId).get().getBookInfoId(); 
-                    boolean isUpdated = false;
-                    
-                    for (Reservation r : reservationDAO.findAll()) {
-                        if (r.getUserId() == userId && r.getBookInfoId() == bookInfoId && (r.getStatus() == 1 || r.getStatus() == 2)) {
-                            ReservationDto dto = new ReservationDto();
-                            dto.setId(r.getId());
-                            dto.setStatus(3); // キャンセル
-                            
-                            if (reservationDAO.update(dto)) {
-                                // 🌟【追加】キャンセル成功時に、利用者の貸出カウント（borrowCount）を減らす
-                                if (userDAO.decrementBorrowCount(userId)) {
-                                    isUpdated = true;
-                                    // セッション内のログインユーザー情報も同期して更新
-                                    loginUser.setBorrowCount(loginUser.getBorrowCount() - 1);
-                                } else {
-                                    resultMsg = "貸出カウントの更新に失敗しました。";
-                                }
-                                break;
-                            }
-                        }
-                    }
-                    if (!isUpdated && resultMsg.isEmpty()) {
-                        resultMsg = "キャンセルの更新に失敗しました。";
-                    }
-                }
+                logic.executeCancellation(userId, bookId);
+                session.setAttribute("successMessage", "予約をキャンセルしました。");
             }
 
             // ==========================================
-            // コミット or ロールバック
-            if (resultMsg.isEmpty()) {
-                conn.commit(); 
-                session.setAttribute("successMessage", "reserve".equals(action) ? "予約手続きが完了しました。" : "予約をキャンセルしました。");
-            } else {
-                conn.rollback(); 
-                session.setAttribute("errorMsg", resultMsg);
+            // 2. 🌟 DBから最新のUser情報を再取得してセッションを更新
+            // ==========================================
+            try (Connection conn = DBManager.getConnection()) {
+                UserDAO userDAO = new UserDAO(conn);
+                User updatedUser = userDAO.findById(userId);
+                if (updatedUser != null) {
+                    session.setAttribute("loginUser", updatedUser); // 最新のユーザー情報でセッションを上書き
+                }
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
-            session.setAttribute("errorMsg", "システムエラーが発生しました。");
+            session.setAttribute("errorMsg", e.getMessage());
         }
         
         // 詳細画面（GET）へリダイレクト
@@ -164,7 +104,7 @@ public class ReserveServlet extends HttpServlet {
         
         HttpSession session = request.getSession();
         
-        // 🌟 GET（詳細画面表示）でも同様に「loginUser」オブジェクトからIDを取得する
+        // GET（詳細画面表示）でも「loginUser」オブジェクトからIDを取得する
         User loginUser = (User) session.getAttribute("loginUser");
         Integer loginUserId = (loginUser != null) ? loginUser.getId() : null;
         
@@ -174,10 +114,11 @@ public class ReserveServlet extends HttpServlet {
             request.setAttribute("successMessage", successMessage);
             session.removeAttribute("successMessage"); 
         }
+        
         String errorMsg = (String) session.getAttribute("errorMsg");
         if (errorMsg != null) {
             request.setAttribute("errorMsg", errorMsg);
-            session.removeAttribute("removeAttribute"); 
+            session.removeAttribute("errorMsg"); // 💡 修正: "removeAttribute" だったキー名のタイポを修正
         }
 
         if (bookIdStr != null && !bookIdStr.isEmpty()) {
@@ -217,7 +158,8 @@ public class ReserveServlet extends HttpServlet {
                             }
                         }
                     }
-                 // --- 💡 追加：貸出情報の取得と判定 ---
+
+                    // --- 貸出情報の取得と判定 ---
                     LendDAO lendDAO = new LendDAO(conn);
                     Lend currentLend = lendDAO.findCurrentLendByBookId(bookId);
                     boolean isLentOut = (currentLend != null);
@@ -226,11 +168,8 @@ public class ReserveServlet extends HttpServlet {
                     if (isLentOut) {
                         request.setAttribute("currentLend", currentLend);
                     }
-                    // ----------------------------------
 
-                    // エンティティにフラグを仕込む
-                    book.setReservedByCurrentUser(isReservedByCurrentUser);
-                    // エンティティにフラグを仕込む
+                    // エンティティにフラグを仕込む (重複行を1行削除)
                     book.setReservedByCurrentUser(isReservedByCurrentUser);
                     
                     // JSPへデータを送る
@@ -241,7 +180,7 @@ public class ReserveServlet extends HttpServlet {
                     request.setAttribute("errorMsg", "該当する図書データが見つかりません。");
                 }
 
-                // 🌟 JSP側の互換性のために、loginUserIdもリクエストスコープに載せておく
+                // JSP側の互換性のために、loginUserIdもリクエストスコープに載せておく
                 request.setAttribute("loginUserId", loginUserId);
 
             } catch (Exception e) {
