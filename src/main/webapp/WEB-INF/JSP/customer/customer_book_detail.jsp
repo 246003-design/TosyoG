@@ -76,29 +76,7 @@
                             </p>
                         </div>
 
-                      <div class="mb-4">
-                            <h4 class="text-sm font-bold text-gray-500 mb-1 uppercase tracking-wider">状態</h4>
-                            <p class="text-gray-700 text-sm md:text-base flex items-center gap-2">
-                                <c:choose>
-                                    <%-- 💡 貸出DAOから取得したリアルタイムな判定を最優先する --%>
-                                    <c:when test="${isLentOut}">
-                                        <span class="text-red-600 font-bold">貸出中</span>
-                                        <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
-                                            返却予定日: <fmt:formatDate value="${currentLend.dueDate}" pattern="yyyy/MM/dd" />
-                                        </span>
-                                    </c:when>
-                                    <c:when test="${book.status == 3}">
-                                        <span class="text-amber-600 font-bold">予約中</span>
-                                    </c:when>
-                                    <c:when test="${book.status == 1}">
-                                        <span class="text-green-600 font-bold">貸出可能</span>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <span class="text-gray-500 font-bold">利用不可</span>
-                                    </c:otherwise>
-                                </c:choose>
-                            </p>
-                        </div>
+
 
                     <div class="flex flex-col sm:flex-row gap-4 mt-8 pt-6 border-t border-gray-100">
                         <a href="LibrarySearchServlet" class="flex-1 py-3.5 border-2 border-gray-300 text-gray-700 rounded-xl font-bold text-center hover:bg-gray-50 transition-colors">
